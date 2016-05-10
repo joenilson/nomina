@@ -1,0 +1,143 @@
+{include="header"}
+
+<script type="text/javascript">
+   $(document).ready(function() {
+      if(window.location.hash.substring(1) == 'nuevo')
+      {
+         $("#modal_nuevo_agente").modal('show');
+         document.f_nuevo_agente.snombre.focus();
+      }
+      $("#b_nuevo_agente").click(function(event) {
+         event.preventDefault();
+         $("#modal_nuevo_agente").modal('show');
+         document.f_nuevo_agente.snombre.focus();
+      });
+   });
+</script>
+
+<div class="container-fluid hidden-print" style="margin-top: 10px;">
+   <div class="row">
+      <div class="col-sm-6 col-xs-6">
+         <div class="btn-group hidden-xs">
+            <a class="btn btn-sm btn-default" href="{$fsc->url()}" title="Recargar la página">
+               <span class="glyphicon glyphicon-refresh"></span>
+            </a>
+            {if="$fsc->page->is_default()"}
+            <a class="btn btn-sm btn-default active" href="{$fsc->url()}&amp;default_page=FALSE" title="desmarcar como página de inicio">
+               <span class="glyphicon glyphicon-home"></span>
+            </a>
+            {else}
+            <a class="btn btn-sm btn-default" href="{$fsc->url()}&amp;default_page=TRUE" title="marcar como página de inicio">
+               <span class="glyphicon glyphicon-home"></span>
+            </a>
+            {/if}
+         </div>
+         <div class="btn-group">
+            <a id="b_nuevo_agente" class="btn btn-sm btn-success" href="#">
+               <span class="glyphicon glyphicon-plus"></span>
+               <span class="hidden-xs">&nbsp; Nuevo</span>
+            </a>              
+            {loop="$fsc->extensions"}
+               {if="$value->type=='button'"}
+               <a href="index.php?page={$value->from}{$value->params}" class="btn btn-sm btn-default">{$value->text}</a>
+               {/if}
+            {/loop}
+         </div>
+         <button type="button" class="btn btn-sm btn-default" onclick="window.print();">
+            <span class="glyphicon glyphicon-print" aria-hidden="true"></span>
+         </button>           
+      </div>
+      <div class="col-sm-6 col-xs-6 text-right">
+         <h2 style="margin-top: 0px;">Empleados</h2>
+      </div>
+   </div>
+</div>
+
+<div class="table-responsive">
+   <table class="table table-hover">
+      <thead>
+         <tr>
+            <th class="text-left">Nombre + Apellidos</th>
+            <th class="text-left">{#FS_CIFNIF#}</th>
+            <th class="text-left">Cargo</th>
+            <th class="text-left">Teléfono</th>
+            <th class="text-left">Nacimiento</th>
+            <th class="text-right">Fecha Alta</th>
+         </tr>
+      </thead>
+      {loop="$fsc->agente->all()"}
+      <tr class='clickableRow{if="$value->f_baja"} danger{/if}' href='{$value->url()}'>
+         <td>
+            {$value->get_fullname()}
+            {if="$value->f_baja"}
+            &nbsp; <span class="label label-danger" title="Empleado dado de baja">Baja</span>
+            {/if}
+         </td>
+         <td>{$value->dnicif}</td>
+         <td>{$value->cargo}</td>
+         <td>{if="$value->telefono==''"}-{else}{$value->telefono}{/if}</td>
+         <td>{$value->f_nacimiento}</td>
+         <td class="text-right">{$value->f_alta}</td>
+      </tr>
+      {else}
+      <tr class="warning">
+         <td colspan="6">Sin resultados.</td>
+      </tr>
+      {/loop}
+   </table>
+</div>
+
+<form class="form-horizontal" role="form" name="f_nuevo_agente" action="{$fsc->url()}" method="post">
+   <div class="modal" id="modal_nuevo_agente">
+      <div class="modal-dialog">
+         <div class="modal-content">
+            <div class="modal-header">
+               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+               <h4 class="modal-title">
+                  <span class="glyphicon glyphicon-user"></span>
+                  &nbsp; Nuevo empleado
+               </h4>
+            </div>
+            <div class="modal-body">
+               <div class="form-group">
+                  <label for="snombre" class="col-sm-2 control-label">Nombre</label>
+                  <div class="col-sm-10">
+                     <input class="form-control" type="text" name="snombre" autocomplete="off" required=""/>
+                  </div>
+               </div>
+               <div class="form-group">
+                  <label for="sapellidos" class="col-sm-2 control-label">Apellidos</label>
+                  <div class="col-sm-10">
+                     <input class="form-control" type="text" name="sapellidos" autocomplete="off"/>
+                  </div>
+               </div>
+               <div class="form-group">
+                  <label for="sdnicif" class="col-sm-2 control-label">{#FS_CIFNIF#}</label>
+                  <div class="col-sm-10">
+                     <input class="form-control" type="text" name="sdnicif" autocomplete="off"/>
+                  </div>
+               </div>
+               <div class="form-group">
+                  <label for="stelefono" class="col-sm-2 control-label">Teléfono</label>
+                  <div class="col-sm-10">
+                     <input class="form-control" type="text" name="stelefono" autocomplete="off"/>
+                  </div>
+               </div>
+               <div class="form-group">
+                  <label for="semail" class="col-sm-2 control-label">Email</label>
+                  <div class="col-sm-10">
+                     <input class="form-control" type="text" name="semail" autocomplete="off"/>
+                  </div>
+               </div>
+            </div>
+            <div class="modal-footer">
+               <button class="btn btn-sm btn-primary" type="submit">
+                  <span class="glyphicon glyphicon-floppy-disk"></span> &nbsp; Guardar
+               </button>
+            </div>
+         </div>
+      </div>
+   </div>
+</form>
+
+{include="footer"}
