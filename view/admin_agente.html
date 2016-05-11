@@ -56,6 +56,19 @@
                {/if}
             {/loop}
          </div>
+         <!-- Panel para nomina !-->
+         <div class="list-group">
+            <a id="b_generales" href="{$fsc->url()}" class="list-group-item active">
+               <span class="glyphicon glyphicon-file"></span> &nbsp; Datos nómina
+            </a>
+            {loop="$fsc->extensions"}
+               {if="$value->type=='button_nomina'"}
+               <a id="b_{$value->from}" href="index.php?page={$value->from}{$value->params}&codagente={$fsc->agente->codagente}" class="list-group-item">
+                  {$value->text}
+               </a>
+               {/if}
+            {/loop}
+         </div>
       </div>
       <div class="col-lg-10 col-md-9 col-sm-9">
          <form class="form" role="form" action="{$fsc->url()}" method="post">
@@ -75,16 +88,23 @@
                         <input class="form-control" type="text" name="nombre" value="{$fsc->agente->nombre}" autocomplete="off"/>
                      </div>
                   </div>
-                  <div class="col-sm-6">
+                  <div class="col-sm-5">
                      <div class="form-group">
                         Apellidos:
                         <input class="form-control" type="text" name="apellidos" value="{$fsc->agente->apellidos}" autocomplete="off"/>
                      </div>
                   </div>
-                  <div class="col-sm-3">
+                  <div class="col-sm-2">
                      <div class="form-group">
                         {#FS_CIFNIF#}:
                         <input class="form-control" type="text" name="dnicif" value="{$fsc->agente->dnicif}" autocomplete="off"/>
+                     </div>
+                  </div>
+                  <div class="col-sm-2">
+                     <div class="form-group">
+                        Sexo:<br/>
+                        <label><input class="radio-inline radio-control" type="radio" name="sexo" value="M"/> Masculino</label>
+                        <label><input class="radio-inline radio-control" type="radio" name="sexo" value="F"/> Femenino</label>
                      </div>
                   </div>
                   <div class="col-sm-4">
@@ -102,7 +122,12 @@
                   <div class="col-sm-4">
                      <div class="form-group">
                         Cargo ocupado:
-                        <input class="form-control" type="text" name="cargo" value="{$fsc->agente->cargo}" autocomplete="off"/>
+                        <select name="codcargo" required class="form-control">
+                            <option value="">--------</option>
+                            {loop="$fsc->almacen->all()"}
+                            <option value="{$value->codalmacen}" {if="$fsc->agente->codalmacen==$value->codalmacen"}selected{/if}>{$value->nombre}</option>
+                            {/loop}
+                        </select>
                      </div>
                   </div>
                   <div class="col-sm-3">
@@ -121,6 +146,95 @@
                      <div class="form-group">
                         Dirección:
                         <input class="form-control" type="text" name="direccion" value="{$fsc->agente->direccion}" autocomplete="off"/>
+                     </div>
+                  </div>
+                  <div class="col-sm-4">
+                     <div class="form-group">
+                        Almacén:
+                        <select name="codalmacen" required class="form-control">
+                            <option value="">--------</option>
+                            {loop="$fsc->almacen->all()"}
+                            <option value="{$value->codalmacen}" {if="$fsc->agente->codalmacen==$value->codalmacen"}selected{/if}>{$value->nombre}</option>
+                            {/loop}
+                        </select>
+                     </div>
+                  </div>
+                  <div class="col-sm-4">
+                     <div class="form-group">
+                        Supervisor:
+                        <select name="codsupervisor" required class="form-control">
+                            <option value="">--------</option>
+                            {loop="$fsc->agente->all()"}
+                            <option value="{$value->codagente}" {if="$fsc->agente->codsupervisor==$value->codagente"}selected{/if}>{$value->nombreap}</option>
+                            {/loop}
+                        </select>
+                     </div>
+                  </div>
+                  <div class="col-sm-4">
+                     <div class="form-group">
+                        Gerencia:
+                        <select name="codgerencia" required class="form-control">
+                            <option value="">--------</option>
+                            {loop="$fsc->agente->all()"}
+                            <option value="{$value->codagente}" {if="$fsc->agente->codsupervisor==$value->codagente"}selected{/if}>{$value->nombreap}</option>
+                            {/loop}
+                        </select>
+                     </div>
+                  </div>
+                  <div class="col-sm-4">
+                     <div class="form-group">
+                        Tipo de Empleado:
+                        <select name="codtipo" required class="form-control">
+                            <option value="">--------</option>
+                            {loop="$fsc->almacen->all()"}
+                            <option value="{$value->codalmacen}" {if="$fsc->agente->codalmacen==$value->codalmacen"}selected{/if}>{$value->nombre}</option>
+                            {/loop}
+                        </select>
+                     </div>
+                  </div>
+                  <div class="col-sm-4">
+                     <div class="form-group">
+                        Area:
+                        <select name="codarea" required class="form-control">
+                            <option value="">--------</option>
+                            {loop="$fsc->almacen->all()"}
+                            <option value="{$value->codalmacen}" {if="$fsc->agente->codalmacen==$value->codalmacen"}selected{/if}>{$value->nombre}</option>
+                            {/loop}
+                        </select>
+                     </div>
+                  </div>
+                  <div class="col-sm-4">
+                     <div class="form-group">
+                        Departamento:
+                        <select name="coddepartamento" required class="form-control">
+                            <option value="">--------</option>
+                            {loop="$fsc->almacen->all()"}
+                            <option value="{$value->codalmacen}" {if="$fsc->agente->codalmacen==$value->codalmacen"}selected{/if}>{$value->nombre}</option>
+                            {/loop}
+                        </select>
+                     </div>
+                  </div>
+                  <div class="col-sm-3">
+                     <div class="form-group">
+                        Formación:
+                        <select name="codformacion" required class="form-control">
+                            <option value="">--------</option>
+                            {loop="$fsc->almacen->all()"}
+                            <option value="{$value->codalmacen}" {if="$fsc->agente->codalmacen==$value->codalmacen"}selected{/if}>{$value->nombre}</option>
+                            {/loop}
+                        </select>
+                     </div>
+                  </div>
+                  <div class="col-sm-4">
+                     <div class="form-group">
+                        Carrera:
+                        <input class="form-control" type="text" name="carrera" value="{$fsc->agente->carrera}" autocomplete="off"/>
+                     </div>
+                  </div>
+                  <div class="col-sm-5">
+                     <div class="form-group">
+                        Centro de estudios:
+                        <input class="form-control" type="text" name="centroestudios" value="{$fsc->agente->centroestudios}" autocomplete="off"/>
                      </div>
                   </div>
                   <div class="col-sm-4">
@@ -156,16 +270,47 @@
                         </div>
                      </div>
                   </div>
-                  <div class="col-sm-5">
+                  <div class="col-sm-3">
+                     <div class="form-group">
+                        Seguridad Social:
+                        <select name="codseguridadsocial" required class="form-control">
+                            <option value="">--------</option>
+                            {loop="$fsc->almacen->all()"}
+                            <option value="{$value->codalmacen}" {if="$fsc->agente->codalmacen==$value->codalmacen"}selected{/if}>{$value->nombre}</option>
+                            {/loop}
+                        </select>
+                     </div>
+                  </div>
+                  <div class="col-sm-3">
                      <div class="form-group">
                         Nº Seguridad Social:
                         <input class="form-control" type="text" name="seg_social" value="{$fsc->agente->seg_social}" autocomplete="off"/>
                      </div>
                   </div>
-                  <div class="col-sm-5">
+                  <div class="col-sm-3">
+                     <div class="form-group">
+                        Banco:
+                        <select name="codbanco" required class="form-control">
+                            <option value="">--------</option>
+                            {loop="$fsc->almacen->all()"}
+                            <option value="{$value->codalmacen}" {if="$fsc->agente->codalmacen==$value->codalmacen"}selected{/if}>{$value->nombre}</option>
+                            {/loop}
+                        </select>
+                     </div>
+                  </div>
+                  <div class="col-sm-3">
                      <div class="form-group">
                         Cuenta Bancaria:
-                        <input class="form-control" type="text" name="banco" value="{$fsc->agente->banco}" autocomplete="off"/>
+                        <input class="form-control" type="text" name="cuenta_banco" value="{$fsc->agente->cuenta_banco}" autocomplete="off"/>
+                     </div>
+                  </div>
+                  <div class="col-sm-2">
+                     <div class="form-group">
+                        Dependientes:
+                        <div class="input-group">
+                            <span class="input-group-addon"><span class="fa fa-group"></span></span>
+                           <input class="form-control" type="number" name="dependientes" value="{$fsc->agente->dependientes}" autocomplete="off"/>
+                        </div>
                      </div>
                   </div>
                   <div class="col-sm-2">

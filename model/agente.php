@@ -48,6 +48,12 @@ class agente extends fs_model
    public $direccion;
 
    /**
+    * Variable que guarda los valores de Nombres, Apellidos
+    * @var type $nombreap Nombrecompleto
+    */
+   public $nombreap;
+
+   /**
     * Se coloca el número o código de seguridad social del empleado
     * @var type $seg_social
     */
@@ -173,14 +179,41 @@ class agente extends fs_model
     */
    public $cuenta_banco;
 
+   /**
+    * Usuario que crea al empleado, para efectos de auditoria
+    * @var type $usuario_creacion
+    */
+   public $usuario_creacion;
+
+   /**
+    * Fecha de ingreso de la ficha del empleado
+    * @var type $fecha_creacion
+    */
+   public $fecha_creacion;
+
+   /**
+    * Usuario que modifica el registro
+    * @var type $usuario_modificacion User->nick
+    */
+   public $usuario_modificacion;
+
+   /**
+    * Fecha en que modifican el registro
+    * @var type $fecha_modificacion
+    */
+   public $fecha_modificacion;
+
    public function __construct($a=FALSE)
    {
       parent::__construct('agentes');
       if($a)
       {
+         $this->codalmacen = $a['codalmacen'];
+         $this->idempresa = $a['idempresa'];
          $this->codagente = $a['codagente'];
          $this->nombre = $a['nombre'];
          $this->apellidos = $a['apellidos'];
+         $this->nombreap = $a['apellidos'].", ".$a['nombre'];
          $this->dnicif = $a['dnicif'];
          $this->coddepartamento = $a['coddepartamento'];
          $this->email = $a['email'];
@@ -196,6 +229,18 @@ class agente extends fs_model
          $this->seg_social = $a['seg_social'];
          $this->banco = $a['banco'];
          $this->cargo =$a['cargo'];
+         $this->codtipo = $a['codtipo'];
+         $this->codgerencia = $a['codgerencia'];
+         $this->codarea = $a['codarea'];
+         $this->codcargo = $a['codcargo'];
+         $this->codsupervisor = $a['codsupervisor'];
+         $this->codseguridadsocial = $a['codseguridadsocial'];
+         $this->dependientes = $a['dependientes'];
+         $this->codformacion = $a['codformacion'];
+         $this->carrera = $a['carrera'];
+         $this->centroestudios = $a['centroestudios'];
+         $this->codbanco = $a['codbanco'];
+         $this->cuenta_banco = $a['cuenta_banco'];
 
          $this->f_alta = NULL;
          if($a['f_alta'] != '')
@@ -214,12 +259,32 @@ class agente extends fs_model
          {
             $this->f_nacimiento = Date('d-m-Y', strtotime($a['f_nacimiento']));
          }
+
+         $this->sexo = $a['sexo'];
+
+         $this->fecha_creacion = NULL;
+         if($a['fecha_creacion'] != '')
+         {
+            $this->fecha_creacion = Date('d-m-Y H:i:s', strtotime($a['fecha_creacion']));
+         }
+         $this->usuario_creacion = $a['usuario_creacion'];
+
+         $this->fecha_modificacion = NULL;
+         if($a['fecha_modificacion'] != '')
+         {
+            $this->fecha_modificacion = Date('d-m-Y H:i:s', strtotime($a['fecha_modificacion']));
+         }
+
+         $this->usuario_modificacion = $a['usuario_modificacion'];
       }
       else
       {
+         $this->codalmacen = NULL;
+         $this->idempresa = NULL;
          $this->codagente = NULL;
          $this->nombre = '';
          $this->apellidos = '';
+         $this->nombreap = '';
          $this->dnicif = '';
          $this->coddepartamento = NULL;
          $this->email = NULL;
@@ -238,6 +303,23 @@ class agente extends fs_model
          $this->f_alta = Date('d-m-Y');
          $this->f_baja = NULL;
          $this->f_nacimiento = Date('d-m-Y');
+         $this->sexo = NULL;
+         $this->codtipo = NULL;
+         $this->codgerencia = NULL;
+         $this->codarea = NULL;
+         $this->codcargo = NULL;
+         $this->codsupervisor = NULL;
+         $this->codseguridadsocial = NULL;
+         $this->dependientes = 0;
+         $this->codformacion = NULL;
+         $this->carrera = NULL;
+         $this->centroestudios = NULL;
+         $this->codbanco = NULL;
+         $this->cuenta_banco = NULL;
+         $this->fecha_creacion = Date('d-m-Y H:i:s');
+         $this->usuario_creacion = NULL;
+         $this->fecha_modificacion = NULL;
+         $this->usuario_modificacion = NULL;
       }
    }
 
@@ -335,6 +417,8 @@ class agente extends fs_model
          {
             $sql = "UPDATE ".$this->table_name." SET nombre = ".$this->var2str($this->nombre).
                     ", apellidos = ".$this->var2str($this->apellidos).
+                    ", codalmacen = ".$this->var2str($this->codalmacen).
+                    ", idempresa = ".$this->intval($this->idempresa).
                     ", dnicif = ".$this->var2str($this->dnicif).
                     ", telefono = ".$this->var2str($this->telefono).
                     ", email = ".$this->var2str($this->email).
@@ -345,18 +429,23 @@ class agente extends fs_model
                     ", f_nacimiento = ".$this->var2str($this->f_nacimiento).
                     ", f_alta = ".$this->var2str($this->f_alta).
                     ", f_baja = ".$this->var2str($this->f_baja).
+                    ", sexo = ".$this->var2str($this->sexo).
                     ", seg_social = ".$this->var2str($this->seg_social).
                     ", banco = ".$this->var2str($this->banco).
                     ", porcomision = ".$this->var2str($this->porcomision).
+                    ", fecha_modificacion = ".$this->var2str($this->fecha_modificacion).
+                    ", usuario_modificacion = ".$this->var2str($this->usuario_modificacion).
                     "  WHERE codagente = ".$this->var2str($this->codagente).";";
          }
          else
          {
-            $sql = "INSERT INTO ".$this->table_name." (codagente,nombre,apellidos,dnicif,telefono,
-               email,cargo,provincia,ciudad,direccion,f_nacimiento,f_alta,f_baja,seg_social,banco,porcomision)
-               VALUES (".$this->var2str($this->codagente).
+            $sql = "INSERT INTO ".$this->table_name." (codalmacen,idempresa,codagente,nombre,apellidos,nombreap,dnicif,telefono,
+               email,cargo,provincia,ciudad,direccion,f_nacimiento,f_alta,f_baja,sexo,seg_social,banco,porcomision)
+               VALUES (".$this->var2str($this->codalmacen).
+                    ",".$this->intval($this->idempresa).
                     ",".$this->var2str($this->nombre).
                     ",".$this->var2str($this->apellidos).
+                    ",".$this->var2str($this->nombreap).
                     ",".$this->var2str($this->dnicif).
                     ",".$this->var2str($this->telefono).
                     ",".$this->var2str($this->email).
@@ -367,9 +456,13 @@ class agente extends fs_model
                     ",".$this->var2str($this->f_nacimiento).
                     ",".$this->var2str($this->f_alta).
                     ",".$this->var2str($this->f_baja).
+                    ",".$this->var2str($this->sexo).
                     ",".$this->var2str($this->seg_social).
                     ",".$this->var2str($this->banco).
-                    ",".$this->var2str($this->porcomision).");";
+                    ",".$this->var2str($this->porcomision).
+                    ",".$this->var2str($this->fecha_creacion).
+                    ",".$this->var2str($this->usuario_creacion)
+                    .");";
          }
 
          return $this->db->exec($sql);
@@ -404,5 +497,37 @@ class agente extends fs_model
       }
 
       return $listagentes;
+   }
+
+   public function corregir(){
+       if( $this->exists() )
+         {
+            $sql = "UPDATE ".$this->table_name." SET nombre = ".$this->var2str($this->nombre).
+                    ", apellidos = ".$this->var2str($this->apellidos).
+                    ", codalmacen = ".$this->var2str($this->codalmacen).
+                    ", idempresa = ".$this->intval($this->idempresa).
+                    ", dnicif = ".$this->var2str($this->dnicif).
+                    ", telefono = ".$this->var2str($this->telefono).
+                    ", email = ".$this->var2str($this->email).
+                    ", cargo = ".$this->var2str($this->cargo).
+                    ", provincia = ".$this->var2str($this->provincia).
+                    ", ciudad = ".$this->var2str($this->ciudad).
+                    ", direccion = ".$this->var2str($this->direccion).
+                    ", f_nacimiento = ".$this->var2str($this->f_nacimiento).
+                    ", f_alta = ".$this->var2str($this->f_alta).
+                    ", f_baja = ".$this->var2str($this->f_baja).
+                    ", sexo = ".$this->var2str($this->sexo).
+                    ", seg_social = ".$this->var2str($this->seg_social).
+                    ", banco = ".$this->var2str($this->banco).
+                    ", cuenta_banco = ".$this->var2str($this->cuenta_banco).
+                    ", codcargo = ".$this->var2str($this->codcargo).
+                    ", porcomision = ".$this->var2str($this->porcomision).
+                    ", fecha_creacion = ".$this->var2str($this->fecha_creacion).
+                    ", usuario_creacion = ".$this->var2str($this->usuario_creacion).
+                    "  WHERE codagente = ".$this->var2str($this->codagente).";";
+            return $this->db->exec($sql);
+         }else{
+             return false;
+         }
    }
 }

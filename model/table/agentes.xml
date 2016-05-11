@@ -197,7 +197,7 @@
    <columna>
         <nombre>fecha_creacion</nombre>
         <tipo>timestamp without time zone</tipo>
-        <nulo>NO</nulo>
+        <nulo>YES</nulo>
    </columna>
    <columna>
         <nombre>fecha_modificacion</nombre>
@@ -207,12 +207,12 @@
    <columna>
         <nombre>idempresa</nombre>
         <tipo>integer</tipo>
-        <nulo>NO</nulo>
+        <nulo>YES</nulo>
    </columna>
    <columna>
         <nombre>usuario_creacion</nombre>
         <tipo>character varying(12)</tipo>
-        <nulo>NO</nulo>
+        <nulo>YES</nulo>
    </columna>
    <columna>
         <nombre>usuario_modificacion</nombre>
