@@ -18,67 +18,58 @@
  */
 
 /**
- * Description of cargos
+ * Description of tipoempleado
  *
  * @author Joe Nilson <joenilson at gmail dot com>
  */
-class cargos extends fs_model{
+class tipoempleado extends fs_model{
     /**
-     * El codigo a generar del cargo
-     * @var type $codcargo Cargos
+     * El codigo a generar del tipoempleado
+     * @var type $codtipo TipoEmpleado
      */
-    public $codcargo;
-    /**
-     * Si este cargo tiene un superior se coloca aquí
-     * @var type $padre Cargo
-     */
-    public $padre;
+    public $codtipo;
 
     /**
-     * Se coloca la descripción del cargo
-     * @var type $descripcion Cargo
+     * Se coloca la descripción del tipoempleado
+     * @var type $descripcion TipoEmpleado
      */
     public $descripcion;
 
     /**
-     * Si se va desactivar un cargo se debe colocar aquí su estado
+     * Si se va desactivar un tipo de empleado se debe colocar aquí su estado
      * @var type $estado Boolean
      */
     public $estado;
     public function __construct($t = FALSE) {
-        parent::__construct('hr_cargos');
+        parent::__construct('hr_tipoempleado');
         if($t){
-            $this->codcargo = $t['codcargo'];
+            $this->codtipo = $t['codtipo'];
             $this->descripcion = $t['descripcion'];
-            $this->padre = $t['padre'];
             $this->estado = $this->str2bool($t['estado']);
         }else{
-            $this->codcargo = NULL;
+            $this->codtipo = NULL;
             $this->descripcion = NULL;
-            $this->padre = NULL;
             $this->estado = FALSE;
         }
     }
 
     protected function install() {
-        return "INSERT INTO ".$this->table_name." (codcargo, descripcion, padre, estado) VALUES ('1','GERENTE GENERAL',NULL,TRUE)";
+        return "INSERT INTO ".$this->table_name.
+                " (codtipo, descripcion, estado) VALUES".
+                " ('1','FIJO',TRUE),".
+                " ('2','TEMPORAL',TRUE),".
+                " ('3','CONTRATO TIEMPO COMPLETO',TRUE),".
+                " ('4','CONTRATO MEDIO TIEMPO',TRUE);";
     }
 
     public function url()
     {
-        if( is_null($this->codcargo) )
-        {
-            return "index.php?page=admin_cargos";
-        }
-        else
-        {
-            return "index.php?page=admin_cargos&cod=".$this->codcargo;
-        }
+        return "index.php?page=admin_tipoempleados";
     }
 
     public function get_new_codigo()
     {
-        $sql = "SELECT MAX(".$this->db->sql_to_int('codcargo').") as cod FROM ".$this->table_name.";";
+        $sql = "SELECT MAX(".$this->db->sql_to_int('codtipo').") as cod FROM ".$this->table_name.";";
         $cod = $this->db->select($sql);
         if($cod)
         {
@@ -91,10 +82,10 @@ class cargos extends fs_model{
     }
 
     public function exists() {
-        if(is_null($this->codcargo)){
+        if(is_null($this->codtipo)){
             return false;
         }else{
-            return $this->db->select("SELECT * FROM ".$this->table_name." WHERE codcargo = ".$this->var2str($this->codcargo).";");
+            return $this->db->select("SELECT * FROM ".$this->table_name." WHERE codtipo = ".$this->var2str($this->codtipo).";");
         }
     }
 
@@ -103,10 +94,9 @@ class cargos extends fs_model{
             $this->update();
         }else{
             //INSERT DATA
-            $sql = "INSERT INTO ".$this->table_name." (codcargo, descripcion, padre, estado) VALUES (".
+            $sql = "INSERT INTO ".$this->table_name." (codtipo, descripcion, estado) VALUES (".
                 $this->var2str($this->get_new_codigo()).", ".
                 $this->var2str($this->descripcion).", ".
-                $this->var2str($this->padre).", ".
                 $this->var2str($this->estado).");";
             return $this->db->exec($sql);
         }
@@ -114,17 +104,16 @@ class cargos extends fs_model{
 
     public function update(){
         $sql = "UPDATE ".$this->table_name." SET ".
-            " padre = ".$this->var2str($this->padre).
             ", estado = ".$this->var2str($this->estado).
             ", descripcion = ".$this->intval($this->descripcion).
-            " WHERE codcargo = ".$this->var2str($this->codcargo).";";
+            " WHERE codtipo = ".$this->var2str($this->codtipo).";";
         return $this->db->exec($sql);
     }
 
-    public function get($codcargo){
-        $data = $this->db->select("SELECT * FROM ".$this->table_name." WHERE codcargo = ".$this->var2str($codcargo).";");
+    public function get($codtipo){
+        $data = $this->db->select("SELECT * FROM ".$this->table_name." WHERE codtipo = ".$this->var2str($codtipo).";");
         if($data){
-            return new cargos($data[0]);
+            return new tipoempleado($data[0]);
         }else{
             return false;
         }
@@ -133,7 +122,7 @@ class cargos extends fs_model{
     public function get_by_descripcion($descripcion){
         $data = $this->db->select("SELECT * FROM ".$this->table_name." WHERE descripcion = ".$this->var2str($descripcion).";");
         if($data){
-            return new cargos($data[0]);
+            return new tipoempleado($data[0]);
         }else{
             return false;
         }
@@ -144,7 +133,7 @@ class cargos extends fs_model{
         $data = $this->db->select("SELECT * FROM ".$this->table_name.";");
         if($data){
             foreach($data as $d){
-                $lista[] = new cargos($d);
+                $lista[] = new tipoempleado($d);
             }
             return $lista;
         }else{
@@ -157,7 +146,7 @@ class cargos extends fs_model{
     }
 
     public function corregir(){
-        $sql = "SELECT codcargo FROM ".$this->table_name." WHERE descripcion = ".$this->var2str($this->descripcion);
+        $sql = "SELECT codtipo FROM ".$this->table_name." WHERE descripcion = ".$this->var2str($this->descripcion);
         $data = $this->db->select($sql);
         if($data){
             $this->update();

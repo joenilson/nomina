@@ -58,9 +58,22 @@
          </div>
          <!-- Panel para nomina !-->
          <div class="list-group">
-            <a id="b_generales" href="{$fsc->url()}" class="list-group-item active">
+            <a id="b_nomina" href="{$fsc->url()}" class="list-group-item active">
                <span class="glyphicon glyphicon-file"></span> &nbsp; Datos nómina
             </a>
+            <a id="b_movimientos" href="{$fsc->url()}" class="list-group-item">
+               <span class="fa fa-code-fork"></span> &nbsp; Movimientos
+            </a>
+            <a id="b_sueldo" href="{$fsc->url()}" class="list-group-item">
+               <span class="fa fa-money"></span> &nbsp; Sueldo
+            </a>
+            <a id="b_dependientes" href="{$fsc->url()}" class="list-group-item">
+               <span class="fa fa-group"></span> &nbsp; Carga Familiar
+            </a>
+            <a id="b_asistencia" href="{$fsc->url()}" class="list-group-item">
+               <span class="fa fa-clock-o"></span> &nbsp; Asistencia
+            </a>
+
             {loop="$fsc->extensions"}
                {if="$value->type=='button_nomina'"}
                <a id="b_{$value->from}" href="index.php?page={$value->from}{$value->params}&codagente={$fsc->agente->codagente}" class="list-group-item">
@@ -124,10 +137,11 @@
                         Cargo ocupado:
                         <select name="codcargo" required class="form-control">
                             <option value="">--------</option>
-                            {loop="$fsc->almacen->all()"}
-                            <option value="{$value->codalmacen}" {if="$fsc->agente->codalmacen==$value->codalmacen"}selected{/if}>{$value->nombre}</option>
+                            {loop="$fsc->cargos->all()"}
+                            <option value="{$value->codcargo}" {if="$fsc->agente->codcargo==$value->codcargo"}selected{/if}>{$value->descripcion}</option>
                             {/loop}
                         </select>
+                        <span class="help-block">Cambios aquí deben realizarse en Movimientos</span>
                      </div>
                   </div>
                   <div class="col-sm-3">
@@ -172,22 +186,22 @@
                   </div>
                   <div class="col-sm-4">
                      <div class="form-group">
-                        Gerencia:
-                        <select name="codgerencia" required class="form-control">
+                        Tipo de Empleado:
+                        <select name="codtipo" required class="form-control">
                             <option value="">--------</option>
-                            {loop="$fsc->agente->all()"}
-                            <option value="{$value->codagente}" {if="$fsc->agente->codsupervisor==$value->codagente"}selected{/if}>{$value->nombreap}</option>
+                            {loop="$fsc->tipoempleado->all()"}
+                            <option value="{$value->codtipo}" {if="$fsc->agente->codtipo==$value->codtipo"}selected{/if}>{$value->descripcion}</option>
                             {/loop}
                         </select>
                      </div>
                   </div>
                   <div class="col-sm-4">
                      <div class="form-group">
-                        Tipo de Empleado:
-                        <select name="codtipo" required class="form-control">
+                        Gerencia:
+                        <select name="codgerencia" required class="form-control">
                             <option value="">--------</option>
-                            {loop="$fsc->almacen->all()"}
-                            <option value="{$value->codalmacen}" {if="$fsc->agente->codalmacen==$value->codalmacen"}selected{/if}>{$value->nombre}</option>
+                            {loop="$fsc->organizacion->all_tipo('GERENCIA')"}
+                            <option value="{$value->codorganizacion}" {if="$fsc->agente->codgerencia==$value->codorganizacion"}selected{/if}>{$value->descripcion}</option>
                             {/loop}
                         </select>
                      </div>
@@ -197,8 +211,8 @@
                         Area:
                         <select name="codarea" required class="form-control">
                             <option value="">--------</option>
-                            {loop="$fsc->almacen->all()"}
-                            <option value="{$value->codalmacen}" {if="$fsc->agente->codalmacen==$value->codalmacen"}selected{/if}>{$value->nombre}</option>
+                            {loop="$fsc->organizacion->all_tipo('AREA')"}
+                            <option value="{$value->codorganizacion}" {if="$fsc->agente->codarea==$value->codorganizacion"}selected{/if}>{$value->descripcion}</option>
                             {/loop}
                         </select>
                      </div>
@@ -208,8 +222,8 @@
                         Departamento:
                         <select name="coddepartamento" required class="form-control">
                             <option value="">--------</option>
-                            {loop="$fsc->almacen->all()"}
-                            <option value="{$value->codalmacen}" {if="$fsc->agente->codalmacen==$value->codalmacen"}selected{/if}>{$value->nombre}</option>
+                            {loop="$fsc->organizacion->all_tipo('DEPARTAMENTO')"}
+                            <option value="{$value->codorganizacion}" {if="$fsc->agente->coddepartamento==$value->codorganizacion"}selected{/if}>{$value->descripcion}</option>
                             {/loop}
                         </select>
                      </div>
@@ -320,6 +334,17 @@
                            <span class="input-group-addon">%</span>
                            <input class="form-control" type="text" name="porcomision" value="{$fsc->agente->porcomision}" autocomplete="off"/>
                         </div>
+                     </div>
+                  </div>
+                  <div class="col-sm-3">
+                     <div class="form-group">
+                        Estado:
+                        <select name="estado" required class="form-control">
+                            <option value="">--------</option>
+                            {loop="$fsc->agente->estados_agente()"}
+                            <option value="{$key}" {if="$fsc->agente->estado==$key"}selected{/if}>{$value}</option>
+                            {/loop}
+                        </select>
                      </div>
                   </div>
                </div>

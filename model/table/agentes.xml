@@ -116,6 +116,11 @@
       <nulo>YES</nulo>
    </columna>
    <columna>
+      <nombre>estado</nombre>
+      <tipo>character varying(1)</tipo>
+      <nulo>YES</nulo>
+   </columna>
+   <columna>
       <nombre>fax</nombre>
       <tipo>character varying(15)</tipo>
       <nulo>YES</nulo>

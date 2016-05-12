@@ -180,6 +180,19 @@ class agente extends fs_model
    public $cuenta_banco;
 
    /**
+    * Aqui se consigna si el empleado esta:
+    * A = Activo
+    * V = Vacaciones
+    * I = Inactivo
+    * S = Suspendido
+    * C = Cesado o Jubilado
+    * P = Permiso médico
+    * L = Litigio
+    * @var type $estado Agente
+    */
+   public $estado;
+
+   /**
     * Usuario que crea al empleado, para efectos de auditoria
     * @var type $usuario_creacion
     */
@@ -241,6 +254,7 @@ class agente extends fs_model
          $this->centroestudios = $a['centroestudios'];
          $this->codbanco = $a['codbanco'];
          $this->cuenta_banco = $a['cuenta_banco'];
+         $this->estado = $a['estado'];
 
          $this->f_alta = NULL;
          if($a['f_alta'] != '')
@@ -316,6 +330,7 @@ class agente extends fs_model
          $this->centroestudios = NULL;
          $this->codbanco = NULL;
          $this->cuenta_banco = NULL;
+         $this->estado = NULL;
          $this->fecha_creacion = Date('d-m-Y H:i:s');
          $this->usuario_creacion = NULL;
          $this->fecha_modificacion = NULL;
@@ -326,8 +341,8 @@ class agente extends fs_model
    protected function install()
    {
       $this->clean_cache();
-      return "INSERT INTO ".$this->table_name." (codagente,nombre,apellidos,dnicif)
-         VALUES ('1','Paco','Pepe','00000014Z');";
+      return "INSERT INTO ".$this->table_name." (codagente,nombre,apellidos,dnicif,estado)
+         VALUES ('1','Paco','Pepe','00000014Z','A');";
    }
 
    public function get_fullname()
@@ -422,7 +437,13 @@ class agente extends fs_model
                     ", dnicif = ".$this->var2str($this->dnicif).
                     ", telefono = ".$this->var2str($this->telefono).
                     ", email = ".$this->var2str($this->email).
+                    ", codcargo = ".$this->var2str($this->codcargo).
                     ", cargo = ".$this->var2str($this->cargo).
+                    ", codsupervisor = ".$this->var2str($this->codsupervisor).
+                    ", codgerencia = ".$this->var2str($this->codgerencia).
+                    ", codtipo = ".$this->var2str($this->codtipo).
+                    ", codarea = ".$this->var2str($this->codarea).
+                    ", codepartamento = ".$this->var2str($this->coddepartamento).
                     ", provincia = ".$this->var2str($this->provincia).
                     ", ciudad = ".$this->var2str($this->ciudad).
                     ", direccion = ".$this->var2str($this->direccion).
@@ -430,7 +451,15 @@ class agente extends fs_model
                     ", f_alta = ".$this->var2str($this->f_alta).
                     ", f_baja = ".$this->var2str($this->f_baja).
                     ", sexo = ".$this->var2str($this->sexo).
+                    ", codseguridadsocial = ".$this->var2str($this->codseguridadsocial).
                     ", seg_social = ".$this->var2str($this->seg_social).
+                    ", cuenta_banco = ".$this->var2str($this->cuenta_banco).
+                    ", codbanco = ".$this->var2str($this->codbanco).
+                    ", codformacion = ".$this->var2str($this->codformacion).
+                    ", carrera = ".$this->var2str($this->carrera).
+                    ", centroestudios = ".$this->var2str($this->centroestudios).
+                    ", dependientes = ".$this->intval($this->dependientes).
+                    ", estado = ".$this->var2str($this->estado).
                     ", banco = ".$this->var2str($this->banco).
                     ", porcomision = ".$this->var2str($this->porcomision).
                     ", fecha_modificacion = ".$this->var2str($this->fecha_modificacion).
@@ -529,5 +558,17 @@ class agente extends fs_model
          }else{
              return false;
          }
-   }
+    }
+
+    public function estados_agente(){
+        $estados = array();
+        $estados['A']='Activo';
+        $estados['V']='Vacaciones';
+        $estados['I']='Inactivo';
+        $estados['S']='Suspendido';
+        $estados['C']='Cesado o Jubilado';
+        $estados['P']='Permiso médico';
+        $estados['L']='Litigio';
+        return $estados;
+    }
 }

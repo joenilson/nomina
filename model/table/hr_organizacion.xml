@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Document   : hr_organizacion.xml
+    Description:
+        Estructura de la tabla hr_organizacion.
+-->
+<tabla>
+    <columna>
+        <nombre>codorganizacion</nombre>
+        <tipo>character varying(6)</tipo>
+        <nulo>NO</nulo>
+    </columna>
+    <columna>
+        <nombre>descripcion</nombre>
+        <tipo>character varying(60)</tipo>
+        <nulo>NO</nulo>
+    </columna>
+    <columna>
+        <nombre>estado</nombre>
+        <tipo>boolean</tipo>
+        <nulo>YES</nulo>
+    </columna>
+    <columna>
+        <nombre>padre</nombre>
+        <tipo>character varying(6)</tipo>
+        <nulo>YES</nulo>
+    </columna>
+    <columna>
+        <nombre>tipo</nombre>
+        <tipo>character varying(32)</tipo>
+        <nulo>NO</nulo>
+    </columna>
+    <restriccion>
+        <nombre>hr_organizacion_pkey</nombre>
+        <consulta>PRIMARY KEY (codorganizacion)</consulta>
+    </restriccion>
+</tabla>

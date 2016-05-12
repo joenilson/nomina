@@ -18,6 +18,8 @@
  */
 require_model('agente.php');
 require_model('cargos.php');
+require_model('organizacion.php');
+require_model('tipoempleado.php');
 /**
  * Description of configuracion_nomina
  *
@@ -27,6 +29,8 @@ class configuracion_nomina extends fs_controller{
     public $agente;
     public $cargo;
     public $cargos;
+    public $tipoempleado;
+    public $organizacion;
     public function __construct() {
         parent::__construct(__CLASS__, 'Configuracion Nomina', 'nomina', TRUE, FALSE, FALSE);
     }
@@ -34,6 +38,8 @@ class configuracion_nomina extends fs_controller{
     protected function private_core() {
         $this->agente = new agente();
         $this->cargo = new cargos();
+        $this->tipoempleado = new tipoempleado();
+        $this->organizacion = new organizacion();
         //Cargamos los datos por primera vez
         $this->fix_info();
         //Movemos Cargo a la tabla de cargos y banco al campo cuenta_banco

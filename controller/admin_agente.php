@@ -20,12 +20,16 @@
 require_model('agente.php');
 require_model('almacen.php');
 require_model('cargos.php');
+require_model('tipoempleado.php');
+require_model('organizacion.php');
 
 class admin_agente extends fs_controller
 {
    public $agente;
    public $cargos;
    public $almacen;
+   public $tipoempleado;
+   public $organizacion;
    public $allow_delete;
 
    /*
@@ -45,6 +49,8 @@ class admin_agente extends fs_controller
       $this->allow_delete = $this->user->allow_delete_on(__CLASS__);
       $this->almacen = new almacen();
       $this->cargos = new cargos();
+      $this->tipoempleado = new tipoempleado();
+      $this->organizacion = new organizacion();
       $this->agente = FALSE;
       if( isset($_GET['cod']) )
       {
