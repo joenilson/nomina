@@ -20,7 +20,10 @@
 require_model('agente.php');
 require_model('almacen.php');
 require_model('cargos.php');
+require_model('bancos.php');
+require_model('seguridadsocial.php');
 require_model('tipoempleado.php');
+require_model('formacion.php');
 require_model('organizacion.php');
 
 class admin_agente extends fs_controller
@@ -28,8 +31,11 @@ class admin_agente extends fs_controller
    public $agente;
    public $cargos;
    public $almacen;
+   public $bancos;
+   public $formacion;
    public $tipoempleado;
    public $organizacion;
+   public $seguridadsocial;
    public $allow_delete;
 
    /*
@@ -48,14 +54,28 @@ class admin_agente extends fs_controller
       /// ¿El usuario tiene permiso para eliminar en esta página?
       $this->allow_delete = $this->user->allow_delete_on(__CLASS__);
       $this->almacen = new almacen();
+      $this->bancos = new bancos();
       $this->cargos = new cargos();
+      $this->formacion = new formacion();
       $this->tipoempleado = new tipoempleado();
       $this->organizacion = new organizacion();
+      $this->seguridadsocial = new seguridadsocial();
       $this->agente = FALSE;
       if( isset($_GET['cod']) )
       {
          $agente = new agente();
          $this->agente = $agente->get($_GET['cod']);
+      }
+
+      if( isset($_GET['type']) ){
+          $type = filter_input(INPUT_GET, 'type');
+          switch ($type){
+              case "organizacion";
+                $this->buscar_organizacion();
+                break;
+              default:
+                break;
+          }
       }
 
       if($this->agente)
@@ -123,6 +143,21 @@ class admin_agente extends fs_controller
       {
          return TRUE;
       }
+   }
+
+   public function buscar_organizacion(){
+        $tipo = false;
+        if(isset($_GET['codgerencia'])){
+            $codigo = filter_input(INPUT_GET, 'codgerencia');
+            $tipo = 'AREA';
+        }elseif(isset($_GET['codarea'])){
+            $codigo = filter_input(INPUT_GET, 'codarea');
+            $tipo = 'DEPARTAMENTO';
+        }
+        $resultado = ($tipo) ? $this->organizacion->get_by_padre($tipo, $codigo):false;
+        $this->template = FALSE;
+        header('Content-Type: application/json');
+        echo json_encode($resultado);
    }
 
    public function url()

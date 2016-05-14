@@ -215,6 +215,11 @@
         <nulo>YES</nulo>
    </columna>
    <columna>
+      <nombre>tiempo_contrato</nombre>
+      <tipo>integer</tipo>
+      <nulo>YES</nulo>
+   </columna>
+   <columna>
         <nombre>usuario_creacion</nombre>
         <tipo>character varying(12)</tipo>
         <nulo>YES</nulo>

@@ -180,6 +180,13 @@ class agente extends fs_model
    public $cuenta_banco;
 
    /**
+    * Si el tipo de empleado es temporal o por contrato
+    * se debe indicar el tiempo en meses de duración del contrato
+    * @var type $tiempo_contrato Integer
+    */
+   public $tiempo_contrato;
+
+   /**
     * Aqui se consigna si el empleado esta:
     * A = Activo
     * V = Vacaciones

@@ -163,6 +163,19 @@ class organizacion extends fs_model{
         }
     }
 
+    public function get_by_padre($tipo, $codorganizacion){
+        $lista = array();
+        $data = $this->db->select("SELECT * FROM ".$this->table_name." WHERE tipo = ".$this->var2str($tipo)." AND padre = ".$this->var2str($codorganizacion).";");
+        if($data){
+            foreach($data as $d){
+                $lista[] = new organizacion($d);
+            }
+            return $lista;
+        }else{
+            return false;
+        }
+    }
+
     public function get_by_descripcion($descripcion){
         $data = $this->db->select("SELECT * FROM ".$this->table_name." WHERE descripcion = ".$this->var2str($descripcion).";");
         if($data){

@@ -3,14 +3,86 @@
 {if="$fsc->agente"}
 <script type="text/javascript" src="{$fsc->get_js_location('provincias.js')}"></script>
 <script type="text/javascript">
-   $(document).ready(function () {
-      $("#b_delete_agente").click(function (event) {
-         event.preventDefault();
-         if( confirm("¿Realmente desea eliminar el agente?") )
-         {
-            window.location.href = '{$fsc->ppage->url()}&delete={$fsc->agente->codagente}';
-         }
-      });
+    function llenar_organizacion(obj,padre,destino){
+        if(padre !== undefined){
+            var data = "";
+            var iddestino = '#'+destino;
+            $.ajax({
+                type: 'GET',
+                url : '{$fsc->url()}&type=organizacion',
+                data : padre+'='+obj.value,
+                async: false,
+                success : function(response) {
+                    if(response.length !== 0){
+                        data = response;
+                    }else{
+                        alert('¡No hay Rutas en este Almacén!');
+                    }
+                },
+                error: function(response) {
+                    alert(response);
+                }
+            });
+            var select = $(iddestino);
+            select.empty();
+            if(data.length !== 0){
+                //var array = data.filter(function(e){return e;});
+                select.append(
+                    $('<option></option>').val('').html('--------------')
+                );
+                $.each(data, function() {
+                    select.append('<option value=' + this['codorganizacion'] + '>' + this['descripcion'] + '</option>');
+                    //select.append(
+                    //    $('<option></option>').val(value.codorganizacion).html(value.descripcion)
+                    //);
+                });
+            }
+        }
+    }
+    $(document).ready(function () {
+        $("#b_delete_agente").click(function (event) {
+            event.preventDefault();
+            if( confirm("¿Realmente desea eliminar el agente?") )
+            {
+                window.location.href = '{$fsc->ppage->url()}&delete={$fsc->agente->codagente}';
+            }
+        });
+        /*
+        $('#codgerencia').change(function() {
+            var data = "";
+            var almacen = document.f_buscar_facturas.codalmacen.value;
+            //Llenamos el selector de rutas
+            $.ajax({
+                type: 'GET',
+                url : '{$fsc->url()}&type=organizacion',
+                data : 'codalmacen='+almacen,
+                async: false,
+                success : function(response) {
+                    if(response.length !== 0){
+                        data = response;
+                    }else{
+                        alert('¡No hay Rutas en este Almacén!');
+                    }
+                },
+                error: function() {
+                    alert(response);
+                }
+            });
+            var select = $('#rutas');
+            select.empty();
+            if(data.length !== 0){
+                var array = data.filter(function(e){return e;});
+                select.append(
+                    $('<option></option>').val('').html('--------------')
+                );
+                $.each(array, function(index, value) {
+                    select.append(
+                        $('<option></option>').val(value.ruta).html(value.ruta+' - '+value.descripcion)
+                    );
+                });
+            }
+        });
+        */
    });
 </script>
 
@@ -201,7 +273,7 @@
                   <div class="col-sm-4">
                      <div class="form-group">
                         Gerencia:
-                        <select name="codgerencia" required class="form-control">
+                        <select name="codgerencia" id="codgerencia" onchange="llenar_organizacion(this,'codgerencia','codarea')" required class="form-control">
                             <option value="">--------</option>
                             {loop="$fsc->organizacion->all_tipo('GERENCIA')"}
                             <option value="{$value->codorganizacion}" {if="$fsc->agente->codgerencia==$value->codorganizacion"}selected{/if}>{$value->descripcion}</option>
@@ -212,7 +284,7 @@
                   <div class="col-sm-4">
                      <div class="form-group">
                         Area:
-                        <select name="codarea" required class="form-control">
+                        <select name="codarea" id="codarea" onchange="llenar_organizacion(this,'codarea','coddepartamento')" required class="form-control">
                             <option value="">--------</option>
                             {loop="$fsc->organizacion->all_tipo('AREA')"}
                             <option value="{$value->codorganizacion}" {if="$fsc->agente->codarea==$value->codorganizacion"}selected{/if}>{$value->descripcion}</option>
@@ -223,7 +295,7 @@
                   <div class="col-sm-4">
                      <div class="form-group">
                         Departamento:
-                        <select name="coddepartamento" required class="form-control">
+                        <select name="coddepartamento" id="coddepartamento" required class="form-control">
                             <option value="">--------</option>
                             {loop="$fsc->organizacion->all_tipo('DEPARTAMENTO')"}
                             <option value="{$value->codorganizacion}" {if="$fsc->agente->coddepartamento==$value->codorganizacion"}selected{/if}>{$value->descripcion}</option>
@@ -236,8 +308,8 @@
                         Formación:
                         <select name="codformacion" required class="form-control">
                             <option value="">--------</option>
-                            {loop="$fsc->almacen->all()"}
-                            <option value="{$value->codalmacen}" {if="$fsc->agente->codalmacen==$value->codalmacen"}selected{/if}>{$value->nombre}</option>
+                            {loop="$fsc->formacion->all()"}
+                            <option value="{$value->codformacion}" {if="$fsc->agente->codformacion==$value->codformacion"}selected{/if}>{$value->nombre}</option>
                             {/loop}
                         </select>
                      </div>
@@ -292,8 +364,8 @@
                         Seguridad Social:
                         <select name="codseguridadsocial" required class="form-control">
                             <option value="">--------</option>
-                            {loop="$fsc->almacen->all()"}
-                            <option value="{$value->codalmacen}" {if="$fsc->agente->codalmacen==$value->codalmacen"}selected{/if}>{$value->nombre}</option>
+                            {loop="$fsc->seguridadsocial->all()"}
+                            <option value="{$value->codseguridadsocial}" {if="$fsc->agente->codseguridadsocial==$value->codseguridadsocial"}selected{/if}>{$value->nombre}</option>
                             {/loop}
                         </select>
                      </div>
@@ -309,8 +381,8 @@
                         Banco:
                         <select name="codbanco" required class="form-control">
                             <option value="">--------</option>
-                            {loop="$fsc->almacen->all()"}
-                            <option value="{$value->codalmacen}" {if="$fsc->agente->codalmacen==$value->codalmacen"}selected{/if}>{$value->nombre}</option>
+                            {loop="$fsc->bancos->all_activos()"}
+                            <option value="{$value->codbanco}" {if="$fsc->agente->codbanco==$value->codbanco"}selected{/if}>{$value->nombre}</option>
                             {/loop}
                         </select>
                      </div>
@@ -337,6 +409,16 @@
                            <span class="input-group-addon">%</span>
                            <input class="form-control" type="text" name="porcomision" value="{$fsc->agente->porcomision}" autocomplete="off"/>
                         </div>
+                     </div>
+                  </div>
+                  <div class="col-sm-3">
+                     <div class="form-group">
+                        Tiempo de Contrato:
+                        <div class="input-group">
+                           <span class="input-group-addon"><span class="fa fa-calendar"></span></span>
+                           <input class="form-control" type="text" name="porcomision" value="{$fsc->agente->porcomision}" autocomplete="off"/>
+                        </div>
+                        <span class="help-block">Solo si aplica al tipo de empleado, debe ingresar cantidad de meses de contrato.</span>
                      </div>
                   </div>
                   <div class="col-sm-3">
