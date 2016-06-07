@@ -20,6 +20,8 @@ require_model('agente.php');
 require_model('cargos.php');
 require_model('organizacion.php');
 require_model('tipoempleado.php');
+require_model('categoriaempleado.php');
+require_model('sindicalizacion.php');
 /**
  * Description of configuracion_nomina
  *
@@ -30,6 +32,8 @@ class configuracion_nomina extends fs_controller{
     public $cargo;
     public $cargos;
     public $tipoempleado;
+    public $categoriaempleado;
+    public $sindicalizacion;
     public $organizacion;
     public function __construct() {
         parent::__construct(__CLASS__, 'Configuracion Nomina', 'nomina', TRUE, FALSE, FALSE);
@@ -39,6 +43,8 @@ class configuracion_nomina extends fs_controller{
         $this->agente = new agente();
         $this->cargo = new cargos();
         $this->tipoempleado = new tipoempleado();
+        $this->categoriaempleado = new categoriaempleado();
+        $this->sindicalizacion = new sindicalizacion();
         $this->organizacion = new organizacion();
         //Cargamos los datos por primera vez
         $this->fix_info();

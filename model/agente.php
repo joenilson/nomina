@@ -37,7 +37,7 @@ class agente extends fs_model
    public $dnicif;
    public $nombre;
    public $apellidos;
-
+   public $segundo_apellido;
    public $email;
    public $fax;
    public $telefono;
@@ -95,7 +95,13 @@ class agente extends fs_model
    public $idempresa;
 
    /**
-    * Tipo de empleado que es Jefe, Administrativo, Obrero, etc
+    * Categoria de empleado que es Jefe, Administrativo, Obrero, Empleado, etc
+    * @var $codcategoria CategoriaEmpleado
+    */
+   public $codcategoria;
+
+   /**
+    * Tipo de empleado que es Por contrato, Fijo, Temporal, etc
     * @var $codtipo TipoEmpleado
     */
    public $codtipo;
@@ -136,6 +142,12 @@ class agente extends fs_model
     * @var type $coduspervisor Agente
     */
    public $codsupervisor;
+
+   /**
+    * Se selecciona si el empleado esta afiliado a un sindicato
+    * @var type $idsincato Sindicato
+    */
+   public $idsindicato;
 
    /**
     * Se elige la compañia que maneja el seguro social o el estado de ser así
@@ -233,7 +245,8 @@ class agente extends fs_model
          $this->codagente = $a['codagente'];
          $this->nombre = $a['nombre'];
          $this->apellidos = $a['apellidos'];
-         $this->nombreap = $a['apellidos'].", ".$a['nombre'];
+         $this->segundo_apellido = $a['segundo_apellido'];
+         $this->nombreap = $a['apellidos']." ".$a['segundo_apellido'].", ".$a['nombre'];
          $this->dnicif = $a['dnicif'];
          $this->coddepartamento = $a['coddepartamento'];
          $this->email = $a['email'];
@@ -249,12 +262,14 @@ class agente extends fs_model
          $this->seg_social = $a['seg_social'];
          $this->banco = $a['banco'];
          $this->cargo =$a['cargo'];
+         $this->codcategoria = $a['codcategoria'];
          $this->codtipo = $a['codtipo'];
          $this->codgerencia = $a['codgerencia'];
          $this->codarea = $a['codarea'];
          $this->codcargo = $a['codcargo'];
          $this->codsupervisor = $a['codsupervisor'];
          $this->codseguridadsocial = $a['codseguridadsocial'];
+         $this->idsindicato = $a['idsindicato'];
          $this->dependientes = $a['dependientes'];
          $this->codformacion = $a['codformacion'];
          $this->carrera = $a['carrera'];
@@ -305,6 +320,7 @@ class agente extends fs_model
          $this->codagente = NULL;
          $this->nombre = '';
          $this->apellidos = '';
+         $this->segundo_apellido = '';
          $this->nombreap = '';
          $this->dnicif = '';
          $this->coddepartamento = NULL;
@@ -325,12 +341,14 @@ class agente extends fs_model
          $this->f_baja = NULL;
          $this->f_nacimiento = Date('d-m-Y');
          $this->sexo = NULL;
+         $this->codcategoria = NULL;
          $this->codtipo = NULL;
          $this->codgerencia = NULL;
          $this->codarea = NULL;
          $this->codcargo = NULL;
          $this->codsupervisor = NULL;
          $this->codseguridadsocial = NULL;
+         $this->idsindicato = NULL;
          $this->dependientes = 0;
          $this->codformacion = NULL;
          $this->carrera = NULL;
@@ -348,13 +366,13 @@ class agente extends fs_model
    protected function install()
    {
       $this->clean_cache();
-      return "INSERT INTO ".$this->table_name." (codagente,nombre,apellidos,dnicif,estado)
-         VALUES ('1','Paco','Pepe','00000014Z','A');";
+      return "INSERT INTO ".$this->table_name." (codagente,nombre,apellidos,segundo_apellido,dnicif,estado)
+         VALUES ('1','Juan','Perez','Prado','00000014Z','A');";
    }
 
    public function get_fullname()
    {
-      return $this->nombre." ".$this->apellidos;
+      return $this->nombre." ".$this->apellidos." ".$this->segundo_apellido;
    }
 
    public function get_new_codigo()
@@ -439,6 +457,7 @@ class agente extends fs_model
          {
             $sql = "UPDATE ".$this->table_name." SET nombre = ".$this->var2str($this->nombre).
                     ", apellidos = ".$this->var2str($this->apellidos).
+                    ", segundo_apellido = ".$this->var2str($this->segundo_apellido).
                     ", codalmacen = ".$this->var2str($this->codalmacen).
                     ", idempresa = ".$this->intval($this->idempresa).
                     ", dnicif = ".$this->var2str($this->dnicif).
@@ -448,6 +467,7 @@ class agente extends fs_model
                     ", cargo = ".$this->var2str($this->cargo).
                     ", codsupervisor = ".$this->var2str($this->codsupervisor).
                     ", codgerencia = ".$this->var2str($this->codgerencia).
+                    ", codcategoria = ".$this->var2str($this->codcategoria).
                     ", codtipo = ".$this->var2str($this->codtipo).
                     ", codarea = ".$this->var2str($this->codarea).
                     ", codepartamento = ".$this->var2str($this->coddepartamento).
@@ -458,6 +478,7 @@ class agente extends fs_model
                     ", f_alta = ".$this->var2str($this->f_alta).
                     ", f_baja = ".$this->var2str($this->f_baja).
                     ", sexo = ".$this->var2str($this->sexo).
+                    ", idsindicato = ".$this->var2str($this->idsindicato).
                     ", codseguridadsocial = ".$this->var2str($this->codseguridadsocial).
                     ", seg_social = ".$this->var2str($this->seg_social).
                     ", cuenta_banco = ".$this->var2str($this->cuenta_banco).
@@ -475,17 +496,27 @@ class agente extends fs_model
          }
          else
          {
-            $sql = "INSERT INTO ".$this->table_name." (codalmacen,idempresa,codagente,nombre,apellidos,nombreap,dnicif,telefono,
-               email,cargo,provincia,ciudad,direccion,f_nacimiento,f_alta,f_baja,sexo,seg_social,banco,porcomision)
+            $sql = "INSERT INTO ".$this->table_name." (codalmacen,idempresa,codagente,nombre,apellidos,segundo_apellido,nombreap,dnicif,telefono,
+               email,codcargo,cargo,codsupervisor,codgerencia,codcategoria,codtipo,codarea,coddepartamento,provincia,ciudad,direccion,f_nacimiento,
+               f_alta,f_baja,sexo,idsindicato,codseguridadsocial,seg_social,cuenta_banco,codbanco,carrera,centroestudios,dependientes,estado,banco,
+               porcomision,fecha_creacion,usuario_creacion)
                VALUES (".$this->var2str($this->codalmacen).
                     ",".$this->intval($this->idempresa).
                     ",".$this->var2str($this->nombre).
                     ",".$this->var2str($this->apellidos).
+                    ",".$this->var2str($this->segundo_apellido).
                     ",".$this->var2str($this->nombreap).
                     ",".$this->var2str($this->dnicif).
                     ",".$this->var2str($this->telefono).
                     ",".$this->var2str($this->email).
+                    ",".$this->var2str($this->codcargo).
                     ",".$this->var2str($this->cargo).
+                    ",".$this->var2str($this->codsupervisor).
+                    ",".$this->var2str($this->codgerencia).
+                    ",".$this->var2str($this->codcategoria).
+                    ",".$this->var2str($this->codtipo).
+                    ",".$this->var2str($this->codarea).
+                    ",".$this->var2str($this->coddepartamento).
                     ",".$this->var2str($this->provincia).
                     ",".$this->var2str($this->ciudad).
                     ",".$this->var2str($this->direccion).
@@ -493,7 +524,15 @@ class agente extends fs_model
                     ",".$this->var2str($this->f_alta).
                     ",".$this->var2str($this->f_baja).
                     ",".$this->var2str($this->sexo).
+                    ",".$this->var2str($this->idsindicato).
+                    ",".$this->var2str($this->codseguridadsocial).
                     ",".$this->var2str($this->seg_social).
+                    ",".$this->var2str($this->cuenta_banco).
+                    ",".$this->var2str($this->codbanco).
+                    ",".$this->var2str($this->carrera).
+                    ",".$this->var2str($this->centroestudios).
+                    ",".$this->var2str($this->dependientes).
+                    ",".$this->var2str($this->estado).
                     ",".$this->var2str($this->banco).
                     ",".$this->var2str($this->porcomision).
                     ",".$this->var2str($this->fecha_creacion).

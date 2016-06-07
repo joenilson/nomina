@@ -11,6 +11,11 @@
       <nulo>NO</nulo>
    </columna>
    <columna>
+      <nombre>segundo_apellido</nombre>
+      <tipo>character varying(100)</tipo>
+      <nulo>YES</nulo>
+   </columna>
+   <columna>
       <nombre>carrera</nombre>
       <tipo>character varying(150)</tipo>
       <nulo>YES</nulo>
@@ -81,6 +86,11 @@
       <nulo>YES</nulo>
    </columna>
    <columna>
+      <nombre>codcategoria</nombre>
+      <tipo>character varying(6)</tipo>
+      <nulo>YES</nulo>
+   </columna>
+   <columna>
       <nombre>codsupervisor</nombre>
       <tipo>character varying(10)</tipo>
       <nulo>YES</nulo>
@@ -133,6 +143,11 @@
    <columna>
       <nombre>idusuario</nombre>
       <tipo>character varying(30)</tipo>
+      <nulo>YES</nulo>
+   </columna>
+   <columna>
+      <nombre>idsindicato</nombre>
+      <tipo>character varying(6)</tipo>
       <nulo>YES</nulo>
    </columna>
    <columna>

@@ -23,6 +23,8 @@ require_model('cargos.php');
 require_model('bancos.php');
 require_model('seguridadsocial.php');
 require_model('tipoempleado.php');
+require_model('categoriaempleado.php');
+require_model('sindicalizacion.php');
 require_model('formacion.php');
 require_model('organizacion.php');
 
@@ -34,6 +36,8 @@ class admin_agente extends fs_controller
    public $bancos;
    public $formacion;
    public $tipoempleado;
+   public $categoriaempleado;
+   public $sindicalizacion;
    public $organizacion;
    public $seguridadsocial;
    public $allow_delete;
@@ -58,6 +62,8 @@ class admin_agente extends fs_controller
       $this->cargos = new cargos();
       $this->formacion = new formacion();
       $this->tipoempleado = new tipoempleado();
+      $this->categoriaempleado = new categoriaempleado();
+      $this->sindicalizacion = new sindicalizacion();
       $this->organizacion = new organizacion();
       $this->seguridadsocial = new seguridadsocial();
       $this->agente = FALSE;

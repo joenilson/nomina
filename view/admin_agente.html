@@ -26,15 +26,11 @@
             var select = $(iddestino);
             select.empty();
             if(data.length !== 0){
-                //var array = data.filter(function(e){return e;});
                 select.append(
                     $('<option></option>').val('').html('--------------')
                 );
                 $.each(data, function() {
                     select.append('<option value=' + this['codorganizacion'] + '>' + this['descripcion'] + '</option>');
-                    //select.append(
-                    //    $('<option></option>').val(value.codorganizacion).html(value.descripcion)
-                    //);
                 });
             }
         }
@@ -47,42 +43,6 @@
                 window.location.href = '{$fsc->ppage->url()}&delete={$fsc->agente->codagente}';
             }
         });
-        /*
-        $('#codgerencia').change(function() {
-            var data = "";
-            var almacen = document.f_buscar_facturas.codalmacen.value;
-            //Llenamos el selector de rutas
-            $.ajax({
-                type: 'GET',
-                url : '{$fsc->url()}&type=organizacion',
-                data : 'codalmacen='+almacen,
-                async: false,
-                success : function(response) {
-                    if(response.length !== 0){
-                        data = response;
-                    }else{
-                        alert('¡No hay Rutas en este Almacén!');
-                    }
-                },
-                error: function() {
-                    alert(response);
-                }
-            });
-            var select = $('#rutas');
-            select.empty();
-            if(data.length !== 0){
-                var array = data.filter(function(e){return e;});
-                select.append(
-                    $('<option></option>').val('').html('--------------')
-                );
-                $.each(array, function(index, value) {
-                    select.append(
-                        $('<option></option>').val(value.ruta).html(value.ruta+' - '+value.descripcion)
-                    );
-                });
-            }
-        });
-        */
    });
 </script>
 
@@ -136,14 +96,20 @@
             <a id="b_movimientos" href="{$fsc->url()}" class="list-group-item">
                <span class="fa fa-code-fork"></span> &nbsp; Movimientos
             </a>
+            <a id="b_movimientos" href="{$fsc->url()}" class="list-group-item">
+                <span class="fa fa-archive"></span> &nbsp; Contratos
+            </a>
             <a id="b_sueldo" href="{$fsc->url()}" class="list-group-item">
                <span class="fa fa-money"></span> &nbsp; Pago e Incentivos
             </a>
             <a id="b_dependientes" href="{$fsc->url()}" class="list-group-item">
                <span class="fa fa-group"></span> &nbsp; Carga Familiar
             </a>
+            <a id="b_movimientos" href="{$fsc->url()}" class="list-group-item">
+               <span class="fa fa-calendar-minus-o"></span> &nbsp; Ausencias
+            </a>
             <a id="b_asistencia" href="{$fsc->url()}" class="list-group-item">
-               <span class="fa fa-clock-o"></span> &nbsp; Asistencia
+               <span class="fa fa-clock-o"></span> &nbsp; Control de Horas
             </a>
             <a id="b_resumen" href="{$fsc->url()}" class="list-group-item">
                <span class="fa fa-suitcase"></span> &nbsp; Hoja de Vida
@@ -173,19 +139,25 @@
                   <div class="col-sm-3">
                      <div class="form-group">
                         Nombre:
-                        <input class="form-control" type="text" name="nombre" value="{$fsc->agente->nombre}" autocomplete="off"/>
+                        <input class="form-control input-sm" type="text" name="nombre" value="{$fsc->agente->nombre}" autocomplete="off"/>
                      </div>
                   </div>
-                  <div class="col-sm-5">
+                  <div class="col-sm-3">
                      <div class="form-group">
-                        Apellidos:
-                        <input class="form-control" type="text" name="apellidos" value="{$fsc->agente->apellidos}" autocomplete="off"/>
+                        Primer Apellido:
+                        <input class="form-control input-sm" type="text" name="apellidos" value="{$fsc->agente->apellidos}" autocomplete="off"/>
                      </div>
                   </div>
-                  <div class="col-sm-2">
+                  <div class="col-sm-3">
+                     <div class="form-group">
+                        Segundo Apellido:
+                        <input class="form-control input-sm" type="text" name="segundo_apellido" value="{$fsc->agente->segundo_apellido}" autocomplete="off"/>
+                     </div>
+                  </div>
+                  <div class="col-sm-3">
                      <div class="form-group">
                         {#FS_CIFNIF#}:
-                        <input class="form-control" type="text" name="dnicif" value="{$fsc->agente->dnicif}" autocomplete="off"/>
+                        <input class="form-control input-sm" type="text" name="dnicif" value="{$fsc->agente->dnicif}" autocomplete="off"/>
                      </div>
                   </div>
                   <div class="col-sm-2">
@@ -195,22 +167,22 @@
                         <label><input class="radio-inline radio-control" type="radio" name="sexo" value="F"/> Femenino</label>
                      </div>
                   </div>
-                  <div class="col-sm-4">
+                  <div class="col-sm-3">
                      <div class="form-group">
                         Teléfono:
-                        <input class="form-control" type="text" name="telefono" value="{$fsc->agente->telefono}" autocomplete="off"/>
+                        <input class="form-control input-sm" type="text" name="telefono" value="{$fsc->agente->telefono}" autocomplete="off"/>
                      </div>
                   </div>
                   <div class="col-sm-4">
                      <div class="form-group">
                         Email:
-                        <input class="form-control" type="text" name="email" value="{$fsc->agente->email}" autocomplete="off"/>
+                        <input class="form-control input-sm" type="text" name="email" value="{$fsc->agente->email}" autocomplete="off"/>
                      </div>
                   </div>
-                  <div class="col-sm-4">
+                  <div class="col-sm-3">
                      <div class="form-group">
                         Cargo ocupado:
-                        <select name="codcargo" required class="form-control">
+                        <select name="codcargo" required class="form-control input-sm">
                             <option value="">--------</option>
                             {loop="$fsc->cargos->all()"}
                             <option value="{$value->codcargo}" {if="$fsc->agente->codcargo==$value->codcargo"}selected{/if}>{$value->descripcion}</option>
@@ -222,25 +194,25 @@
                   <div class="col-sm-3">
                      <div class="form-group">
                         Provincia:
-                        <input id="ac_provincia" class="form-control" type="text" name="provincia" value="{$fsc->agente->provincia}" autocomplete="off"/>
+                        <input id="ac_provincia" class="form-control input-sm" type="text" name="provincia" value="{$fsc->agente->provincia}" autocomplete="off"/>
                      </div>
                   </div>
                   <div class="col-sm-3">
                      <div class="form-group">
                         Ciudad:
-                        <input class="form-control" type="text" name="ciudad" value="{$fsc->agente->ciudad}"/>
+                        <input class="form-control input-sm" type="text" name="ciudad" value="{$fsc->agente->ciudad}"/>
                      </div>
                   </div>
                   <div class="col-sm-6">
                      <div class="form-group">
                         Dirección:
-                        <input class="form-control" type="text" name="direccion" value="{$fsc->agente->direccion}" autocomplete="off"/>
+                        <input class="form-control input-sm" type="text" name="direccion" value="{$fsc->agente->direccion}" autocomplete="off"/>
                      </div>
                   </div>
-                  <div class="col-sm-4">
+                  <div class="col-sm-3">
                      <div class="form-group">
                         Almacén:
-                        <select name="codalmacen" required class="form-control">
+                        <select name="codalmacen" required class="form-control input-sm">
                             <option value="">--------</option>
                             {loop="$fsc->almacen->all()"}
                             <option value="{$value->codalmacen}" {if="$fsc->agente->codalmacen==$value->codalmacen"}selected{/if}>{$value->nombre}</option>
@@ -248,10 +220,10 @@
                         </select>
                      </div>
                   </div>
-                  <div class="col-sm-4">
+                  <div class="col-sm-3">
                      <div class="form-group">
-                        Supervisor:
-                        <select name="codsupervisor" required class="form-control">
+                        Reporta a:
+                        <select name="codsupervisor" required class="form-control input-sm">
                             <option value="">--------</option>
                             {loop="$fsc->agente->all()"}
                             <option value="{$value->codagente}" {if="$fsc->agente->codsupervisor==$value->codagente"}selected{/if}>{$value->nombreap}</option>
@@ -259,10 +231,21 @@
                         </select>
                      </div>
                   </div>
-                  <div class="col-sm-4">
+                  <div class="col-sm-3">
                      <div class="form-group">
-                        Tipo de Empleado:
-                        <select name="codtipo" required class="form-control">
+                        Categoria de empleado:
+                        <select name="codcategoria" required class="form-control input-sm">
+                            <option value="">--------</option>
+                            {loop="$fsc->categoriaempleado->all()"}
+                            <option value="{$value->codcategoria}" {if="$fsc->agente->codcategoria==$value->codcategoria"}selected{/if}>{$value->descripcion}</option>
+                            {/loop}
+                        </select>
+                     </div>
+                  </div>
+                  <div class="col-sm-3">
+                     <div class="form-group">
+                        Tipo de Contrato:
+                        <select name="codtipo" required class="form-control input-sm">
                             <option value="">--------</option>
                             {loop="$fsc->tipoempleado->all()"}
                             <option value="{$value->codtipo}" {if="$fsc->agente->codtipo==$value->codtipo"}selected{/if}>{$value->descripcion}</option>
@@ -273,7 +256,7 @@
                   <div class="col-sm-4">
                      <div class="form-group">
                         Gerencia:
-                        <select name="codgerencia" id="codgerencia" onchange="llenar_organizacion(this,'codgerencia','codarea')" required class="form-control">
+                        <select name="codgerencia" id="codgerencia" onchange="llenar_organizacion(this,'codgerencia','codarea')" required class="form-control input-sm">
                             <option value="">--------</option>
                             {loop="$fsc->organizacion->all_tipo('GERENCIA')"}
                             <option value="{$value->codorganizacion}" {if="$fsc->agente->codgerencia==$value->codorganizacion"}selected{/if}>{$value->descripcion}</option>
@@ -284,7 +267,7 @@
                   <div class="col-sm-4">
                      <div class="form-group">
                         Area:
-                        <select name="codarea" id="codarea" onchange="llenar_organizacion(this,'codarea','coddepartamento')" required class="form-control">
+                        <select name="codarea" id="codarea" onchange="llenar_organizacion(this,'codarea','coddepartamento')" required class="form-control input-sm">
                             <option value="">--------</option>
                             {loop="$fsc->organizacion->all_tipo('AREA')"}
                             <option value="{$value->codorganizacion}" {if="$fsc->agente->codarea==$value->codorganizacion"}selected{/if}>{$value->descripcion}</option>
@@ -295,7 +278,7 @@
                   <div class="col-sm-4">
                      <div class="form-group">
                         Departamento:
-                        <select name="coddepartamento" id="coddepartamento" required class="form-control">
+                        <select name="coddepartamento" id="coddepartamento" required class="form-control input-sm">
                             <option value="">--------</option>
                             {loop="$fsc->organizacion->all_tipo('DEPARTAMENTO')"}
                             <option value="{$value->codorganizacion}" {if="$fsc->agente->coddepartamento==$value->codorganizacion"}selected{/if}>{$value->descripcion}</option>
@@ -306,7 +289,7 @@
                   <div class="col-sm-3">
                      <div class="form-group">
                         Formación:
-                        <select name="codformacion" required class="form-control">
+                        <select name="codformacion" required class="form-control input-sm">
                             <option value="">--------</option>
                             {loop="$fsc->formacion->all()"}
                             <option value="{$value->codformacion}" {if="$fsc->agente->codformacion==$value->codformacion"}selected{/if}>{$value->nombre}</option>
@@ -317,13 +300,13 @@
                   <div class="col-sm-4">
                      <div class="form-group">
                         Carrera:
-                        <input class="form-control" type="text" name="carrera" value="{$fsc->agente->carrera}" autocomplete="off"/>
+                        <input class="form-control input-sm" type="text" name="carrera" value="{$fsc->agente->carrera}" autocomplete="off"/>
                      </div>
                   </div>
                   <div class="col-sm-5">
                      <div class="form-group">
                         Centro de estudios:
-                        <input class="form-control" type="text" name="centroestudios" value="{$fsc->agente->centroestudios}" autocomplete="off"/>
+                        <input class="form-control input-sm" type="text" name="centroestudios" value="{$fsc->agente->centroestudios}" autocomplete="off"/>
                      </div>
                   </div>
                   <div class="col-sm-4">
@@ -333,7 +316,7 @@
                            <span class="input-group-addon">
                               <span class="glyphicon glyphicon-calendar"></span>
                            </span>
-                           <input class="form-control datepicker" type="text" name="f_nacimiento" value="{$fsc->agente->f_nacimiento}" autocomplete="off"/>
+                           <input class="form-control datepicker input-sm" type="text" name="f_nacimiento" value="{$fsc->agente->f_nacimiento}" autocomplete="off"/>
                         </div>
                      </div>
                   </div>
@@ -344,7 +327,7 @@
                            <span class="input-group-addon">
                               <span class="glyphicon glyphicon-calendar"></span>
                            </span>
-                           <input class="form-control datepicker" type="text" name="f_alta" value="{$fsc->agente->f_alta}" autocomplete="off"/>
+                           <input class="form-control datepicker input-sm" type="text" name="f_alta" value="{$fsc->agente->f_alta}" autocomplete="off"/>
                         </div>
                      </div>
                   </div>
@@ -355,14 +338,14 @@
                            <span class="input-group-addon">
                               <span class="glyphicon glyphicon-calendar"></span>
                            </span>
-                           <input class="form-control datepicker" type="text" name="f_baja" value="{$fsc->agente->f_baja}" autocomplete="off"/>
+                           <input class="form-control datepicker input-sm" type="text" name="f_baja" value="{$fsc->agente->f_baja}" autocomplete="off"/>
                         </div>
                      </div>
                   </div>
                   <div class="col-sm-3">
                      <div class="form-group">
                         Seguridad Social:
-                        <select name="codseguridadsocial" required class="form-control">
+                        <select name="codseguridadsocial" required class="form-control input-sm">
                             <option value="">--------</option>
                             {loop="$fsc->seguridadsocial->all()"}
                             <option value="{$value->codseguridadsocial}" {if="$fsc->agente->codseguridadsocial==$value->codseguridadsocial"}selected{/if}>{$value->nombre}</option>
@@ -373,13 +356,13 @@
                   <div class="col-sm-3">
                      <div class="form-group">
                         Nº Seguridad Social:
-                        <input class="form-control" type="text" name="seg_social" value="{$fsc->agente->seg_social}" autocomplete="off"/>
+                        <input class="form-control input-sm" type="text" name="seg_social" value="{$fsc->agente->seg_social}" autocomplete="off"/>
                      </div>
                   </div>
                   <div class="col-sm-3">
                      <div class="form-group">
                         Banco:
-                        <select name="codbanco" required class="form-control">
+                        <select name="codbanco" required class="form-control input-sm">
                             <option value="">--------</option>
                             {loop="$fsc->bancos->all_activos()"}
                             <option value="{$value->codbanco}" {if="$fsc->agente->codbanco==$value->codbanco"}selected{/if}>{$value->nombre}</option>
@@ -390,15 +373,15 @@
                   <div class="col-sm-3">
                      <div class="form-group">
                         Cuenta Bancaria:
-                        <input class="form-control" type="text" name="cuenta_banco" value="{$fsc->agente->cuenta_banco}" autocomplete="off"/>
+                        <input class="form-control input-sm" type="text" name="cuenta_banco" value="{$fsc->agente->cuenta_banco}" autocomplete="off"/>
                      </div>
                   </div>
                   <div class="col-sm-2">
                      <div class="form-group">
                         Dependientes:
                         <div class="input-group">
-                            <span class="input-group-addon"><span class="fa fa-group"></span></span>
-                           <input class="form-control" type="number" name="dependientes" value="{$fsc->agente->dependientes}" autocomplete="off"/>
+                            <span class="input-group-addon input-sm"><span class="fa fa-group"></span></span>
+                           <input class="form-control input-sm" type="number" name="dependientes" value="{$fsc->agente->dependientes}" autocomplete="off"/>
                         </div>
                      </div>
                   </div>
@@ -406,28 +389,39 @@
                      <div class="form-group">
                         Comisión:
                         <div class="input-group">
-                           <span class="input-group-addon">%</span>
-                           <input class="form-control" type="text" name="porcomision" value="{$fsc->agente->porcomision}" autocomplete="off"/>
+                           <span class="input-group-addon input-sm">%</span>
+                           <input class="form-control input-sm" type="text" name="porcomision" value="{$fsc->agente->porcomision}" autocomplete="off"/>
                         </div>
                      </div>
                   </div>
-                  <div class="col-sm-3">
+                  <div class="col-sm-2">
                      <div class="form-group">
                         Tiempo de Contrato:
                         <div class="input-group">
-                           <span class="input-group-addon"><span class="fa fa-calendar"></span></span>
-                           <input class="form-control" type="text" name="porcomision" value="{$fsc->agente->porcomision}" autocomplete="off"/>
+                           <span class="input-group-addon input-sm"><span class="fa fa-calendar"></span></span>
+                           <input class="form-control input-sm" type="text" name="porcomision" value="{$fsc->agente->porcomision}" autocomplete="off"/>
                         </div>
-                        <span class="help-block">Solo si aplica al tipo de empleado, debe ingresar cantidad de meses de contrato.</span>
+                        <span class="help-block">Puede ingresar los meses del contrato actual, pero utilice <b>Contratos</b> para renovar o cerrar un contrato de este Empleado.</span>
                      </div>
                   </div>
                   <div class="col-sm-3">
                      <div class="form-group">
                         Estado:
-                        <select name="estado" required class="form-control">
+                        <select name="estado" required class="form-control input-sm">
                             <option value="">--------</option>
                             {loop="$fsc->agente->estados_agente()"}
                             <option value="{$key}" {if="$fsc->agente->estado==$key"}selected{/if}>{$value}</option>
+                            {/loop}
+                        </select>
+                     </div>
+                  </div>
+                  <div class="col-sm-3">
+                     <div class="form-group">
+                        Sindicalizado:
+                        <select name="idsindicalizado" required class="form-control input-sm">
+                            <option value="">--------</option>
+                            {loop="$fsc->sindicalizacion->all()"}
+                            <option value="{$value->idsindicato}" {if="$fsc->agente->idsindicato==$value->idsindicato"}selected{/if}>{$value->descripcion}</option>
                             {/loop}
                         </select>
                      </div>
