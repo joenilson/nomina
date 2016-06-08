@@ -42,6 +42,8 @@ class admin_agente extends fs_controller
    public $seguridadsocial;
    public $allow_delete;
    public $foto_empleado;
+   public $imagen = 'plugins/nomina/view/imagenes/empleado.png';
+   public $noimagen = 'plugins/nomina/view/imagenes/no_foto.jpg';
    /*
     * Esta página está en la carpeta admin, pero no se necesita ser admin para usarla.
     * Está en la carpeta admin porque su antecesora también lo está (y debe estarlo).
