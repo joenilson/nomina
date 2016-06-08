@@ -125,7 +125,7 @@
          </div>
       </div>
       <div class="col-lg-10 col-md-9 col-sm-9">
-         <form class="form" role="form" action="{$fsc->url()}" method="post">
+         <form class="form" role="form" enctype="multipart/form-data" action="{$fsc->url()}" method="post">
             <div class='panel {if="$fsc->agente->f_baja"}panel-danger{else}panel-primary{/if}' id='panel_generales'>
                <div class="panel-heading">
                   <h3 class="panel-title">
@@ -136,9 +136,15 @@
                   </h3>
                </div>
                <div class="panel-body">
-                   <div class="col-sm-2">
-                       <img src="{if="$fsc->agente->foto!=''"}{$fsc->imagen}{else}{$fsc->noimagen}{/if}" alt="{$fsc->agente->nombreap}" class="img-circle">
+                   <div class="col-sm-2" align="center">
                        <div class="form-group">
+                           <img id="imagen-empleado" width="auto" height="120" src="{if="$fsc->agente->foto!=''"}{$fsc->agente->get_foto()}{else}{$fsc->noimagen}{/if}" alt="{$fsc->agente->nombreap}" class="img-circle">
+                       </div>
+                       <br/>
+                       <div class="form-group" align="center">
+                           <label class="btn btn-default btn-xs btn-file image-input">
+                              Cambiar <input type="file" style="display: none;" accept="image/png, image/jpeg" name="foto">
+                           </label>
                        </div>
                    </div>
                   <div class="col-sm-3">
@@ -196,7 +202,7 @@
                         <input class="form-control input-sm" type="text" name="ciudad" value="{$fsc->agente->ciudad}"/>
                      </div>
                   </div>
-                  <div class="col-sm-6">
+                  <div class="col-sm-4">
                      <div class="form-group">
                         Dirección:
                         <input class="form-control input-sm" type="text" name="direccion" value="{$fsc->agente->direccion}" autocomplete="off"/>
@@ -204,7 +210,7 @@
                   </div>
                   <div class="col-sm-2">
                      <div class="form-group">
-                        Almacén:
+                         <a href="{$fsc->almacen->url()}">Almacén:</a>
                         <select name="codalmacen" required class="form-control input-sm">
                             <option value="">--------</option>
                             {loop="$fsc->almacen->all()"}
@@ -215,7 +221,7 @@
                   </div>
                   <div class="col-sm-2">
                      <div class="form-group">
-                        Cargo ocupado:
+                        <a href="{$fsc->cargos->url()}">Cargo ocupado:</a>
                         <select name="codcargo" required class="form-control input-sm">
                             <option value="">--------</option>
                             {loop="$fsc->cargos->all()"}
@@ -228,7 +234,7 @@
                   <div class="col-sm-3">
                      <div class="form-group">
                         Reporta a:
-                        <select name="codsupervisor" required class="form-control input-sm">
+                        <select name="codsupervisor" class="form-control input-sm">
                             <option value="">--------</option>
                             {loop="$fsc->agente->all()"}
                             <option value="{$value->codagente}" {if="$fsc->agente->codsupervisor==$value->codagente"}selected{/if}>{$value->nombreap}</option>
@@ -238,7 +244,7 @@
                   </div>
                   <div class="col-sm-2">
                      <div class="form-group">
-                        Categoria de empleado:
+                        <a href="{$fsc->categoriaempleado->url()}">Categoria de empleado:</a>
                         <select name="codcategoria" required class="form-control input-sm">
                             <option value="">--------</option>
                             {loop="$fsc->categoriaempleado->all()"}
@@ -249,7 +255,7 @@
                   </div>
                   <div class="col-sm-3">
                      <div class="form-group">
-                        Tipo de Contrato:
+                        <a href="{$fsc->tipoempleado->url()}">Tipo de Contrato:</a>
                         <select name="codtipo" required class="form-control input-sm">
                             <option value="">--------</option>
                             {loop="$fsc->tipoempleado->all()"}
@@ -260,7 +266,7 @@
                   </div>
                   <div class="col-sm-4">
                      <div class="form-group">
-                        Gerencia:
+                        <a href="{$fsc->organizacion->url()}">Gerencia:</a>
                         <select name="codgerencia" id="codgerencia" onchange="llenar_organizacion(this,'codgerencia','codarea')" required class="form-control input-sm">
                             <option value="">--------</option>
                             {loop="$fsc->organizacion->all_tipo('GERENCIA')"}
@@ -271,7 +277,7 @@
                   </div>
                   <div class="col-sm-4">
                      <div class="form-group">
-                        Area:
+                        <a href="{$fsc->organizacion->url()}">Area:</a>
                         <select name="codarea" id="codarea" onchange="llenar_organizacion(this,'codarea','coddepartamento')" required class="form-control input-sm">
                             <option value="">--------</option>
                             {loop="$fsc->organizacion->all_tipo('AREA')"}
@@ -282,7 +288,7 @@
                   </div>
                   <div class="col-sm-4">
                      <div class="form-group">
-                        Departamento:
+                        <a href="{$fsc->organizacion->url()}">Departamento:</a>
                         <select name="coddepartamento" id="coddepartamento" required class="form-control input-sm">
                             <option value="">--------</option>
                             {loop="$fsc->organizacion->all_tipo('DEPARTAMENTO')"}
@@ -293,7 +299,7 @@
                   </div>
                   <div class="col-sm-3">
                      <div class="form-group">
-                        Formación:
+                        <a href="{$fsc->formacion->url()}">Formación:</a>
                         <select name="codformacion" required class="form-control input-sm">
                             <option value="">--------</option>
                             {loop="$fsc->formacion->all()"}
@@ -349,7 +355,7 @@
                   </div>
                   <div class="col-sm-3">
                      <div class="form-group">
-                        Seguridad Social:
+                        <a href="{$fsc->seguridadsocial->url()}">Seguridad Social:</a>
                         <select name="codseguridadsocial" required class="form-control input-sm">
                             <option value="">--------</option>
                             {loop="$fsc->seguridadsocial->all()"}
@@ -366,7 +372,7 @@
                   </div>
                   <div class="col-sm-3">
                      <div class="form-group">
-                        Banco:
+                        <a href="{$fsc->bancos->url()}">Banco:</a>
                         <select name="codbanco" required class="form-control input-sm">
                             <option value="">--------</option>
                             {loop="$fsc->bancos->all_activos()"}
@@ -422,7 +428,7 @@
                   </div>
                   <div class="col-sm-3">
                      <div class="form-group">
-                        Sindicalizado:
+                        <a href="{$fsc->sindicalizacion->url()}">Sindicalizado:</a>
                         <select name="idsindicalizado" required class="form-control input-sm">
                             <option value="">--------</option>
                             {loop="$fsc->sindicalizacion->all()"}
@@ -442,6 +448,17 @@
       </div>
    </div>
 </div>
+<script type="text/javascript">
+$(".image-input input:file").change(function (){     
+    var img = $('#imagen-empleado');    
+    var file = this.files[0];
+    var reader = new FileReader();
+    reader.onload = function (e) {
+        img.attr('src', e.target.result);
+    };   
+    reader.readAsDataURL(file);
+});
+</script>
 {else}
 <div class="thumbnail">
    <img src="view/img/fuuu_face.png" alt="fuuuuu"/>

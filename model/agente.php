@@ -379,7 +379,20 @@ class agente extends fs_model
    }
 
    public function get_foto(){
-       return 'tmp/'.FS_TMP_NAME.'/nomina/empleados/'.$this->foto;
+      if($this->foto){
+         return 'tmp/'.FS_TMP_NAME.'nomina/empleados/'.$this->foto;
+      }else{
+         return false;
+      }
+   }
+   
+   public function set_foto($nombre_foto){
+      if($nombre_foto){
+         $sql = "UPDATE ".$this->table_name." SET FOTO = ".$this->var2str($nombre_foto).";";
+         return $this->db->exec($sql);
+      }else{
+         return false;
+      }
    }
 
    public function get_new_codigo()

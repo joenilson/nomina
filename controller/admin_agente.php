@@ -27,6 +27,7 @@ require_model('categoriaempleado.php');
 require_model('sindicalizacion.php');
 require_model('formacion.php');
 require_model('organizacion.php');
+require_once 'plugins/nomina/extras/verot/class.upload.php';
 
 class admin_agente extends fs_controller
 {
@@ -42,8 +43,10 @@ class admin_agente extends fs_controller
    public $seguridadsocial;
    public $allow_delete;
    public $foto_empleado;
-   public $imagen = 'plugins/nomina/view/imagenes/empleado.png';
    public $noimagen = 'plugins/nomina/view/imagenes/no_foto.jpg';
+   private $upload_photo;
+   private $dir_empleados = 'tmp/'.FS_TMP_NAME.'/nomina/empleados/';
+
    /*
     * Esta página está en la carpeta admin, pero no se necesita ser admin para usarla.
     * Está en la carpeta admin porque su antecesora también lo está (y debe estarlo).
@@ -128,6 +131,7 @@ class admin_agente extends fs_controller
                $this->agente->codtipo = $_POST['codtipo'];
                $this->agente->codsupervisor = $_POST['codsupervisor'];
                $this->agente->codgerencia = $_POST['codgerencia'];
+               $this->agente->codcargo = $_POST['codcargo'];
                $this->agente->codarea = $_POST['codarea'];
                $this->agente->coddepartamento = $_POST['coddepartamento'];
                $this->agente->codformacion = $_POST['codformacion'];
@@ -142,6 +146,10 @@ class admin_agente extends fs_controller
 
                if( $this->agente->save() )
                {
+                  $this->upload_photo = new Upload($_FILES['foto']); 
+                  if ($this->upload_photo->uploaded) {
+                      $this->guardar_foto();
+                  }
                   $this->new_message("Datos del empleado guardados correctamente.");
                }
                else
@@ -167,14 +175,31 @@ class admin_agente extends fs_controller
       }
    }
 
+   //Para guardar la foto hacemos uso de la libreria de class.upload.php que esta en extras/verot/
+   //Con esta libreria estandarizamos todas las imagenes en PNG y les hacemos un resize a 120px
    public function guardar_foto(){
       $this->foto_empleado = $this->agente->get_foto();
       if(file_exists($this->foto_empleado)){
          unlink($this->foto_empleado);
       }
-      
-   }
+      $newname = str_pad($this->agente->codagente,6,0,STR_PAD_LEFT); 
 
+      // Grabar la imagen con un nuevo nombre y con un resize de 120px
+      $this->upload_photo->file_new_name_body = $newname;
+      $this->upload_photo->image_resize = true;
+      $this->upload_photo->image_convert = 'png';
+      $this->upload_photo->image_x = 120;
+      $this->upload_photo->file_overwrite = true;
+      $this->upload_photo->image_ratio_y = true;
+      $this->upload_photo->Process($this->dir_empleados);
+      if ($this->upload_photo->processed) {
+         $this->upload_photo->clean();
+         $this->agente->set_foto($newname.".png");
+      }else{
+         $this->new_error_msg('error : ' . $$this->upload_photo->error);
+      }   
+   }
+   
    public function buscar_organizacion(){
         $tipo = false;
         if(isset($_GET['codgerencia'])){
