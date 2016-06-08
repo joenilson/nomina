@@ -136,6 +136,11 @@
       <nulo>YES</nulo>
    </columna>
    <columna>
+      <nombre>foto</nombre>
+      <tipo>character varying(64)</tipo>
+      <nulo>YES</nulo>
+   </columna>
+   <columna>
       <nombre>idprovincia</nombre>
       <tipo>integer</tipo>
       <nulo>YES</nulo>

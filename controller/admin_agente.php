@@ -41,7 +41,7 @@ class admin_agente extends fs_controller
    public $organizacion;
    public $seguridadsocial;
    public $allow_delete;
-
+   public $foto_empleado;
    /*
     * Esta página está en la carpeta admin, pero no se necesita ser admin para usarla.
     * Está en la carpeta admin porque su antecesora también lo está (y debe estarlo).
@@ -90,17 +90,19 @@ class admin_agente extends fs_controller
 
          if( isset($_POST['nombre']) )
          {
+            //En la edición solo se permite campos no sensibles genéricos
             if( $this->user_can_edit() )
             {
                $this->agente->nombre = $_POST['nombre'];
                $this->agente->apellidos = $_POST['apellidos'];
+               $this->agente->segundo_apellido = $_POST['segundo_apellido'];
                $this->agente->dnicif = $_POST['dnicif'];
                $this->agente->telefono = $_POST['telefono'];
                $this->agente->email = $_POST['email'];
-               $this->agente->cargo = $_POST['cargo'];
                $this->agente->provincia = $_POST['provincia'];
                $this->agente->ciudad = $_POST['ciudad'];
                $this->agente->direccion = $_POST['direccion'];
+               $this->agente->sexo = $_POST['sexo'];
 
                $this->agente->f_nacimiento = NULL;
                if($_POST['f_nacimiento'] != '')
@@ -120,9 +122,21 @@ class admin_agente extends fs_controller
                   $this->agente->f_baja = $_POST['f_baja'];
                }
 
+               $this->agente->codcategoria = $_POST['codcategoria'];
+               $this->agente->codtipo = $_POST['codtipo'];
+               $this->agente->codsupervisor = $_POST['codsupervisor'];
+               $this->agente->codgerencia = $_POST['codgerencia'];
+               $this->agente->codarea = $_POST['codarea'];
+               $this->agente->coddepartamento = $_POST['coddepartamento'];
+               $this->agente->codformacion = $_POST['codformacion'];
+               $this->agente->codseguridadsocial = $_POST['codseguridadsocial'];
                $this->agente->seg_social = $_POST['seg_social'];
-               $this->agente->banco = $_POST['banco'];
+               $this->agente->codbanco = $_POST['codbanco'];
+               $this->agente->cuenta_banco = $_POST['cuenta_banco'];
                $this->agente->porcomision = floatval($_POST['porcomision']);
+               $this->agente->dependientes = $_POST['dependientes'];
+               $this->agente->idsindicato = $_POST['idsindicalizado'];
+               $this->agente->estado = $_POST['estado'];
 
                if( $this->agente->save() )
                {
@@ -149,6 +163,14 @@ class admin_agente extends fs_controller
       {
          return TRUE;
       }
+   }
+
+   public function guardar_foto(){
+      $this->foto_empleado = $this->agente->get_foto();
+      if(file_exists($this->foto_empleado)){
+         unlink($this->foto_empleado);
+      }
+      
    }
 
    public function buscar_organizacion(){

@@ -50,6 +50,11 @@ class configuracion_nomina extends fs_controller{
         $this->fix_info();
         //Movemos Cargo a la tabla de cargos y banco al campo cuenta_banco
         $this->trasladar_datos();
+        //Validamos si existen las carpetas de almacenamiento de datos
+        // imagenes de empleados
+        // archivos generados
+        // formatos de presentacion
+        //@TODO
     }
 
     protected function fix_info(){

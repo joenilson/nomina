@@ -39,6 +39,7 @@ class agente extends fs_model
    public $apellidos;
    public $segundo_apellido;
    public $email;
+   public $foto;
    public $fax;
    public $telefono;
    public $codpostal;
@@ -250,6 +251,7 @@ class agente extends fs_model
          $this->dnicif = $a['dnicif'];
          $this->coddepartamento = $a['coddepartamento'];
          $this->email = $a['email'];
+         $this->foto = $a['foto'];
          $this->fax = $a['fax'];
          $this->telefono = $a['telefono'];
          $this->codpostal = $a['codpostal'];
@@ -325,6 +327,7 @@ class agente extends fs_model
          $this->dnicif = '';
          $this->coddepartamento = NULL;
          $this->email = NULL;
+         $this->foto = NULL;
          $this->fax = NULL;
          $this->telefono = NULL;
          $this->codpostal = NULL;
@@ -373,6 +376,10 @@ class agente extends fs_model
    public function get_fullname()
    {
       return $this->nombre." ".$this->apellidos." ".$this->segundo_apellido;
+   }
+
+   public function get_foto(){
+       return 'tmp/'.FS_TMP_NAME.'/nomina/empleados/'.$this->foto;
    }
 
    public function get_new_codigo()
@@ -470,7 +477,7 @@ class agente extends fs_model
                     ", codcategoria = ".$this->var2str($this->codcategoria).
                     ", codtipo = ".$this->var2str($this->codtipo).
                     ", codarea = ".$this->var2str($this->codarea).
-                    ", codepartamento = ".$this->var2str($this->coddepartamento).
+                    ", coddepartamento = ".$this->var2str($this->coddepartamento).
                     ", provincia = ".$this->var2str($this->provincia).
                     ", ciudad = ".$this->var2str($this->ciudad).
                     ", direccion = ".$this->var2str($this->direccion).

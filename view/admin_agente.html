@@ -163,8 +163,8 @@
                   <div class="col-sm-2">
                      <div class="form-group">
                         Sexo:<br/>
-                        <label><input class="radio-inline radio-control" type="radio" name="sexo" value="M"/> Masculino</label>
-                        <label><input class="radio-inline radio-control" type="radio" name="sexo" value="F"/> Femenino</label>
+                        <label><input class="radio-inline radio-control" type="radio" name="sexo" value="M" {if="$fsc->agente->sexo=='M'"}checked{/if}/> Masculino</label>
+                        <label><input class="radio-inline radio-control" type="radio" name="sexo" value="F" {if="$fsc->agente->sexo=='F'"}checked{/if}/> Femenino</label>
                      </div>
                   </div>
                   <div class="col-sm-3">
