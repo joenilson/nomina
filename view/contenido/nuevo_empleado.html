@@ -1,0 +1,448 @@
+<!--
+Copyright (C) 2016 Joe Nilson <joenilson at gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<script type="text/javascript" src="{$fsc->get_js_location('bootstrap-plugins/jquery.bootstrap.wizard.min.js')}"></script>
+<div class="modal fade" id="nuevoEmpleadoModal" tabindex="-1" role="dialog" aria-labelledby="nuevoEmpleadoModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Nuevo Empleado</h4>
+            </div>
+            <div class="modal-body">
+                <div id="nuevoempleado">
+                    <div class="navbar">
+                        <div class="navbar-inner">
+                            <div class="container">
+                                <ul>
+                                    <li><a href="#tab1" data-toggle="tab">Datos Básicos</a></li>
+                                    <li><a href="#tab2" data-toggle="tab">Organización</a></li>
+                                    <li><a href="#tab3" data-toggle="tab">Formación</a></li>
+                                    <li><a href="#tab4" data-toggle="tab">Contrato</a></li>
+                                    <li><a href="#tab5" data-toggle="tab">Derechohabientes</a></li>
+                                    <li><a href="#tab6" data-toggle="tab">Información Adicional</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <form class="form" role="form" name="f_nuevo_empleado" enctype="multipart/form-data" action="{$fsc->url()}" method="post">
+                        <div class="tab-content">
+                            <div class="tab-pane" id="tab1">
+                                <div class="row">
+                                    <div class="col-sm-2" align="center">
+                                        <div class="form-group">
+                                            <img id="imagen-nuevo-empleado" width="auto" height="120" src="{$fsc->noimagen}" alt="Nuevo Empleado" class="img-circle">
+                                        </div>
+                                        <br/>
+                                        <div class="form-group" align="center">
+                                            <label class="btn btn-default btn-xs btn-file image-new-input">
+                                                Agregar <input type="file" style="display: none;" accept="image/png, image/jpeg" name="foto">
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            <label class="label label-default" for="nombre">Nombre:</label>
+                                            <input class="form-control input-sm" type="text" name="nombre" value="" autocomplete="off"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                            <label class="label label-sm label-default" for="apellidos">Primer Apellido:</label>
+                                            <input class="form-control input-sm" type="text" name="apellidos" value="" autocomplete="off"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                            <label class="label label-sm label-default" for="segundo_apellido">Segundo Apellido:</label>
+                                            <input class="form-control input-sm" type="text" name="segundo_apellido" value="" autocomplete="off"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <label class="label label-sm label-default" for="dnicif">{#FS_CIFNIF#}:</label>
+                                            <input class="form-control input-sm" type="text" name="dnicif" value="" autocomplete="off"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <span class="label label-sm label-default">Sexo:</span><br />
+                                            <label><input class="radio-inline radio-control" type="radio" name="sexo" value="M"/> <span class="fa fa-male fa-1x"> Masc</span></label>
+                                            <label><input class="radio-inline radio-control" type="radio" name="sexo" value="F"/> <span class="fa fa-female fa-1x"> Fem</span></label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                            <label class="label label-sm label-default" for="estado_civil">Estado Civil:</label>
+                                            <select name="estado_civil" required class="form-control input-sm">
+                                                <option value="">--------</option>
+                                                {loop="$fsc->agente->estado_civil_agente()"}
+                                                <option value="{$key}">{$value}</option>
+                                                {/loop}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                            <label class="label label-sm label-default" for="telefono">Teléfono:</label>
+                                            <input class="form-control input-sm" type="text" name="telefono" value="" autocomplete="off"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            <label class="label label-sm label-default" for="email">Email:</label>
+                                            <input class="form-control input-sm" type="text" name="email" value="" autocomplete="off"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                            <label class="label label-sm label-default" for="provincia">Provincia:</label>
+                                            <input id="ac_provincia" class="form-control input-sm" type="text" name="provincia" value="" autocomplete="off"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                            <label class="label label-sm label-default" for="ciudad">Ciudad:</label>
+                                            <input class="form-control input-sm" type="text" name="ciudad" value=""/>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="label label-sm label-default" for="direccion">Dirección:</label>
+                                            <input class="form-control input-sm" type="text" name="direccion" value="" autocomplete="off"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                            <label class="label label-sm label-default">Fecha Nacimiento:</label>
+                                            <div class="input-group">
+                                                <span class="input-group-addon">
+                                                    <span class="glyphicon glyphicon-calendar"></span>
+                                                </span>
+                                                <input class="form-control datepicker input-sm" type="text" name="f_nacimiento" value="" autocomplete="off"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tab2">
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                            <label class="label label-sm label-default" for="codalmacen">
+                                                <a href="{$fsc->almacen->url()}">Almacén:</a>
+                                            </label>
+                                            <select name="codalmacen" required class="form-control input-sm">
+                                                <option value="">--------</option>
+                                                {loop="$fsc->almacen->all()"}
+                                                <option value="{$value->codalmacen}">{$value->nombre}</option>
+                                                {/loop}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                            <label class="label label-sm label-default" for="codcargo">
+                                                <a href="{$fsc->cargos->url()}">Cargo ocupado:</a>
+                                            </label>
+                                            <select name="codcargo" required class="form-control input-sm">
+                                                <option value="">--------</option>
+                                                {loop="$fsc->cargos->all()"}
+                                                <option value="{$value->codcargo}">{$value->descripcion}</option>
+                                                {/loop}
+                                            </select>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                            <label class="label label-sm label-default" for="codcategoria">
+                                                <a href="{$fsc->categoriaempleado->url()}">Categoria de empleado:</a>
+                                            </label>
+                                            <select name="codcategoria" required class="form-control input-sm">
+                                                <option value="">--------</option>
+                                                {loop="$fsc->categoriaempleado->all()"}
+                                                <option value="{$value->codcategoria}">{$value->descripcion}</option>
+                                                {/loop}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                            <label class="label label-sm label-default" for="codsupervisor">
+                                            Reporta a:
+                                            </label>
+                                            <select name="codsupervisor" class="form-control input-sm">
+                                                <option value="">--------</option>
+                                                {loop="$fsc->agente->all()"}
+                                                <option value="{$value->codagente}">{$value->nombreap}</option>
+                                                {/loop}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                            <label class="label label-sm label-default" for="codtipo">
+                                                <a href="{$fsc->tipoempleado->url()}">Tipo de Contrato:</a>
+                                            </label>
+                                            <select name="codtipo" required class="form-control input-sm">
+                                                <option value="">--------</option>
+                                                {loop="$fsc->tipoempleado->all()"}
+                                                <option value="{$value->codtipo}">{$value->descripcion}</option>
+                                                {/loop}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                            <label class="label label-sm label-default" for="codgerencia">
+                                                <a href="{$fsc->organizacion->url()}">Gerencia:</a>
+                                            </label>
+                                            <select name="codgerencia" id="ncodgerencia" onchange="llenar_organizacion_ne(this, 'codgerencia', 'ncodarea')" required class="form-control input-sm">
+                                                <option value="">--------</option>
+                                                {loop="$fsc->organizacion->all_tipo('GERENCIA')"}
+                                                <option value="{$value->codorganizacion}">{$value->descripcion}</option>
+                                                {/loop}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                            <label class="label label-sm label-default" for="codarea">
+                                                <a href="{$fsc->organizacion->url()}">Area:</a>
+                                            </label>
+                                            <select name="codarea" id="ncodarea" onchange="llenar_organizacion_ne(this, 'codarea', 'ncoddepartamento')" required class="form-control input-sm">
+                                                <option value="">--------</option>
+                                                {loop="$fsc->organizacion->all_tipo('AREA')"}
+                                                <option value="{$value->codorganizacion}">{$value->descripcion}</option>
+                                                {/loop}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                            <label class="label label-sm label-default" for="coddepartamento">
+                                                <a href="{$fsc->organizacion->url()}">Departamento:</a>
+                                            </label>
+                                            <select name="coddepartamento" id="ncoddepartamento" required class="form-control input-sm">
+                                                <option value="">--------</option>
+                                                {loop="$fsc->organizacion->all_tipo('DEPARTAMENTO')"}
+                                                <option value="{$value->codorganizacion}">{$value->descripcion}</option>
+                                                {/loop}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tab3">
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                            <label class="label label-sm label-default" for="codformacion">
+                                                <a href="{$fsc->formacion->url()}">Formación:</a>
+                                            </label>
+                                            <select name="codformacion" required class="form-control input-sm">
+                                                <option value="">--------</option>
+                                                {loop="$fsc->formacion->all()"}
+                                                <option value="{$value->codformacion}">{$value->nombre}</option>
+                                                {/loop}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            <label class="label label-sm label-default" for="carrera">
+                                                Carrera:
+                                            </label>
+                                            <input class="form-control input-sm" type="text" name="carrera" value="" autocomplete="off"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-5">
+                                        <div class="form-group">
+                                            <label class="label label-sm label-default" for="centroestudios">
+                                                Centro de estudios:
+                                            </label>
+                                            <input class="form-control input-sm" type="text" name="centroestudios" value="" autocomplete="off"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tab4">
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                           <label class="label label-sm label-default">Fecha Alta:</label>
+                                           <div class="input-group">
+                                              <span class="input-group-addon">
+                                                 <span class="glyphicon glyphicon-calendar"></span>
+                                              </span>
+                                              <input class="form-control datepicker input-sm" type="text" name="f_alta" value="" autocomplete="off"/>
+                                           </div>
+                                        </div>
+                                     </div>
+                                     <div class="col-sm-3">
+                                        <div class="form-group">
+                                           <label class="label label-sm label-default">Fecha Baja:</label>
+                                           <div class="input-group">
+                                              <span class="input-group-addon">
+                                                 <span class="glyphicon glyphicon-calendar"></span>
+                                              </span>
+                                              <input class="form-control datepicker input-sm" type="text" name="f_baja" value="" autocomplete="off"/>
+                                           </div>
+                                        </div>
+                                     </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tab5">
+                                <div class="row">
+
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tab6">
+                                <div class="row">
+
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="pull-right">
+                        <input type='button' class='btn btn-xs btn-default button-next' name='next' value='Siguiente' />
+                        <input type='button' class='btn btn-xs btn-default button-last' name='last' value='Final' />
+                    </div>
+                    <div class="pull-left">
+                        <input type='button' class='btn btn-xs btn-default button-first' name='first' value='Inicio' />
+                        <input type='button' class='btn btn-xs btn-default button-previous' name='previous' value='Anterior' />
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Cancelar Ingreso</button>
+                <button type="button" class="btn btn-sm btn-primary">Guardar Datos</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+$(".image-new-input input:file").change(function (){     
+    var img = $('#imagen-nuevo-empleado');    
+    var file = this.files[0];
+    var reader = new FileReader();
+    reader.onload = function (e) {
+        img.attr('src', e.target.result);
+    };   
+    reader.readAsDataURL(file);
+});
+
+function llenar_organizacion_ne(obj,padre,destino){
+    if(padre !== undefined){
+        var data = "";
+        var iddestino = '#'+destino;
+        $.ajax({
+            type: 'GET',
+            url : '{$fsc->url()}&type=organizacion',
+            data : padre+'='+obj.value,
+            async: false,
+            success : function(response) {
+                if(response.length !== 0){
+                    data = response;
+                }else{
+                    alert('¡No hay una estructura asignada para este padre!');
+                }
+            },
+            error: function(response) {
+                alert(response);
+            }
+        });
+        var select = $(iddestino);
+        select.empty();
+        if(data.length !== 0){
+            select.append(
+                $('<option></option>').val('').html('--------------')
+            );
+            $.each(data, function() {
+                select.append('<option value=' + this['codorganizacion'] + '>' + this['descripcion'] + '</option>');
+            });
+        }
+    }
+}
+$(document).ready(function() {
+    $('#nuevoempleado').bootstrapWizard({
+        'nextSelector': '.button-next', 
+        'previousSelector': '.button-previous', 
+        'firstSelector': '.button-first', 
+        'lastSelector': '.button-last',
+        onTabClick: function(tab, navigation, index) {
+            return false;
+        },
+        onNext: function(tab, navigation, index) {
+            var form = document.f_nuevo_empleado;
+            var msg = 'Complete los siguientes campos obligatorios: \n\n';
+            var conteo_requeridos = 0;
+            if(index===1) {
+                if(form.nombre.value===''){
+                    conteo_requeridos++;
+                    msg += 'Nombre \n';
+                } 
+                if(form.apellidos.value===''){
+                    conteo_requeridos++;
+                    msg += 'Primer Apellido \n';
+                }
+                if(form.segundo_apellido.value===''){
+                    conteo_requeridos++;
+                    msg += 'Segundo Apellido \n';  
+                }
+                if(conteo_requeridos>0){
+                    alert(msg);
+                    return false;
+                }
+            }
+            if(index===2) {
+                // Make sure we entered the name
+                if(!$('#name').val()) {
+                    alert('You must enter your name');
+                    $('#name').focus();
+                    return false;
+                }
+            }
+            if(index===3) {
+                // Make sure we entered the name
+                if(!$('#name').val()) {
+                    alert('You must enter your name');
+                    $('#name').focus();
+                    return false;
+                }
+            }
+            if(index===4) {
+                // Make sure we entered the name
+                if(!$('#name').val()) {
+                    alert('You must enter your name');
+                    $('#name').focus();
+                    return false;
+                }
+            }
+            if(index===6) {
+                // Make sure we entered the name
+                if(!$('#name').val()) {
+                    alert('You must enter your name');
+                    $('#name').focus();
+                    return false;
+                }
+            }            
+        }
+    });
+});
+</script>

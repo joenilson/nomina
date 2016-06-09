@@ -47,7 +47,7 @@ class agente extends fs_model
    public $provincia;
    public $ciudad;
    public $direccion;
-
+   public $estado_civil;
    /**
     * Variable que guarda los valores de Nombres, Apellidos
     * @var type $nombreap Nombrecompleto
@@ -279,6 +279,7 @@ class agente extends fs_model
          $this->codbanco = $a['codbanco'];
          $this->cuenta_banco = $a['cuenta_banco'];
          $this->estado = $a['estado'];
+         $this->estado_civil = $a['estado_civil'];
 
          $this->f_alta = NULL;
          if($a['f_alta'] != '')
@@ -359,6 +360,7 @@ class agente extends fs_model
          $this->codbanco = NULL;
          $this->cuenta_banco = NULL;
          $this->estado = NULL;
+         $this->estado_civil = NULL;
          $this->fecha_creacion = Date('d-m-Y H:i:s');
          $this->usuario_creacion = NULL;
          $this->fecha_modificacion = NULL;
@@ -369,8 +371,9 @@ class agente extends fs_model
    protected function install()
    {
       $this->clean_cache();
-      return "INSERT INTO ".$this->table_name." (codagente,nombre,apellidos,segundo_apellido,dnicif,estado)
-         VALUES ('1','Juan','Perez','Prado','00000014Z','A');";
+      return "INSERT INTO ".$this->table_name." (codagente,nombre,apellidos,segundo_apellido,dnicif,sexo,estado,estado_civil)
+         VALUES ('1','Juan','Perez','Prado','00000014Z','M','A','S'),".
+              "('1','Maria','Ruiz','Diaz','00000019Z','F','A','D');";
    }
 
    public function get_fullname()
@@ -508,6 +511,7 @@ class agente extends fs_model
                     ", centroestudios = ".$this->var2str($this->centroestudios).
                     ", dependientes = ".$this->intval($this->dependientes).
                     ", estado = ".$this->var2str($this->estado).
+                    ", estado_civil = ".$this->var2str($this->estado_civil).
                     ", banco = ".$this->var2str($this->banco).
                     ", porcomision = ".$this->var2str($this->porcomision).
                     ", fecha_modificacion = ".$this->var2str($this->fecha_modificacion).
@@ -518,7 +522,7 @@ class agente extends fs_model
          {
             $sql = "INSERT INTO ".$this->table_name." (codalmacen,idempresa,codagente,nombre,apellidos,segundo_apellido,nombreap,dnicif,telefono,
                email,codcargo,cargo,codsupervisor,codgerencia,codcategoria,codtipo,codarea,coddepartamento,provincia,ciudad,direccion,f_nacimiento,
-               f_alta,f_baja,sexo,idsindicato,codseguridadsocial,seg_social,cuenta_banco,codbanco,carrera,centroestudios,dependientes,estado,banco,
+               f_alta,f_baja,sexo,idsindicato,codseguridadsocial,seg_social,cuenta_banco,codbanco,carrera,centroestudios,dependientes,estado,estado_civil,banco,
                porcomision,fecha_creacion,usuario_creacion)
                VALUES (".$this->var2str($this->codalmacen).
                     ",".$this->intval($this->idempresa).
@@ -553,6 +557,7 @@ class agente extends fs_model
                     ",".$this->var2str($this->centroestudios).
                     ",".$this->var2str($this->dependientes).
                     ",".$this->var2str($this->estado).
+                    ",".$this->var2str($this->estado_civil).
                     ",".$this->var2str($this->banco).
                     ",".$this->var2str($this->porcomision).
                     ",".$this->var2str($this->fecha_creacion).
@@ -636,5 +641,14 @@ class agente extends fs_model
         $estados['P']='Permiso médico';
         $estados['L']='Litigio';
         return $estados;
+    }
+    
+    public function estado_civil_agente(){
+        $estado_civil = array();
+        $estado_civil['S']='Soltero';
+        $estado_civil['C']='Casado';
+        $estado_civil['V']='Viudo';
+        $estado_civil['D']='Divorciado';
+        return $estado_civil;
     }
 }

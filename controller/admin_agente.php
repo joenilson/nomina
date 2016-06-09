@@ -143,6 +143,7 @@ class admin_agente extends fs_controller
                $this->agente->dependientes = $_POST['dependientes'];
                $this->agente->idsindicato = $_POST['idsindicalizado'];
                $this->agente->estado = $_POST['estado'];
+               $this->agente->estado_civil = $_POST['estado_civil'];
 
                if( $this->agente->save() )
                {
