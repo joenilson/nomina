@@ -30,8 +30,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <ul>
                                     <li><a href="#tab1" data-toggle="tab">Datos Básicos</a></li>
                                     <li><a href="#tab2" data-toggle="tab">Organización</a></li>
-                                    <li><a href="#tab3" data-toggle="tab">Formación</a></li>
-                                    <li><a href="#tab4" data-toggle="tab">Contrato</a></li>
+                                    <li><a href="#tab3" data-toggle="tab">Contrato</a></li>
+                                    <li><a href="#tab4" data-toggle="tab">Formación</a></li>
                                     <li><a href="#tab5" data-toggle="tab">Derechohabientes</a></li>
                                     <li><a href="#tab6" data-toggle="tab">Información Adicional</a></li>
                                 </ul>
@@ -195,19 +195,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </div>
                                     <div class="col-sm-3">
                                         <div class="form-group">
-                                            <label class="label label-sm label-default" for="codtipo">
-                                                <a href="{$fsc->tipoempleado->url()}">Tipo de Contrato:</a>
-                                            </label>
-                                            <select name="codtipo" required class="form-control input-sm">
-                                                <option value="">--------</option>
-                                                {loop="$fsc->tipoempleado->all()"}
-                                                <option value="{$value->codtipo}">{$value->descripcion}</option>
-                                                {/loop}
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-3">
-                                        <div class="form-group">
                                             <label class="label label-sm label-default" for="codgerencia">
                                                 <a href="{$fsc->organizacion->url()}">Gerencia:</a>
                                             </label>
@@ -251,6 +238,45 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <div class="row">
                                     <div class="col-sm-3">
                                         <div class="form-group">
+                                            <label class="label label-sm label-default" for="codtipo">
+                                                <a href="{$fsc->tipoempleado->url()}">Tipo de Contrato:</a>
+                                            </label>
+                                            <select name="codtipo" required class="form-control input-sm">
+                                                <option value="">--------</option>
+                                                {loop="$fsc->tipoempleado->all()"}
+                                                <option value="{$value->codtipo}">{$value->descripcion}</option>
+                                                {/loop}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                           <label class="label label-sm label-default">Fecha Alta:</label>
+                                           <div class="input-group">
+                                              <span class="input-group-addon">
+                                                 <span class="glyphicon glyphicon-calendar"></span>
+                                              </span>
+                                              <input class="form-control datepicker input-sm" type="text" name="f_alta" value="" autocomplete="off"/>
+                                           </div>
+                                        </div>
+                                     </div>
+                                     <div class="col-sm-3">
+                                        <div class="form-group">
+                                           <label class="label label-sm label-default">Fecha Baja:</label>
+                                           <div class="input-group">
+                                              <span class="input-group-addon">
+                                                 <span class="glyphicon glyphicon-calendar"></span>
+                                              </span>
+                                              <input class="form-control datepicker input-sm" type="text" name="f_baja" value="" autocomplete="off"/>
+                                           </div>
+                                        </div>
+                                     </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tab4">
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
                                             <label class="label label-sm label-default" for="codformacion">
                                                 <a href="{$fsc->formacion->url()}">Formación:</a>
                                             </label>
@@ -280,35 +306,48 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </div>
                                 </div>
                             </div>
-                            <div class="tab-pane" id="tab4">
-                                <div class="row">
-                                    <div class="col-sm-3">
-                                        <div class="form-group">
-                                           <label class="label label-sm label-default">Fecha Alta:</label>
-                                           <div class="input-group">
-                                              <span class="input-group-addon">
-                                                 <span class="glyphicon glyphicon-calendar"></span>
-                                              </span>
-                                              <input class="form-control datepicker input-sm" type="text" name="f_alta" value="" autocomplete="off"/>
-                                           </div>
-                                        </div>
-                                     </div>
-                                     <div class="col-sm-3">
-                                        <div class="form-group">
-                                           <label class="label label-sm label-default">Fecha Baja:</label>
-                                           <div class="input-group">
-                                              <span class="input-group-addon">
-                                                 <span class="glyphicon glyphicon-calendar"></span>
-                                              </span>
-                                              <input class="form-control datepicker input-sm" type="text" name="f_baja" value="" autocomplete="off"/>
-                                           </div>
-                                        </div>
-                                     </div>
-                                </div>
-                            </div>
                             <div class="tab-pane" id="tab5">
-                                <div class="row">
-
+                                <div class="row" id="dhRows">
+                                    <div class="row">
+                                        <div class="col-sm-2">
+                                            <select name="dh_parentesco[]" required class="form-control input-sm">
+                                                <option value="">Parentesco</option>
+                                                <option value="C">Conyuge</option>
+                                                <option value="H">Hijo/a</option>
+                                                <option value="P">Padre</option>
+                                                <option value="M">Madre</option>
+                                                <option value="S">Sobrino/a</option>
+                                                <option value="A">Apoderado</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <input class="form-control input-sm" type="text" name="dh_nombre[]" value="" placeholder="Nombre y Apellidos">
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <input class="form-control input-sm" type="text" name="dh_dnicif[]" value="" placeholder="{#FS_CIFNIF#}">
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <div class="form-group">
+                                                <label><input class="radio-inline radio-control" type="radio" name="dh_sexo[]" value="M"/> <span class="fa fa-male fa-1x"> Masc</span></label>
+                                                <label><input class="radio-inline radio-control" type="radio" name="dh_sexo[]" value="F"/> <span class="fa fa-female fa-1x"> Fem</span></label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">
+                                                   <span class="glyphicon glyphicon-calendar"></span>
+                                                </span>
+                                                <input class="form-control  datepicker input-sm" type="text" name="dh_f_nacimiento[]" value="" placeholder="Fecha Nac">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-1 pull-left">
+                                            <span class="input-group-btn">
+                                                <button onclick="addDerechohabiente(this.form)" class="btn btn-success btn-sm btn-add" type="button">
+                                                    <span class="fa fa-plus"></span>
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="tab-pane" id="tab6">
@@ -337,6 +376,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     </div>
 </div>
 <script type="text/javascript">
+//Cuando carguemos la foto del empleado
 $(".image-new-input input:file").change(function (){     
     var img = $('#imagen-nuevo-empleado');    
     var file = this.files[0];
@@ -346,7 +386,62 @@ $(".image-new-input input:file").change(function (){
     };   
     reader.readAsDataURL(file);
 });
+//Para agregar los campos adicionales para Derechohbientes
+var dhNum = 0;
+function addDerechohabiente(frm) {
+    dhNum++;
+    var row='<div class="row" id="linea_'+dhNum+'">'+
+            '<div class="col-sm-2">'+
+            '    <select name="dh_parentesco[]" required class="form-control input-sm">'+
+            '        <option value="">Parentesco</option>'+
+            '        <option value="C">Conyuge</option>'+
+            '        <option value="H">Hijo/a</option>'+
+            '        <option value="P">Padre</option>'+
+            '        <option value="M">Madre</option>'+
+            '        <option value="S">Sobrino/a</option>'+
+            '        <option value="A">Apoderado</option>'+
+            '    </select>'+
+            '</div>'+
+            '<div class="col-sm-2">'+
+            '<input class="form-control input-sm" type="text" name="dh_nombre[]" value="" placeholder="Nombre y Apellidos">'+
+            '</div>'+
+            '<div class="col-sm-2">'+
+            '<input class="form-control input-sm" type="text" name="dh_dnicif[]" value="" placeholder="{#FS_CIFNIF#}">'+
+            '</div>'+
+            '<div class="col-sm-2">'+
+            '    <div class="form-group">'+
+            '        <label><input class="radio-inline radio-control" type="radio" name="dh_sexo[]" value="M"/> <span class="fa fa-male fa-1x"> Masc</span></label>'+
+            '        <label><input class="radio-inline radio-control" type="radio" name="dh_sexo[]" value="F"/> <span class="fa fa-female fa-1x"> Fem</span></label>'+
+            '    </div>'+
+            '</div>'+
+            '<div class="col-sm-3">'+
+            '    <div class="input-group">'+
+            '        <span class="input-group-addon">'+
+            '           <span class="glyphicon glyphicon-calendar"></span>'+
+            '        </span>'+
+            '        <input class="form-control  datepicker input-sm" type="text" name="dh_f_nacimiento[]" value="" placeholder="Fecha Nac">'+
+            '    </div>'+
+            '</div>'+
+            '<div class="col-sm-1 pull-left">'+
+            '    <span class="input-group-btn">'+
+            '        <button onclick="removeDerechohabiente('+dhNum+')" class="btn btn-warning btn-sm btn-add" type="button">'+
+            '            <span class="fa fa-minus"></span>'+
+            '        </button>'+
+            '    </span>'+
+            '</div>'+
+            '</div>';
+            //'<input type="button" value="Remove" onclick="removeRow('+dhNum+');"></p>';
+    jQuery('#dhRows').append(row);
+    frm.add_qty.value = '';
+    frm.add_name.value = '';
+}
+//Para eliminar una fila de campos adicionales
+function removeDerechohabiente(rnum) {
+    dhNum--;
+    $('#linea_'+rnum).remove();
+}
 
+//Para armar la estructura del empleado
 function llenar_organizacion_ne(obj,padre,destino){
     if(padre !== undefined){
         var data = "";
@@ -401,9 +496,45 @@ $(document).ready(function() {
                     conteo_requeridos++;
                     msg += 'Primer Apellido \n';
                 }
-                if(form.segundo_apellido.value===''){
+                if(form.dnicif.value===''){
                     conteo_requeridos++;
-                    msg += 'Segundo Apellido \n';  
+                    msg += '{#FS_CIFNIF#} \n';  
+                }
+                if(form.sexo.value===''){
+                    conteo_requeridos++;
+                    msg += 'Sexo \n';  
+                }
+                if(form.estado_civil.value===''){
+                    conteo_requeridos++;
+                    msg += 'Estado Civil \n';  
+                }
+                if(form.telefono.value===''){
+                    conteo_requeridos++;
+                    msg += 'Telefono \n';  
+                }
+                if(form.email.value===''){
+                    conteo_requeridos++;
+                    msg += 'Email \n';  
+                }
+                if(form.email.value===''){
+                    conteo_requeridos++;
+                    msg += 'Email \n';  
+                }
+                if(form.provincia.value===''){
+                    conteo_requeridos++;
+                    msg += 'Provincia \n';  
+                }
+                if(form.ciudad.value===''){
+                    conteo_requeridos++;
+                    msg += 'Ciudad \n';  
+                }
+                if(form.direccion.value===''){
+                    conteo_requeridos++;
+                    msg += 'Direccion \n';  
+                }
+                if(form.f_nacimiento.value===''){
+                    conteo_requeridos++;
+                    msg += 'Fecha de Nacimiento \n';  
                 }
                 if(conteo_requeridos>0){
                     alert(msg);
@@ -411,26 +542,65 @@ $(document).ready(function() {
                 }
             }
             if(index===2) {
-                // Make sure we entered the name
-                if(!$('#name').val()) {
-                    alert('You must enter your name');
-                    $('#name').focus();
+                if(form.codalmacen.value===''){
+                    conteo_requeridos++;
+                    msg += 'Almacen \n';  
+                }
+                if(form.codcargo.value===''){
+                    conteo_requeridos++;
+                    msg += 'Cargo ocupado \n';  
+                }
+                if(form.codcategoria.value===''){
+                    conteo_requeridos++;
+                    msg += 'Categoria de empleado \n';  
+                }
+                if(form.codgerencia.value===''){
+                    conteo_requeridos++;
+                    msg += 'Gerencia \n';  
+                }
+                if(form.codarea.value===''){
+                    conteo_requeridos++;
+                    msg += 'Area \n';  
+                }
+                if(form.coddepartamento.value===''){
+                    conteo_requeridos++;
+                    msg += 'Departamento \n';  
+                }
+                if(conteo_requeridos>0){
+                    alert(msg);
                     return false;
                 }
             }
             if(index===3) {
-                // Make sure we entered the name
-                if(!$('#name').val()) {
-                    alert('You must enter your name');
-                    $('#name').focus();
+                if(form.codtipo.value===''){
+                    conteo_requeridos++;
+                    msg += 'Tipo de contrato \n';  
+                }
+                if(form.f_alta.value===''){
+                    conteo_requeridos++;
+                    msg += 'Fecha de alta \n';  
+                }
+                if(conteo_requeridos>0){
+                    alert(msg);
                     return false;
                 }
+
             }
             if(index===4) {
-                // Make sure we entered the name
-                if(!$('#name').val()) {
-                    alert('You must enter your name');
-                    $('#name').focus();
+                if(form.codformacion.value===''){
+                    conteo_requeridos++;
+                    msg += 'Formacion \n';  
+                }
+                if(form.carrera.value===''){
+                    conteo_requeridos++;
+                    msg += 'Carrera \n';  
+                }
+                if(form.centroestudios.value===''){
+                    conteo_requeridos++;
+                    msg += 'Centro de estudios \n';  
+                }
+                if(conteo_requeridos>0){
+                    alert(msg);
                     return false;
                 }
             }
