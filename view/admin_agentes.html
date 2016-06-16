@@ -1,6 +1,11 @@
 {include="header"}
-
+<script src="{$fsc->get_js_location('plugins/jquery.jqGrid.min.js')}" type="text/javascript"></script>
+<script src="{$fsc->get_js_location('locale/grid.locale-es.js')}" type="text/javascript"></script>
+<script src="{$fsc->get_js_location('plugins/jquery.tablecheckbox.min.js')}" type="text/javascript"></script>
+<script src="{$fsc->get_js_location('bootbox.min.js')}" type="text/javascript"></script>
 <script type="text/javascript">
+   $.jgrid.defaults.responsive = true;
+   $.jgrid.defaults.styleUI = 'Bootstrap';
    $(document).ready(function() {
       if(window.location.hash.substring(1) == 'nuevo')
       {
@@ -11,6 +16,76 @@
          event.preventDefault();
          $("#modal_nuevo_agente").modal('show');
          document.f_nuevo_agente.snombre.focus();
+      });
+      $("#b_importar_empleados").click(function(event) {
+         event.preventDefault();
+         $("#modal_importar_empleados").modal('show');
+      });
+      $("#b_importar").click(function(event) {
+         event.preventDefault();
+         //console.log($('form[name=f_importar_empleados]'));
+         var formData = new FormData();
+         formData.append('importar', true);
+         formData.append('empleados', $('#empleados')[0].files[0]);
+         $.ajax({
+            type: 'POST',
+            url: '{$fsc->url()}',
+            processData: false,
+            contentType: false,
+            data: formData,
+            enctype: 'multipart/form-data',
+            success : function(datos) {
+                $("#grid_resultados_procesados").jqGrid('clearGridData');
+                $("#grid_resultados_procesados").jqGrid({
+                    data: datos,
+                    datatype: "local",
+                    colModel: [
+                        {label: 'Sede', name: 'sede', width: 100},
+                        {label: 'Empresa', name: 'empresa', width: 120},
+                        {label: '{#FS_CIFNIF#}', name: 'cifnif', width: 90, key: true},
+                        {label: 'Apellido Paterno', name: 'apellidos', width: 120},
+                        {label: 'Apellido Materno', name: 'segundo_apellido', width: 120},
+                        {label: 'Nombres', name: 'nombre', width: 120},
+                        {label: 'Sexo', name: 'sexo', width: 90},
+                        {label: 'Estado Civil', name: 'estado_civil', width: 75},
+                        {label: 'Fec Nac', name: 'f_nacimiento', width: 75, sorttype: 'date'},
+                        {label: 'Direccion', name: 'direccion', width: 240},
+                        {label: 'Telefono', name: 'telefono', width: 90},
+                        {label: 'Fec Ingreso', name: 'f_alta', width: 75, sorttype: 'date'},
+                        {label: 'Fec Cese', name: 'f_baja', width: 75, sorttype: 'date'},
+                        {label: 'Gerencia', name: 'gerencia', width: 120, sorttype: 'text'}
+                    ],
+                    loadonce: false,
+                    viewrecords: true,
+                    autowidth: true,
+                    shrinkToFit: false,
+                    height: 300,
+                    rowNum: 50,
+                    rowList: [50, 75, 100,150, 200,250],
+                    scrollPopUp: true,
+                    scrollLeftOffset: "53%",
+                    rownumbers: true,
+                    rownumWidth: 25,
+                    multiselect: true,
+                    defaults: {
+                        emptyrecords: "No se encontraron registros",
+                        loadtext: "Buscando..."
+                    },
+                    pager: "#grid_resultados_procesados_pager"
+                });
+                $('#grid_resultados_procesados').navGrid('#grid_resultados_procesados_pager',
+                    { edit: false, add: false, del: false, search: true, refresh: true, view: true, position: "left", cloneToTop: false });
+                $('#grid_resultados_procesados').jqGrid()
+                    .setGridParam({
+                        data: datos,
+                        datatype: "local",
+                    })
+                    .trigger("reloadGrid");
+            },
+            error: function() {
+                alert("Ocurrio un error no contemplado en el plugin, por favor envie un mensaje en el foro de soporte de FacturaScripts para verificar el problema, gracias.");
+            }
+        });
       });
    });
 </script>
@@ -36,16 +111,19 @@
             <a id="b_nuevo_agente" class="btn btn-sm btn-success" href="#">
                <span class="glyphicon glyphicon-plus"></span>
                <span class="hidden-xs">&nbsp; Nuevo</span>
-            </a>              
+            </a>
             {loop="$fsc->extensions"}
                {if="$value->type=='button'"}
                <a href="index.php?page={$value->from}{$value->params}" class="btn btn-sm btn-default">{$value->text}</a>
                {/if}
             {/loop}
          </div>
+         <button type="button" class="btn btn-sm btn-info" id="b_importar_empleados">
+            <span class="fa fa-upload" aria-hidden="true"></span> Cargar Empleados
+         </button>
          <button type="button" class="btn btn-sm btn-default" onclick="window.print();">
             <span class="glyphicon glyphicon-print" aria-hidden="true"></span>
-         </button>           
+         </button>
       </div>
       <div class="col-sm-6 col-xs-6 text-right">
          <h2 style="margin-top: 0px;">Empleados</h2>
@@ -134,6 +212,40 @@
                <button class="btn btn-sm btn-primary" type="submit">
                   <span class="glyphicon glyphicon-floppy-disk"></span> &nbsp; Guardar
                </button>
+            </div>
+         </div>
+      </div>
+   </div>
+</form>
+
+<form class="form-horizontal" role="form" name="f_importar_empleados" enctype="multipart/form-data" action="{$fsc->url()}" method="post">
+   <div class="modal" id="modal_importar_empleados">
+      <div class="modal-dialog modal-lg">
+         <div class="modal-content">
+            <div class="modal-header">
+               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+               <h4 class="modal-title">
+                  <span class="glyphicon glyphicon-user"></span>
+                  &nbsp; Importar empleados
+               </h4>
+            </div>
+            <div class="modal-body">
+               <div class="row">
+
+                  <div class="col-sm-6 form-group">
+                     <label for="empleados" class="control-label">Cargue un archivo</label>
+                     <input id="empleados" type="file" name="empleados" accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required=""/>
+                  </div>
+                  <div class="col-sm-4">
+                     <button class="btn btn-sm btn-primary" type="button" id="b_importar">
+                        <span class="fa fa-upload"></span> &nbsp; Importar
+                     </button>
+                  </div>
+               </div>
+               <table id="grid_resultados_procesados">
+               </table>
+               <div id="grid_resultados_procesados_pager">
+               </div>
             </div>
          </div>
       </div>
