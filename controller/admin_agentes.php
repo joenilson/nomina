@@ -53,7 +53,7 @@ class admin_agentes extends fs_controller
          else
             $this->new_error_msg("¡Imposible guardar el empleado!");
       }
-      elseif( isset($_GET['delete']) )
+      else if( isset($_GET['delete']) )
       {
          $age0 = $this->agente->get($_GET['delete']);
          if($age0)

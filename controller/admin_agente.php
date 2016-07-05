@@ -62,6 +62,7 @@ class admin_agente extends fs_controller
 
       /// ¿El usuario tiene permiso para eliminar en esta página?
       $this->allow_delete = $this->user->allow_delete_on(__CLASS__);
+
       $this->almacen = new almacen();
       $this->bancos = new bancos();
       $this->cargos = new cargos();
@@ -71,6 +72,7 @@ class admin_agente extends fs_controller
       $this->sindicalizacion = new sindicalizacion();
       $this->organizacion = new organizacion();
       $this->seguridadsocial = new seguridadsocial();
+
       $this->agente = FALSE;
       if( isset($_GET['cod']) )
       {
@@ -147,7 +149,7 @@ class admin_agente extends fs_controller
 
                if( $this->agente->save() )
                {
-                  $this->upload_photo = new Upload($_FILES['foto']); 
+                  $this->upload_photo = new Upload($_FILES['foto']);
                   if ($this->upload_photo->uploaded) {
                       $this->guardar_foto();
                   }
@@ -183,7 +185,7 @@ class admin_agente extends fs_controller
       if(file_exists($this->foto_empleado)){
          unlink($this->foto_empleado);
       }
-      $newname = str_pad($this->agente->codagente,6,0,STR_PAD_LEFT); 
+      $newname = str_pad($this->agente->codagente,6,0,STR_PAD_LEFT);
 
       // Grabar la imagen con un nuevo nombre y con un resize de 120px
       $this->upload_photo->file_new_name_body = $newname;
@@ -198,9 +200,9 @@ class admin_agente extends fs_controller
          $this->agente->set_foto($newname.".png");
       }else{
          $this->new_error_msg('error : ' . $$this->upload_photo->error);
-      }   
+      }
    }
-   
+
    public function buscar_organizacion(){
         $tipo = false;
         if(isset($_GET['codgerencia'])){
