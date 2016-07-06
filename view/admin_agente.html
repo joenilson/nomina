@@ -1,6 +1,13 @@
 {include="header"}
 
 {if="$fsc->agente"}
+<style>
+.nav-pills li {
+  color: #ffffff;
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.8em;
+}
+</style>
 <script type="text/javascript" src="{$fsc->get_js_location('provincias.js')}"></script>
 <script type="text/javascript">
     function llenar_organizacion(obj,padre,destino){
@@ -108,37 +115,37 @@
                 </a>
              </li>
              <li role="presentation">
-                <a id="b_movimientos" href="{$fsc->url()}" class="list-group-item">
+                <a id="b_movimientos" href="{$fsc->url()}">
                    <span class="fa fa-code-fork"></span> &nbsp; Movimientos
                 </a>
              </li>
              <li role="presentation">
-                <a id="b_movimientos" href="{$fsc->url()}" class="list-group-item">
+                <a id="b_movimientos" href="{$fsc->url()}">
                     <span class="fa fa-archive"></span> &nbsp; Contratos
                 </a>
              </li>
              <li role="presentation">
-                <a id="b_movimientos" href="{$fsc->url()}" class="list-group-item">
+                <a id="b_movimientos" href="{$fsc->url()}">
                    <span class="fa fa-calendar-minus-o"></span> &nbsp; Ausencias
                 </a>
              </li>
              <li role="presentation">
-                <a id="b_dependientes" href="{$fsc->url()}" class="list-group-item">
+                <a id="b_dependientes" href="{$fsc->url()}">
                    <span class="fa fa-group"></span> &nbsp; Carga Familiar
                 </a>
              </li>
              <li role="presentation">
-                <a id="b_resumen" href="{$fsc->url()}" class="list-group-item">
+                <a id="b_resumen" href="{$fsc->url()}">
                    <span class="fa fa-suitcase"></span> &nbsp; Hoja de Vida
                 </a>
              </li>
              <li role="presentation">
-                <a id="b_sueldo" href="{$fsc->url()}" class="list-group-item">
+                <a id="b_sueldo" href="{$fsc->url()}">
                    <span class="fa fa-money"></span> &nbsp; Pago e Incentivos
                 </a>
              </li>
              <li role="presentation">
-                <a id="b_asistencia" href="{$fsc->url()}" class="list-group-item">
+                <a id="b_asistencia" href="{$fsc->url()}">
                    <span class="fa fa-clock-o"></span> &nbsp; Control de Horas
                 </a>
              </li>

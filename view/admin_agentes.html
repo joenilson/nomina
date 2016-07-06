@@ -54,7 +54,21 @@
                         {label: 'Telefono', name: 'telefono', width: 90},
                         {label: 'Fec Ingreso', name: 'f_alta', width: 75, sorttype: 'date'},
                         {label: 'Fec Cese', name: 'f_baja', width: 75, sorttype: 'date'},
-                        {label: 'Gerencia', name: 'gerencia', width: 120, sorttype: 'text'}
+                        {label: 'Gerencia', name: 'gerencia', width: 120, sorttype: 'text'},
+                        {label: 'Area', name: 'area', width: 120, sorttype: 'text'},
+                        {label: 'Departamento', name: 'departamento', width: 120, sorttype: 'text'},
+                        {label: 'Cargo', name: 'cargo', width: 120, sorttype: 'text'},
+                        {label: 'Categoria', name: 'categoria', width: 120, sorttype: 'text'},
+                        {label: 'Seg Social', name: 'codseguridadsocial', width: 120, sorttype: 'text'},
+                        {label: 'Nro SegSoc', name: 'seg_social', width: 120, sorttype: 'text'},
+                        {label: 'Dependientes', name: 'dependientes', width: 120, sorttype: 'text'},
+                        {label: 'Formacion', name: 'codformacion', width: 120, sorttype: 'text'},
+                        {label: 'Carrera', name: 'carrera', width: 120, sorttype: 'text'},
+                        {label: 'Centro Estudios', name: 'centroestudios', width: 120, sorttype: 'text'},
+                        {label: 'Centro Sindicato', name: 'idsindicato', width: 120, sorttype: 'text'},
+                        {label: 'Tipo', name: 'codtipo', width: 120, sorttype: 'text'},
+                        {label: 'Pago Total', name: 'pago_total', width: 120, sorttype: 'text'},
+                        {label: 'Pago Neto', name: 'pago_neto', width: 120, sorttype: 'text'}
                     ],
                     loadonce: false,
                     viewrecords: true,
@@ -119,9 +133,9 @@
                {/if}
             {/loop}
          </div>
-         <button type="button" class="btn btn-sm btn-info" id="b_importar_empleados">
+         <a href="index.php?page=importar_agentes" class="btn btn-sm btn-info">
             <span class="fa fa-upload" aria-hidden="true"></span> Cargar Empleados
-         </button>
+         </a>
          <a class="btn btn-sm btn-default" onclick="window.print();">
             <span class="glyphicon glyphicon-print" aria-hidden="true"></span>
          </a>

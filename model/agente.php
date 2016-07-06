@@ -213,6 +213,16 @@ class agente extends fs_model
    public $estado;
 
    /**
+    * @var type double precision $pago_total
+    */
+   public $pago_total;
+
+   /**
+    * @var type double precision $pago_neto
+    */
+   public $pago_neto;
+
+   /**
     * Usuario que crea al empleado, para efectos de auditoria
     * @var type $usuario_creacion
     */
@@ -260,6 +270,8 @@ class agente extends fs_model
          $this->ciudad = $a['ciudad'];
          $this->direccion = $a['direccion'];
          $this->porcomision = floatval($a['porcomision']);
+         $this->pago_total = floatval($a['pago_total']);
+         $this->pago_neto = floatval($a['pago_neto']);
          $this->irpf = floatval($a['irpf']);
          $this->seg_social = $a['seg_social'];
          $this->banco = $a['banco'];
@@ -337,6 +349,8 @@ class agente extends fs_model
          $this->ciudad = NULL;
          $this->direccion = NULL;
          $this->porcomision = 0;
+         $this->pago_total = 0;
+         $this->pago_neto = 0;
          $this->irpf = 0;
          $this->seg_social = NULL;
          $this->banco = NULL;
@@ -388,7 +402,7 @@ class agente extends fs_model
          return false;
       }
    }
-   
+
    public function set_foto($nombre_foto){
       if($nombre_foto){
          $sql = "UPDATE ".$this->table_name." SET FOTO = ".$this->var2str($nombre_foto).";";
@@ -514,6 +528,8 @@ class agente extends fs_model
                     ", estado_civil = ".$this->var2str($this->estado_civil).
                     ", banco = ".$this->var2str($this->banco).
                     ", porcomision = ".$this->var2str($this->porcomision).
+                    ", pago_total = ".$this->var2str($this->pago_total).
+                    ", pago_neto = ".$this->var2str($this->pago_neto).
                     ", fecha_modificacion = ".$this->var2str($this->fecha_modificacion).
                     ", usuario_modificacion = ".$this->var2str($this->usuario_modificacion).
                     "  WHERE codagente = ".$this->var2str($this->codagente).";";
@@ -523,7 +539,7 @@ class agente extends fs_model
             $sql = "INSERT INTO ".$this->table_name." (codalmacen,idempresa,codagente,nombre,apellidos,segundo_apellido,nombreap,dnicif,telefono,
                email,codcargo,cargo,codsupervisor,codgerencia,codcategoria,codtipo,codarea,coddepartamento,provincia,ciudad,direccion,f_nacimiento,
                f_alta,f_baja,sexo,idsindicato,codseguridadsocial,seg_social,cuenta_banco,codbanco,carrera,centroestudios,dependientes,estado,estado_civil,banco,
-               porcomision,fecha_creacion,usuario_creacion)
+               porcomision,pago_total,pago_neto,fecha_creacion,usuario_creacion)
                VALUES (".$this->var2str($this->codalmacen).
                     ",".$this->intval($this->idempresa).
                     ",".$this->var2str($this->nombre).
@@ -560,6 +576,8 @@ class agente extends fs_model
                     ",".$this->var2str($this->estado_civil).
                     ",".$this->var2str($this->banco).
                     ",".$this->var2str($this->porcomision).
+                    ",".$this->var2str($this->pago_total).
+                    ",".$this->var2str($this->pago_neto).
                     ",".$this->var2str($this->fecha_creacion).
                     ",".$this->var2str($this->usuario_creacion)
                     .");";
@@ -642,7 +660,7 @@ class agente extends fs_model
         $estados['L']='Litigio';
         return $estados;
     }
-    
+
     public function estado_civil_agente(){
         $estado_civil = array();
         $estado_civil['S']='Soltero';
