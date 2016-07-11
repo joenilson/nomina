@@ -45,7 +45,7 @@ class admin_agente extends fs_controller
    public $foto_empleado;
    public $noimagen = "plugins/nomina/view/imagenes/no_foto.jpg";
    private $upload_photo;
-   private $dir_empleados = "tmp/".FS_TMP_NAME."/nomina/empleados/";
+   private $dir_empleados = "tmp/".\FS_TMP_NAME."/nomina/empleados/";
 
    /*
     * Esta página está en la carpeta admin, pero no se necesita ser admin para usarla.
