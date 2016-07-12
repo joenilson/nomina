@@ -18,90 +18,6 @@
          $("#modal_nuevo_agente").modal('show');
          document.f_nuevo_agente.snombre.focus();
       });
-      $("#b_importar_empleados").click(function(event) {
-         event.preventDefault();
-         $("#modal_importar_empleados").modal('show');
-      });
-      $("#b_importar").click(function(event) {
-         event.preventDefault();
-         //console.log($('form[name=f_importar_empleados]'));
-         var formData = new FormData();
-         formData.append('importar', true);
-         formData.append('empleados', $('#empleados')[0].files[0]);
-         $.ajax({
-            type: 'POST',
-            url: '{$fsc->url()}',
-            processData: false,
-            contentType: false,
-            data: formData,
-            enctype: 'multipart/form-data',
-            success : function(datos) {
-                $("#grid_resultados_procesados").jqGrid('clearGridData');
-                $("#grid_resultados_procesados").jqGrid({
-                    data: datos,
-                    datatype: "local",
-                    colModel: [
-                        {label: 'Sede', name: 'sede', width: 100},
-                        {label: 'Empresa', name: 'empresa', width: 120},
-                        {label: '{#FS_CIFNIF#}', name: 'cifnif', width: 90, key: true},
-                        {label: 'Apellido Paterno', name: 'apellidos', width: 120},
-                        {label: 'Apellido Materno', name: 'segundo_apellido', width: 120},
-                        {label: 'Nombres', name: 'nombre', width: 120},
-                        {label: 'Sexo', name: 'sexo', width: 90},
-                        {label: 'Estado Civil', name: 'estado_civil', width: 75},
-                        {label: 'Fec Nac', name: 'f_nacimiento', width: 75, sorttype: 'date'},
-                        {label: 'Direccion', name: 'direccion', width: 240},
-                        {label: 'Telefono', name: 'telefono', width: 90},
-                        {label: 'Fec Ingreso', name: 'f_alta', width: 75, sorttype: 'date'},
-                        {label: 'Fec Cese', name: 'f_baja', width: 75, sorttype: 'date'},
-                        {label: 'Gerencia', name: 'gerencia', width: 120, sorttype: 'text'},
-                        {label: 'Area', name: 'area', width: 120, sorttype: 'text'},
-                        {label: 'Departamento', name: 'departamento', width: 120, sorttype: 'text'},
-                        {label: 'Cargo', name: 'cargo', width: 120, sorttype: 'text'},
-                        {label: 'Categoria', name: 'categoria', width: 120, sorttype: 'text'},
-                        {label: 'Seg Social', name: 'codseguridadsocial', width: 120, sorttype: 'text'},
-                        {label: 'Nro SegSoc', name: 'seg_social', width: 120, sorttype: 'text'},
-                        {label: 'Dependientes', name: 'dependientes', width: 120, sorttype: 'text'},
-                        {label: 'Formacion', name: 'codformacion', width: 120, sorttype: 'text'},
-                        {label: 'Carrera', name: 'carrera', width: 120, sorttype: 'text'},
-                        {label: 'Centro Estudios', name: 'centroestudios', width: 120, sorttype: 'text'},
-                        {label: 'Centro Sindicato', name: 'idsindicato', width: 120, sorttype: 'text'},
-                        {label: 'Tipo', name: 'codtipo', width: 120, sorttype: 'text'},
-                        {label: 'Pago Total', name: 'pago_total', width: 120, sorttype: 'text'},
-                        {label: 'Pago Neto', name: 'pago_neto', width: 120, sorttype: 'text'}
-                    ],
-                    loadonce: false,
-                    viewrecords: true,
-                    autowidth: true,
-                    shrinkToFit: false,
-                    height: 300,
-                    rowNum: 50,
-                    rowList: [50, 75, 100,150, 200,250],
-                    scrollPopUp: true,
-                    scrollLeftOffset: "53%",
-                    rownumbers: true,
-                    rownumWidth: 25,
-                    multiselect: true,
-                    defaults: {
-                        emptyrecords: "No se encontraron registros",
-                        loadtext: "Buscando..."
-                    },
-                    pager: "#grid_resultados_procesados_pager"
-                });
-                $('#grid_resultados_procesados').navGrid('#grid_resultados_procesados_pager',
-                    { edit: false, add: false, del: false, search: true, refresh: true, view: true, position: "left", cloneToTop: false });
-                $('#grid_resultados_procesados').jqGrid()
-                    .setGridParam({
-                        data: datos,
-                        datatype: "local",
-                    })
-                    .trigger("reloadGrid");
-            },
-            error: function() {
-                alert("Ocurrio un error no contemplado en el plugin, por favor envie un mensaje en el foro de soporte de FacturaScripts para verificar el problema, gracias.");
-            }
-        });
-      });
    });
 </script>
 
@@ -133,9 +49,6 @@
                {/if}
             {/loop}
          </div>
-         <a href="index.php?page=importar_agentes" class="btn btn-sm btn-info">
-            <span class="fa fa-upload" aria-hidden="true"></span> Cargar Empleados
-         </a>
          <a class="btn btn-sm btn-default" onclick="window.print();">
             <span class="glyphicon glyphicon-print" aria-hidden="true"></span>
          </a>
@@ -268,5 +181,5 @@
       </div>
    </div>
 </form>
-
+{include="contenido/nuevo_empleado"}
 {include="footer"}

@@ -18,6 +18,7 @@
  */
 
 require_model('agente.php');
+require_once 'helper_nomina.php';
 require_once('plugins/nomina/extras/PHPExcel/PHPExcel/IOFactory.php');
 
 class admin_agentes extends fs_controller
@@ -25,7 +26,12 @@ class admin_agentes extends fs_controller
    public $agente;
    public $archivo;
    public $resultado;
-
+   public $almacen;
+   public $foto_empleado;
+   public $noimagen = "plugins/nomina/view/imagenes/no_foto.jpg";
+   private $upload_photo;
+   private $dir_empleados = "tmp/{FS_TMP_NAME}/nomina/empleados/";
+   
    public function __construct()
    {
       parent::__construct(__CLASS__, 'Empleados', 'admin', TRUE, TRUE);
@@ -35,7 +41,26 @@ class admin_agentes extends fs_controller
    {
       $this->share_extensions();
       $this->agente = new agente();
-
+      $this->almacen = new almacen();
+      
+      if( isset($_GET['type']) ){
+          $type = filter_input(INPUT_GET, 'type');
+          switch ($type){
+              case "organizacion";
+                $this->template = false;
+                $helper = new helper_nomina();
+                $helper->buscar_organizacion();
+                break;
+              case "nuevo":
+                  $this->agente = new agente();
+                  $this->template = 'contenido/nuevo_agente';
+                  break;
+              default:
+                break;
+          }
+      }
+      
+      
       if( isset($_POST['sdnicif']) )
       {
          $age0 = new agente();

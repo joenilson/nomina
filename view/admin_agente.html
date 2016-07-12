@@ -10,6 +10,8 @@
 </style>
 <script type="text/javascript" src="{$fsc->get_js_location('provincias.js')}"></script>
 <script type="text/javascript">
+    url_organizacion = '{$fsc->url()}';
+    /*
     function llenar_organizacion(obj,padre,destino){
         if(padre !== undefined){
             var data = "";
@@ -42,10 +44,11 @@
             }
         }
     }
+    */
     $(document).ready(function () {
         $("#b_delete_agente").click(function (event) {
             event.preventDefault();
-            if( confirm("¿Realmente desea eliminar el agente?") )
+            if(confirm("¿Realmente desea eliminar el agente?"))
             {
                 window.location.href = '{$fsc->ppage->url()}&delete={$fsc->agente->codagente}';
             }
@@ -103,58 +106,6 @@
                   <a href="#ext_{$key}" aria-controls="ext_{$key}" role="tab" data-toggle="tab">
                      {$value->text}
                   </a>
-               </li>
-               {/if}
-            {/loop}
-         </ul>
-         <!-- Panel para nomina !-->
-         <ul class="nav nav-pills nav-stacked" role="tablist">
-             <li role="presentation" class="active">
-                <a id="b_nomina" href="{$fsc->url()}" class="list-group-item active">
-                   <span class="glyphicon glyphicon-file"></span> &nbsp; Datos nómina
-                </a>
-             </li>
-             <li role="presentation">
-                <a id="b_movimientos" href="{$fsc->url()}">
-                   <span class="fa fa-code-fork"></span> &nbsp; Movimientos
-                </a>
-             </li>
-             <li role="presentation">
-                <a id="b_movimientos" href="{$fsc->url()}">
-                    <span class="fa fa-archive"></span> &nbsp; Contratos
-                </a>
-             </li>
-             <li role="presentation">
-                <a id="b_movimientos" href="{$fsc->url()}">
-                   <span class="fa fa-calendar-minus-o"></span> &nbsp; Ausencias
-                </a>
-             </li>
-             <li role="presentation">
-                <a id="b_dependientes" href="{$fsc->url()}">
-                   <span class="fa fa-group"></span> &nbsp; Carga Familiar
-                </a>
-             </li>
-             <li role="presentation">
-                <a id="b_resumen" href="{$fsc->url()}">
-                   <span class="fa fa-suitcase"></span> &nbsp; Hoja de Vida
-                </a>
-             </li>
-             <li role="presentation">
-                <a id="b_sueldo" href="{$fsc->url()}">
-                   <span class="fa fa-money"></span> &nbsp; Pago e Incentivos
-                </a>
-             </li>
-             <li role="presentation">
-                <a id="b_asistencia" href="{$fsc->url()}">
-                   <span class="fa fa-clock-o"></span> &nbsp; Control de Horas
-                </a>
-             </li>
-            {loop="$fsc->extensions"}
-               {if="$value->type=='button_nomina'"}
-               <li role="presentation">
-                   <a id="b_{$value->from}" href="index.php?page={$value->from}{$value->params}&codagente={$fsc->agente->codagente}" class="list-group-item">
-                      {$value->text}
-                   </a>
                </li>
                {/if}
             {/loop}
@@ -543,6 +494,7 @@
 </div>
 {include="contenido/nuevo_empleado"}
 <script type="text/javascript">
+/*
 $(".image-input input:file").change(function (){
     var img = $('#imagen-empleado');
     var file = this.files[0];
@@ -552,6 +504,7 @@ $(".image-input input:file").change(function (){
     };
     reader.readAsDataURL(file);
 });
+*/
 </script>
 {else}
 <div class="thumbnail">

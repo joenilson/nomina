@@ -27,6 +27,7 @@ require_model('categoriaempleado.php');
 require_model('sindicalizacion.php');
 require_model('formacion.php');
 require_model('organizacion.php');
+require_once 'helper_nomina.php';
 require_once 'plugins/nomina/extras/verot/class.upload.php';
 
 class admin_agente extends fs_controller
@@ -72,7 +73,7 @@ class admin_agente extends fs_controller
       $this->sindicalizacion = new sindicalizacion();
       $this->organizacion = new organizacion();
       $this->seguridadsocial = new seguridadsocial();
-
+      
       $this->agente = FALSE;
       if( isset($_GET['cod']) )
       {
@@ -84,8 +85,35 @@ class admin_agente extends fs_controller
           $type = filter_input(INPUT_GET, 'type');
           switch ($type){
               case "organizacion";
-                $this->buscar_organizacion();
+                $this->template = false;
+                $helper = new helper_nomina();
+                $helper->buscar_organizacion();
                 break;
+              case "nuevo":
+                  $this->agente = new agente();
+                  $this->template = 'contenido/nuevo_agente';
+                  break;
+              case "movimientos":
+                  $this->template = 'contenido/movimientos';
+                  break;
+              case "contratos":
+                  $this->template = 'contenido/contratos';
+                  break;
+              case "control_horas":
+                  $this->template = 'contenido/control_horas';
+                  break;
+              case "ausencias":
+                  $this->template = 'contenido/ausencias';
+                  break;
+              case "carga_familiar":
+                  $this->template = 'contenido/carga_familiar';
+                  break;
+              case "pagos_incentivos":
+                  $this->template = 'contenido/pagos_incentivos';
+                  break;
+              case "hoja_vida":
+                  $this->template = 'contenido/hoja_vida';
+                  break;
               default:
                 break;
           }
@@ -201,21 +229,6 @@ class admin_agente extends fs_controller
       }else{
          $this->new_error_msg('error : ' . $$this->upload_photo->error);
       }
-   }
-
-   public function buscar_organizacion(){
-        $tipo = false;
-        if(isset($_GET['codgerencia'])){
-            $codigo = filter_input(INPUT_GET, 'codgerencia');
-            $tipo = 'AREA';
-        }elseif(isset($_GET['codarea'])){
-            $codigo = filter_input(INPUT_GET, 'codarea');
-            $tipo = 'DEPARTAMENTO';
-        }
-        $resultado = ($tipo) ? $this->organizacion->get_by_padre($tipo, $codigo):false;
-        $this->template = FALSE;
-        header('Content-Type: application/json');
-        echo json_encode($resultado);
    }
 
    public function url()

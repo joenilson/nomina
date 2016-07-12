@@ -40,6 +40,7 @@ class configuracion_nomina extends fs_controller{
     }
 
     protected function private_core() {
+        $this->share_extensions();
         $this->agente = new agente();
         $this->cargo = new cargos();
         $this->tipoempleado = new tipoempleado();
@@ -101,6 +102,114 @@ class configuracion_nomina extends fs_controller{
             if(is_null($agente->codcargo) AND ($c0)){
                 $agente->codcargo = $c0->codcargo;
                 $agente->corregir();
+            }
+        }
+    }
+    
+    public function share_extensions(){
+        $extensiones = array(
+            array(
+                'name' => 'cargar_empleados_button',
+                'page_from' => 'importar_agentes',
+                'page_to' => 'admin_agentes',
+                'type' => 'button',
+                'text' => '<span class="fa fa-upload" aria-hidden="true"></span> &nbsp; Cargar Empleados',
+                'params' => ''
+            ),
+            array(
+                'name' => 'nuevo_agente_js',
+                'page_from' => __CLASS__,
+                'page_to' => 'admin_agente',
+                'type' => 'head',
+                'text' => '<script src="plugins/nomina/view/js/nomina.js" type="text/javascript"></script>',
+                'params' => ''
+            ),
+            array(
+                'name' => 'nuevo_agente_css',
+                'page_from' => __CLASS__,
+                'page_to' => 'admin_agente',
+                'type' => 'head',
+                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="plugins/nomina/view/css/nomina.css"/>',
+                'params' => ''
+            ),
+            array(
+                'name' => 'nuevo_empleado_js',
+                'page_from' => __CLASS__,
+                'page_to' => 'admin_agentes',
+                'type' => 'head',
+                'text' => '<script src="plugins/nomina/view/js/nomina.js" type="text/javascript"></script>',
+                'params' => ''
+            ),
+            array(
+                'name' => 'nuevo_empleado_css',
+                'page_from' => __CLASS__,
+                'page_to' => 'admin_agentes',
+                'type' => 'head',
+                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="plugins/nomina/view/css/nomina.css"/>',
+                'params' => ''
+            ),
+            array(
+                'name' => 'movimientos_empleado',
+                'page_from' => 'admin_agente',
+                'page_to' => 'admin_agente',
+                'type' => 'tab',
+                'text' => '<span class="fa fa-code-fork" aria-hidden="true"></span> &nbsp; Movimientos',
+                'params' => '&type=movimientos'
+            ),
+            array(
+                'name' => 'contratos_empleado',
+                'page_from' => 'admin_agente',
+                'page_to' => 'admin_agente',
+                'type' => 'tab',
+                'text' => '<span class="fa fa-archive" aria-hidden="true"></span> &nbsp; Contratos',
+                'params' => '&type=contratos'
+            ),
+            array(
+                'name' => 'ausencias_empleado',
+                'page_from' => 'admin_agente',
+                'page_to' => 'admin_agente',
+                'type' => 'tab',
+                'text' => '<span class="fa fa-calendar-minus-o" aria-hidden="true"></span> &nbsp; Ausencias',
+                'params' => '&type=ausencias'
+            ),
+            array(
+                'name' => 'carga_familiar_empleado',
+                'page_from' => 'admin_agente',
+                'page_to' => 'admin_agente',
+                'type' => 'tab',
+                'text' => '<span class="fa fa-group" aria-hidden="true"></span> &nbsp; Carga Familiar',
+                'params' => '&type=carga_familiar'
+            ),
+            array(
+                'name' => 'hoja_vida_empleado',
+                'page_from' => 'admin_agente',
+                'page_to' => 'admin_agente',
+                'type' => 'tab',
+                'text' => '<span class="fa fa-suitcase" aria-hidden="true"></span> &nbsp; Hoja de Vida',
+                'params' => '&type=hoja_vida'
+            ),
+            array(
+                'name' => 'pagos_incentivos_empleado',
+                'page_from' => 'admin_agente',
+                'page_to' => 'admin_agente',
+                'type' => 'tab',
+                'text' => '<span class="fa fa-money" aria-hidden="true"></span> &nbsp; Pagos e Incentivos',
+                'params' => '&type=pagos_incentivos'
+            ),
+            array(
+                'name' => 'control_horas_empleado',
+                'page_from' => 'admin_agente',
+                'page_to' => 'admin_agente',
+                'type' => 'tab',
+                'text' => '<span class="fa fa-clock-o" aria-hidden="true"></span> &nbsp; Control de Horas',
+                'params' => '&type=control_horas'
+            )
+        );
+        
+        foreach ($extensiones as $ext) {
+            $fsext0 = new fs_extension($ext);
+            if (!$fsext0->save()) {
+                $this->new_error_msg('Imposible guardar los datos de la extensión ' . $ext['name'] . '.');
             }
         }
     }
