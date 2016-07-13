@@ -1,12 +1,5 @@
 {include="header"}
-
-<script src="{$fsc->get_js_location('plugins/jquery.jqGrid.min.js')}" type="text/javascript"></script>
-<script src="{$fsc->get_js_location('locale/grid.locale-es.js')}" type="text/javascript"></script>
-<script src="{$fsc->get_js_location('plugins/jquery.tablecheckbox.min.js')}" type="text/javascript"></script>
-<script src="{$fsc->get_js_location('bootbox.min.js')}" type="text/javascript"></script>
 <script type="text/javascript">
-   $.jgrid.defaults.responsive = true;
-   $.jgrid.defaults.styleUI = 'Bootstrap';
    $(document).ready(function() {
       if(window.location.hash.substring(1) == 'nuevo')
       {
@@ -142,40 +135,6 @@
                <button class="btn btn-sm btn-primary" type="submit">
                   <span class="glyphicon glyphicon-floppy-disk"></span>&nbsp; Guardar
                </button>
-            </div>
-         </div>
-      </div>
-   </div>
-</form>
-
-<form class="form-horizontal" role="form" name="f_importar_empleados" enctype="multipart/form-data" action="{$fsc->url()}" method="post">
-   <div class="modal" id="modal_importar_empleados">
-      <div class="modal-dialog modal-lg">
-         <div class="modal-content">
-            <div class="modal-header">
-               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-               <h4 class="modal-title">
-                  <span class="glyphicon glyphicon-user"></span>
-                  &nbsp; Importar empleados
-               </h4>
-            </div>
-            <div class="modal-body">
-               <div class="row">
-
-                  <div class="col-sm-6 form-group">
-                     <label for="empleados" class="control-label">Cargue un archivo</label>
-                     <input id="empleados" type="file" name="empleados" accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required=""/>
-                  </div>
-                  <div class="col-sm-4">
-                     <button class="btn btn-sm btn-primary" type="button" id="b_importar">
-                        <span class="fa fa-upload"></span> &nbsp; Importar
-                     </button>
-                  </div>
-               </div>
-               <table id="grid_resultados_procesados">
-               </table>
-               <div id="grid_resultados_procesados_pager">
-               </div>
             </div>
          </div>
       </div>

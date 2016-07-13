@@ -1,51 +1,10 @@
 {include="header"}
 
 {if="$fsc->agente"}
-<style>
-.nav-pills li {
-  color: #ffffff;
-  font-family: 'Oswald', sans-serif;
-  font-size: 0.8em;
-}
-</style>
 <script type="text/javascript" src="{$fsc->get_js_location('provincias.js')}"></script>
 <script type="text/javascript">
-    url_organizacion = '{$fsc->url()}';
-    /*
-    function llenar_organizacion(obj,padre,destino){
-        if(padre !== undefined){
-            var data = "";
-            var iddestino = '#'+destino;
-            $.ajax({
-                type: 'GET',
-                url : '{$fsc->url()}&type=organizacion',
-                data : padre+'='+obj.value,
-                async: false,
-                success : function(response) {
-                    if(response.length !== 0){
-                        data = response;
-                    }else{
-                       alert('¡No hay una estructura asignada para este padre!');
-                    }
-                },
-                error: function(response) {
-                    alert(response);
-                }
-            });
-            var select = $(iddestino);
-            select.empty();
-            if(data.length !== 0){
-                select.append(
-                    $('<option></option>').val('').html('--------------')
-                );
-                $.each(data, function() {
-                    select.append('<option value=' + this['codorganizacion'] + '>' + this['descripcion'] + '</option>');
-                });
-            }
-        }
-    }
-    */
-    $(document).ready(function () {
+    url_organizacion = '{$fsc->url()}&type=organizacion';
+     $(document).ready(function () {
         $("#b_delete_agente").click(function (event) {
             event.preventDefault();
             if(confirm("¿Realmente desea eliminar el agente?"))
@@ -493,19 +452,6 @@
    </div>
 </div>
 {include="contenido/nuevo_empleado"}
-<script type="text/javascript">
-/*
-$(".image-input input:file").change(function (){
-    var img = $('#imagen-empleado');
-    var file = this.files[0];
-    var reader = new FileReader();
-    reader.onload = function (e) {
-        img.attr('src', e.target.result);
-    };
-    reader.readAsDataURL(file);
-});
-*/
-</script>
 {else}
 <div class="thumbnail">
    <img src="{#FS_PATH#}view/img/fuuu_face.png" alt="fuuuuu"/>
