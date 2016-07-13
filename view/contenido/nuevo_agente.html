@@ -40,7 +40,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     </div>
     <div class="row">
         <div class="col-sm-12 col-lg-12">
-            <form class="form" role="form" enctype="multipart/form-data" action="{$fsc->url()}" method="post">
+            <form class="form" role="form" enctype="multipart/form-data" action="index.php?page=admin_agentes" method="post">
+                <input type="hidden" name="nuevo" value="1">
                 <div class='panel panel-primary' id='panel_generales'>
                     <div class="panel-heading">
                         <h3 class="panel-title">
@@ -109,7 +110,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <select name="estado_civil" required class="form-control input-sm">
                                         <option value="">--------</option>
                                         {loop="$fsc->agente->estado_civil_agente()"}
-                                        <option value="{$key}"></option>
+                                        <option value="{$key}">{$value}</option>
                                         {/loop}
                                     </select>
                                 </div>

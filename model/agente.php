@@ -542,6 +542,7 @@ class agente extends fs_model
                porcomision,pago_total,pago_neto,fecha_creacion,usuario_creacion)
                VALUES (".$this->var2str($this->codalmacen).
                     ",".$this->intval($this->idempresa).
+                    ",".$this->var2str($this->codagente).
                     ",".$this->var2str($this->nombre).
                     ",".$this->var2str($this->apellidos).
                     ",".$this->var2str($this->segundo_apellido).

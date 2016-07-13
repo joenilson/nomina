@@ -20,7 +20,7 @@
 require_model('agente.php');
 require_once 'helper_nomina.php';
 require_once('plugins/nomina/extras/PHPExcel/PHPExcel/IOFactory.php');
-
+require_once 'plugins/nomina/extras/verot/class.upload.php';
 class admin_agentes extends fs_controller
 {
    public $agente;
@@ -59,19 +59,50 @@ class admin_agentes extends fs_controller
                 break;
           }
       }
-      
-      
-      if( isset($_POST['sdnicif']) )
+
+      if( isset($_POST['nuevo']) AND $_POST['nuevo'] == 1 )
       {
          $age0 = new agente();
+         $age0->codalmacen = $_POST['codalmacen'];
+         $age0->idempresa = $this->empresa->id;
          $age0->codagente = $age0->get_new_codigo();
-         $age0->nombre = $_POST['snombre'];
-         $age0->apellidos = $_POST['sapellidos'];
-         $age0->dnicif = $_POST['sdnicif'];
-         $age0->telefono = $_POST['stelefono'];
-         $age0->email = $_POST['semail'];
+         $age0->nombre = $_POST['nombre'];
+        $age0->apellidos = $_POST['apellidos'];
+        $age0->segundo_apellido = $_POST['segundo_apellido'];
+        $age0->dnicif = $_POST['dnicif'];
+        $age0->telefono = $_POST['telefono'];
+        $age0->email = $_POST['email'];
+        $age0->provincia = $_POST['provincia'];
+        $age0->ciudad = $_POST['ciudad'];
+        $age0->direccion = $_POST['direccion'];
+        $age0->sexo = $_POST['sexo'];
+        $age0->f_nacimiento = $_POST['f_nacimiento'];
+        $age0->f_alta = $_POST['f_alta'];
+        $age0->f_baja = (!empty($_POST['f_baja']))?$_POST['f_baja']:NULL;
+        $age0->codcategoria = $_POST['codcategoria'];
+        $age0->codtipo = $_POST['codtipo'];
+        $age0->codsupervisor = $_POST['codsupervisor'];
+        $age0->codgerencia = $_POST['codgerencia'];
+        $age0->codcargo = $_POST['codcargo'];
+        $age0->coddepartamento = $_POST['coddepartamento'];
+        $age0->codformacion = $_POST['codformacion'];
+        $age0->codseguridadsocial = $_POST['codseguridadsocial'];
+        $age0->seg_social = $_POST['seg_social'];
+        $age0->codbanco = $_POST['codbanco'];
+        $age0->cuenta_banco = $_POST['cuenta_banco'];
+        $age0->porcomision = floatval($_POST['porcomision']);
+        $age0->dependientes = $_POST['dependientes'];
+        $age0->idsindicato = $_POST['idsindicalizado'];
+        $age0->estado = $_POST['estado'];
+        $age0->estado_civil = $_POST['estado_civil'];
+        $age0->fecha_creacion = date('d-m-y H:m:s');
+        $age0->usuario_creacion = $this->user->nick;
          if( $age0->save() )
          {
+            $this->upload_photo = new Upload($_FILES['foto']);
+            if ($this->upload_photo->uploaded) {
+                $this->guardar_foto();
+            }
             $this->new_message("Empleado ".$age0->codagente." guardado correctamente.");
             header('location: '.$age0->url());
          }
@@ -137,6 +168,31 @@ class admin_agentes extends fs_controller
         $this->template = false;
         header('Content-Type: application/json');
         echo json_encode($this->resultado);
+   }
+   
+   //Para guardar la foto hacemos uso de la libreria de class.upload.php que esta en extras/verot/
+   //Con esta libreria estandarizamos todas las imagenes en PNG y les hacemos un resize a 120px
+   public function guardar_foto(){
+      $this->foto_empleado = $this->agente->get_foto();
+      if(file_exists($this->foto_empleado)){
+         unlink($this->foto_empleado);
+      }
+      $newname = str_pad($this->agente->codagente,6,0,STR_PAD_LEFT);
+
+      // Grabar la imagen con un nuevo nombre y con un resize de 120px
+      $this->upload_photo->file_new_name_body = $newname;
+      $this->upload_photo->image_resize = true;
+      $this->upload_photo->image_convert = 'png';
+      $this->upload_photo->image_x = 120;
+      $this->upload_photo->file_overwrite = true;
+      $this->upload_photo->image_ratio_y = true;
+      $this->upload_photo->Process($this->dir_empleados);
+      if ($this->upload_photo->processed) {
+         $this->upload_photo->clean();
+         $this->agente->set_foto($newname.".png");
+      }else{
+         $this->new_error_msg('error : ' . $$this->upload_photo->error);
+      }
    }
 
    private function share_extensions(){
