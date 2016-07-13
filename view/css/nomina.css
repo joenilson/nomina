@@ -14,13 +14,16 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-/* 
+/*
     Created on : 12-jul-2016, 12:40:42
     Author     : Joe Nilson <joenilson at gmail.com>
 */
 .nav-pills li {
-  color: #ffffff;
-  font-family: 'Oswald', sans-serif;
-  font-size: 0.8em;
+    color: #ffffff;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.8em;
+}
+.ui-jqgrid-disablePointerEvents {
+    pointer-events: none;
 }
 

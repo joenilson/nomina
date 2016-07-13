@@ -50,25 +50,30 @@ class importar_agentes extends fs_controller
             ,'telefono','f_alta','f_baja','gerencia','area','departamento','cargo','categoria'
             ,'codseguridadsocial','seg_social','dependientes','codformacion','carrera'
             ,'centroestudios','idsindicato','codtipo','pago_total','pago_neto');
+        $l = 0;
         foreach ($objPHPExcel->getWorksheetIterator() as $worksheet) {
             $worksheetTitle     = $worksheet->getTitle();
             $highestRow         = $worksheet->getHighestRow(); // e.g. 10
             $highestColumn      = $worksheet->getHighestColumn(); // e.g 'F'
             $highestColumnIndex = PHPExcel_Cell::columnIndexFromString($highestColumn);
             $nrColumns = ord($highestColumn) - 64;
-            for ($row = 1; $row <= $highestRow; ++ $row) {
-                $celda = ($row==1)?'th':'td';
+
+            for ($row = 1; $row <= $highestRow; ++$row) {
+
                 if($row!=1){
                     for ($col = 0; $col < count($arrayCabeceras); ++$col) {
                         $cell = $worksheet->getCellByColumnAndRow($col, $row);
                         $val = $cell->getValue();
                         if(PHPExcel_Shared_Date::isDateTime($cell)) {
-                            $val = date('d-m-Y', PHPExcel_Shared_Date::ExcelToPHP($val));
+                            $val = (is_null($val))?'':date('d-m-Y', PHPExcel_Shared_Date::ExcelToPHP($val));
                         }
                         $linea[$arrayCabeceras[$col]]=$val;
+
                     }
+                    $linea['id']=$l;
                     $this->resultado[]=$linea;
                 }
+                $l++;
             }
         }
         $this->template = false;

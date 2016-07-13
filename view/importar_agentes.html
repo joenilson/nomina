@@ -8,86 +8,123 @@
     $.jgrid.defaults.responsive = true;
     $.jgrid.defaults.styleUI = 'Bootstrap';
     $(document).ready(function() {
-    $("#b_importar").click(function(event) {
-        event.preventDefault();
-        //console.log($('form[name=f_importar_empleados]'));
-        var formData = new FormData();
-        formData.append('importar', true);
-        formData.append('empleados', $('#empleados')[0].files[0]);
-        $.ajax({
-            type: 'POST',
+        $("#b_importar").click(function(event) {
+            event.preventDefault();
+            var formData = new FormData();
+            formData.append('importar', true);
+            formData.append('empleados', $('#empleados')[0].files[0]);
+            $("#grid_resultados_procesados").jqGrid('clearGridData');
+            $("#grid_resultados_procesados")[0].grid.beginReq();
+            $.ajax({
+                type: 'POST',
                 url: '{$fsc->url()}',
                 processData: false,
                 contentType: false,
                 data: formData,
                 enctype: 'multipart/form-data',
                 success : function(datos) {
-                $("#grid_resultados_procesados").jqGrid('clearGridData');
-                $("#grid_resultados_procesados").jqGrid({
-                    data: datos,
-                    datatype: "local",
-                    colModel: [
-                        {label: 'Sede', name: 'sede', width: 100},
-                        {label: 'Empresa', name: 'empresa', width: 120},
-                        {label: '{#FS_CIFNIF#}', name: 'cifnif', width: 90, key: true},
-                        {label: 'Apellido Paterno', name: 'apellidos', width: 120},
-                        {label: 'Apellido Materno', name: 'segundo_apellido', width: 120},
-                        {label: 'Nombres', name: 'nombre', width: 120},
-                        {label: 'Sexo', name: 'sexo', width: 90},
-                        {label: 'Estado Civil', name: 'estado_civil', width: 75},
-                        {label: 'Fec Nac', name: 'f_nacimiento', width: 75, sorttype: 'date'},
-                        {label: 'Direccion', name: 'direccion', width: 240},
-                        {label: 'Telefono', name: 'telefono', width: 90},
-                        {label: 'Fec Ingreso', name: 'f_alta', width: 75, sorttype: 'date'},
-                        {label: 'Fec Cese', name: 'f_baja', width: 75, sorttype: 'date'},
-                        //{label: 'Gerencia', name: 'gerencia', width: 120, sorttype: 'text'},
-                        //{label: 'Area', name: 'area', width: 120, sorttype: 'text'},
-                        //{label: 'Departamento', name: 'departamento', width: 120, sorttype: 'text'},
-                        {label: 'Cargo', name: 'cargo', width: 140, sorttype: 'text'},
-                        {label: 'Categoria', name: 'categoria', width: 140, sorttype: 'text'},
-                        {label: 'Seg Social', name: 'codseguridadsocial', width: 75, sorttype: 'text'},
-                        {label: 'Nro SegSoc', name: 'seg_social', width: 120, sorttype: 'text'},
-                        //{label: 'Dependientes', name: 'dependientes', width: 120, sorttype: 'text'},
-                        //{label: 'Formacion', name: 'codformacion', width: 120, sorttype: 'text'},
-                        //{label: 'Carrera', name: 'carrera', width: 120, sorttype: 'text'},
-                        //{label: 'Centro Estudios', name: 'centroestudios', width: 120, sorttype: 'text'},
-                        //{label: 'Centro Sindicato', name: 'idsindicato', width: 120, sorttype: 'text'},
-                        //{label: 'Tipo', name: 'codtipo', width: 120, sorttype: 'text'},
-                        {label: 'Pago Total', name: 'pago_total', width: 75, sorttype: 'text'},
-                        {label: 'Pago Neto', name: 'pago_neto', width: 75, sorttype: 'text'}
-                    ],
-                    loadonce: false,
-                    viewrecords: true,
-                    autowidth: true,
-                    shrinkToFit: false,
-                    height: 300,
-                    rowNum: 50,
-                    rowList: [50, 75, 100, 150, 200, 250],
-                    scrollPopUp: true,
-                    scrollLeftOffset: "5%",
-                    rownumbers: true,
-                    rownumWidth: 30,
-                    multiselect: true,
-                    defaults: {
-                        emptyrecords: "No se encontraron registros",
-                        loadtext: "Importando..."
-                    },
-                    pager: "#grid_resultados_procesados_pager"
-                });
-                $('#grid_resultados_procesados').navGrid('#grid_resultados_procesados_pager',
-                { edit: false, add: false, del: false, search: true, refresh: true, view: true, position: "left", cloneToTop: true });
-                $('#grid_resultados_procesados').jqGrid()
+                    $('#grid_resultados_procesados').jqGrid()
                     .setGridParam({
                     data: datos,
-                            datatype: "local",
-                    })
-                    .trigger("reloadGrid");
+                        datatype: "local",
+                    });
+                    $("#grid_resultados_procesados")[0].grid.endReq();
+                    $('#grid_resultados_procesados').jqGrid().trigger("reloadGrid");
                 },
                 error: function() {
                     alert("Ocurrio un error no contemplado en el plugin, por favor envie un mensaje en el foro de soporte de FacturaScripts para verificar el problema, gracias.");
                 }
             });
         });
+        $("#grid_resultados_procesados").jqGrid({
+            datatype: "local",
+            colModel: [
+                {label: 'Id', name: 'id', hidden: true, key: true},
+                {label: 'Sede', name: 'sede', width: 100},
+                {label: 'Empresa', name: 'empresa', width: 120},
+                {label: '{#FS_CIFNIF#}', name: 'cifnif', width: 90},
+                {label: 'Apellido Paterno', name: 'apellidos', width: 120},
+                {label: 'Apellido Materno', name: 'segundo_apellido', width: 120},
+                {label: 'Nombres', name: 'nombre', width: 120},
+                {label: 'Sexo', name: 'sexo', width: 90},
+                {label: 'Estado Civil', name: 'estado_civil', width: 75},
+                {label: 'Fec Nac', name: 'f_nacimiento', width: 75, sorttype: 'date'},
+                {label: 'Direccion', name: 'direccion', width: 240},
+                {label: 'Telefono', name: 'telefono', width: 90},
+                {label: 'Fec Ingreso', name: 'f_alta', width: 75, sorttype: 'date'},
+                {label: 'Fec Cese', name: 'f_baja', width: 75, sorttype: 'date'},
+                {label: 'Gerencia', name: 'gerencia', width: 120, sorttype: 'text'},
+                {label: 'Area', name: 'area', width: 120, sorttype: 'text'},
+                {label: 'Departamento', name: 'departamento', width: 120, sorttype: 'text'},
+                {label: 'Cargo', name: 'cargo', width: 140, sorttype: 'text'},
+                {label: 'Categoria', name: 'categoria', width: 140, sorttype: 'text'},
+                {label: 'Seg Social', name: 'codseguridadsocial', width: 75, sorttype: 'text'},
+                {label: 'Nro SegSoc', name: 'seg_social', width: 120, sorttype: 'text'},
+                {label: 'Dependientes', name: 'dependientes', width: 120, sorttype: 'text'},
+                {label: 'Formacion', name: 'codformacion', width: 120, sorttype: 'text'},
+                {label: 'Carrera', name: 'carrera', width: 120, sorttype: 'text'},
+                {label: 'Centro Estudios', name: 'centroestudios', width: 120, sorttype: 'text'},
+                {label: 'Centro Sindicato', name: 'idsindicato', width: 120, sorttype: 'text'},
+                {label: 'Tipo', name: 'codtipo', width: 120, sorttype: 'text'},
+                {label: 'Pago Total', name: 'pago_total', width: 75, sorttype: 'text'},
+                {label: 'Pago Neto', name: 'pago_neto', width: 75, sorttype: 'text'}
+            ],
+            loadonce: false,
+            viewrecords: true,
+            autowidth: true,
+            shrinkToFit: false,
+            height: 450,
+            rowNum: 50,
+            rowList: [50, 75, 100, 150, 200, 250],
+            scrollPopUp: true,
+            scrollLeftOffset: "5%",
+            rownumbers: true,
+            rownumWidth: 30,
+            multiselect: true,
+            defaults: {
+                emptyrecords: "No se encontraron registros",
+                loadtext: "Importando..."
+            },
+            pager: "#grid_resultados_procesados_pager",
+            loadComplete: function(data) {
+                for (var i = 0; i < data.rows.length; i++) {
+                    var rowData = data.rows[i];
+
+                    if (rowData.cifnif === null) {//update this to have your own check
+                        var checkbox = $("#jqg_grid_resultados_procesados_" + rowData.id);//update this with your own grid name
+                        checkbox.css("visibility", "hidden");
+                        checkbox.attr("disabled", true);
+                    }
+                }
+            },
+            beforeSelectRow: function(rowid, e) {
+                var cbsdis = $("tr#" + rowid + ".jqgrow > td > input.cbox:disabled", this);
+                if (e.length === 0) {
+                    return true;    // allow select the row
+                } else {
+                    return false;   // not allow select the row
+                }
+            },
+            onSelectAll: function(aRowids, status) {
+                if (status) {
+                    // uncheck "protected" rows
+                    var cbs = $("tr.jqgrow > td > input.cbox:disabled", this);
+                    cbs.removeAttr("checked");
+
+                    //modify the selarrrow parameter
+                    this.p.selarrrow = $('#grid_resultados_procesados').find("tr.jqgrow:has(td > input.cbox:checked)")
+                        .map(function() { return this.cifnif; }) // convert to set of ids
+                        .get(); // convert to instance of Array
+
+                    //deselect disabled rows
+                    $('#grid_resultados_procesados').find("tr.jqgrow:has(td > input.cbox:disabled)")
+                        .attr('aria-selected', 'false')
+                        .removeClass('success');
+                }
+            }
+        });
+        $('#grid_resultados_procesados').navGrid('#grid_resultados_procesados_pager',
+        { edit: false, add: false, del: false, search: true, refresh: true, view: true, position: "left", cloneToTop: true });
     });
 </script>
 <div class="container-fluid hidden-print" style="margin-top: 10px;">
