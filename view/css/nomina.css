@@ -27,3 +27,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     pointer-events: none;
 }
 
+legend {
+    font-size: 1em;
+    font-family: 'Oswald', sans-serif;
+    font-weight: bold;
+}
+

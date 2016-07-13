@@ -49,9 +49,10 @@ class importar_agentes extends fs_controller
             'segundo_apellido','nombre','sexo','estado_civil','f_nacimiento','direccion'
             ,'telefono','f_alta','f_baja','gerencia','area','departamento','cargo','categoria'
             ,'codseguridadsocial','seg_social','dependientes','codformacion','carrera'
-            ,'centroestudios','idsindicato','codtipo','pago_total','pago_neto');
+            ,'centroestudios','idsindicato','codtipo','pago_total','pago_neto','email');
         $l = 0;
-        foreach ($objPHPExcel->getWorksheetIterator() as $worksheet) {
+        //foreach ($objPHPExcel->getWorksheetIterator() as $worksheet) {
+            $worksheet = $objPHPExcel->getSheet(0);
             $worksheetTitle     = $worksheet->getTitle();
             $highestRow         = $worksheet->getHighestRow(); // e.g. 10
             $highestColumn      = $worksheet->getHighestColumn(); // e.g 'F'
@@ -75,7 +76,7 @@ class importar_agentes extends fs_controller
                 }
                 $l++;
             }
-        }
+        //}
         $this->template = false;
         header('Content-Type: application/json');
         echo json_encode($this->resultado);

@@ -48,6 +48,9 @@ function llenar_organizacion(obj,padre,destino){
 }
 
 $(document).ready(function() {
+    if($('#modal_nuevo_agente').length === 1){
+        $('#modal_nuevo_agente').html('');
+    }
     $("#b_nuevo_agente").click(function(event) {
         event.preventDefault();
         window.location.href = 'index.php?page=admin_agente&type=nuevo';
