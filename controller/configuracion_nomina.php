@@ -107,6 +107,15 @@ class configuracion_nomina extends fs_controller{
     }
     
     public function share_extensions(){
+        $fsext1 = new fs_extension(array(
+            'name' => 'cargar_empleados_button',
+            'page_from' => __CLASS__,
+            'page_to' => 'admin_agentes',
+            'type' => 'button',
+            'text' => '<span class="fa fa-upload" aria-hidden="true"></span> &nbsp; Cargar Empleados',
+            'params' => ''
+        ));
+        $fsext1->delete();
         $extensiones = array(
             array(
                 'name' => 'cargar_empleados_button',
