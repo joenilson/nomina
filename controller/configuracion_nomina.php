@@ -212,7 +212,23 @@ class configuracion_nomina extends fs_controller{
                 'type' => 'tab',
                 'text' => '<span class="fa fa-clock-o" aria-hidden="true"></span> &nbsp; Control de Horas',
                 'params' => '&type=control_horas'
-            )
+            ),
+            array(
+                'name' => 'importar_agentes_js',
+                'page_from' => __CLASS__,
+                'page_to' => 'importar_agentes',
+                'type' => 'head',
+                'text' => '<script src="plugins/nomina/view/js/nomina.js" type="text/javascript"></script>',
+                'params' => ''
+            ),
+            array(
+                'name' => 'importar_agentes_css',
+                'page_from' => __CLASS__,
+                'page_to' => 'importar_agentes',
+                'type' => 'head',
+                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="plugins/nomina/view/css/nomina.css"/>',
+                'params' => ''
+            ),
         );
         
         foreach ($extensiones as $ext) {

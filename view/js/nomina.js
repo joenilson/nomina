@@ -47,6 +47,21 @@ function llenar_organizacion(obj,padre,destino){
     }
 }
 
+function getSelectedRows(gridid) {
+    var grid = $("#"+gridid);
+    var rowKey = grid.getGridParam("selrow");
+    if (!rowKey)
+        return 0;
+    else {
+        var selectedIDs = grid.getGridParam("selarrrow");
+        var result = [];
+        for (var i = 0; i < selectedIDs.length; i++) {
+            result.push(selectedIDs[i]);
+        }
+        return result;
+    }
+}
+
 $(document).ready(function() {
     if($('#modal_nuevo_agente').length === 1){
         $('#modal_nuevo_agente').html('');
@@ -55,6 +70,33 @@ $(document).ready(function() {
         event.preventDefault();
         window.location.href = 'index.php?page=admin_agente&type=nuevo';
     });
+    
+    $("#b_guardar_empleados").click(function(event) {
+        event.preventDefault();
+        var lista = getSelectedRows('grid_resultados_procesados');
+        for(var i = 0; i < 5; i++){
+            var dataFromTheRow = $('#grid_resultados_procesados').getRowData(lista[i]);
+            console.log(dataFromTheRow);
+            $.ajax({
+            type: 'POST',
+            url : url_import,
+            data : dataFromTheRow,
+            async: false,
+            success : function(response) {
+                if(response.length !== 0){
+                    data = response;
+                }else{
+                   console.log(response);
+                }
+            },
+            error: function(response) {
+                alert(response);
+            }
+        });
+        }
+        console.log(lista);
+    });
+    
     $(".image-input input:file").change(function (){
         var img = $('#imagen-empleado');
         var file = this.files[0];

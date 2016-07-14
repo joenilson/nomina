@@ -24,28 +24,33 @@
  */
 class seguridadsocial extends fs_model{
     /**
-     * El codigo a generar del Banco
-     * @var type $codseguridadsocial Banco
+     * El codigo a generar de Seguridad Social
+     * @var type $codseguridadsocial SeguridadSocial
      */
     public $codseguridadsocial;
 
     /**
-     * Se coloca el nombre del Banco
-     * @var type $nombre Banco
+     * Se coloca el nombre de la Seguridad Social
+     * @var type $nombre Seguridad Social
      */
     public $nombre;
 
     /**
-     * Aqui ponemos el tipo de Banco, puede ser
-     * 1 Banco
-     * 2 Cooperativa de Ahorro
-     * 3 Asoc. de Ahorro y Prestamo
-     * @var type $tipo Banco
+     * Se coloca la abreviatura de la Seguridad Social
+     * @var type $nombre_corto
+     */
+    public $nombre_corto;
+
+    /**
+     * Aqui ponemos el tipo de Seguridad Social, puede ser
+     * PRIVADO
+     * GOBIERNO
+     * @var type $tipo Seguridad Social
      */
     public $tipo;
 
     /**
-     * Si se va desactivar un banco se debe colocar aquí su estado
+     * Si se va desactivar un registro se debe colocar aquí su estado
      * @var type $estado Boolean
      */
     public $estado;
@@ -54,11 +59,13 @@ class seguridadsocial extends fs_model{
         if($t){
             $this->codseguridadsocial = $t['codseguridadsocial'];
             $this->nombre = $t['nombre'];
+            $this->nombre_corto = $t['nombre_corto'];
             $this->tipo = $t['tipo'];
             $this->estado = $this->str2bool($t['estado']);
         }else{
             $this->codseguridadsocial = NULL;
             $this->nombre = NULL;
+            $this->nombre_corto = NULL;
             $this->tipo = NULL;
             $this->estado = FALSE;
         }
@@ -66,9 +73,9 @@ class seguridadsocial extends fs_model{
 
     protected function install() {
         return "INSERT INTO ".$this->table_name.
-                " (codseguridadsocial, nombre, tipo, estado) VALUES".
-                " ('1','SEGURIDAD SOCIAL PUBLICA','GOBIERNO',TRUE),".
-                " ('2','SEGURO PRIVADO','PRIVADO',TRUE);";
+            " (codseguridadsocial, nombre, tipo, estado, nombre_corto) VALUES".
+            " ('1','SEGURIDAD SOCIAL PUBLICA','GOBIERNO',TRUE, '0'),".
+            " ('2','SEGURO PRIVADO','PRIVADO',TRUE, '0');";
     }
 
     public function url()
@@ -103,9 +110,10 @@ class seguridadsocial extends fs_model{
             $this->update();
         }else{
             //INSERT DATA
-            $sql = "INSERT INTO ".$this->table_name." (codseguridadsocial, nombre, tipo, estado) VALUES (".
+            $sql = "INSERT INTO ".$this->table_name." (codseguridadsocial, nombre, nombre_corto, tipo, estado) VALUES (".
                 $this->var2str($this->get_new_codigo()).", ".
                 $this->var2str($this->nombre).", ".
+                $this->var2str($this->nombre_corto).", ".
                 $this->var2str($this->tipo).", ".
                 $this->var2str($this->estado).");";
             return $this->db->exec($sql);
@@ -116,7 +124,8 @@ class seguridadsocial extends fs_model{
         $sql = "UPDATE ".$this->table_name." SET ".
             ", estado = ".$this->var2str($this->estado).
             ", tipo = ".$this->var2str($this->tipo).
-            ", nombre = ".$this->intval($this->nombre).
+            ", nombre = ".$this->var2str($this->nombre).
+            ", nombre = ".$this->var2str($this->nombre_corto).
             " WHERE codseguridadsocial = ".$this->var2str($this->codseguridadsocial).";";
         return $this->db->exec($sql);
     }
@@ -139,6 +148,15 @@ class seguridadsocial extends fs_model{
         }
     }
 
+    public function get_by_nombre_corto($nombre_corto){
+        $data = $this->db->select("SELECT * FROM ".$this->table_name." WHERE nombre_corto = ".$this->var2str($nombre_corto).";");
+        if($data){
+            return new seguridadsocial($data[0]);
+        }else{
+            return false;
+        }
+    }
+    
     public function get_by_tipo($tipo){
         $data = $this->db->select("SELECT * FROM ".$this->table_name." WHERE tipo = ".$this->var2str($tipo).";");
         if($data){

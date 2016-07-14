@@ -17,6 +17,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require_model('agente.php');
+require_model('almacen.php');
+require_model('cargos.php');
+require_model('bancos.php');
+require_model('seguridadsocial.php');
+require_model('tipoempleado.php');
+require_model('categoriaempleado.php');
+require_model('sindicalizacion.php');
+require_model('formacion.php');
+require_model('organizacion.php');
+require_once 'helper_nomina.php';
+require_once 'plugins/nomina/extras/verot/class.upload.php';
 require_once('plugins/nomina/extras/PHPExcel/PHPExcel/IOFactory.php');
 /**
  * Description of importar_agentes
@@ -26,8 +37,26 @@ require_once('plugins/nomina/extras/PHPExcel/PHPExcel/IOFactory.php');
 class importar_agentes extends fs_controller
 {
    public $agente;
+   public $cargos;
+   public $almacen;
+   public $bancos;
+   public $formacion;
+   public $tipoempleado;
+   public $categoriaempleado;
+   public $sindicalizacion;
+   public $organizacion;
+   public $seguridadsocial;
+   public $allow_delete;
+   public $foto_empleado;
+   public $noimagen = "plugins/nomina/view/imagenes/no_foto.jpg";
+   private $upload_photo;
    public $archivo;
    public $resultado;
+   public $arrayCabeceras = array('sede','empresa','dnicif','nombreap','apellidos',
+            'segundo_apellido','nombre','sexo','estado_civil','f_nacimiento','direccion'
+            ,'telefono','f_alta','f_baja','gerencia','area','departamento','cargo','categoria'
+            ,'codseguridadsocial','seg_social','dependientes','codformacion','carrera'
+            ,'centroestudios','idsindicato','codtipo','pago_total','pago_neto','email');
     public function __construct() {
         parent::__construct(__CLASS__, 'Importar Empleados', 'admin', 'false', FALSE, FALSE);
     }
@@ -35,21 +64,29 @@ class importar_agentes extends fs_controller
     protected function private_core() {
         $this->share_extensions();
         $this->agente = new agente();
+        $this->almacen = new almacen();
+        $this->bancos = new bancos();
+        $this->cargos = new cargos();
+        $this->formacion = new formacion();
+        $this->tipoempleado = new tipoempleado();
+        $this->categoriaempleado = new categoriaempleado();
+        $this->sindicalizacion = new sindicalizacion();
+        $this->organizacion = new organizacion();
+        $this->seguridadsocial = new seguridadsocial();
 
         if( isset($_POST['importar']) )
         {
             $this->archivo = $_FILES['empleados'];
             $this->importar_empleados();
         }
+        elseif(isset($_GET['guardar_empleados']))
+        {
+            $this->guardar_empleados();
+        }
     }
 
     private function importar_empleados(){
         $objPHPExcel = PHPExcel_IOFactory::load($this->archivo['tmp_name']);
-        $arrayCabeceras = array('sede','empresa','cifnif','nombreap','apellidos',
-            'segundo_apellido','nombre','sexo','estado_civil','f_nacimiento','direccion'
-            ,'telefono','f_alta','f_baja','gerencia','area','departamento','cargo','categoria'
-            ,'codseguridadsocial','seg_social','dependientes','codformacion','carrera'
-            ,'centroestudios','idsindicato','codtipo','pago_total','pago_neto','email');
         $l = 0;
         //foreach ($objPHPExcel->getWorksheetIterator() as $worksheet) {
             $worksheet = $objPHPExcel->getSheet(0);
@@ -62,13 +99,13 @@ class importar_agentes extends fs_controller
             for ($row = 1; $row <= $highestRow; ++$row) {
 
                 if($row!=1){
-                    for ($col = 0; $col < count($arrayCabeceras); ++$col) {
+                    for ($col = 0; $col < count($this->arrayCabeceras); ++$col) {
                         $cell = $worksheet->getCellByColumnAndRow($col, $row);
                         $val = $cell->getValue();
                         if(PHPExcel_Shared_Date::isDateTime($cell)) {
                             $val = (is_null($val))?'':date('d-m-Y', PHPExcel_Shared_Date::ExcelToPHP($val));
                         }
-                        $linea[$arrayCabeceras[$col]]=$val;
+                        $linea[$this->arrayCabeceras[$col]]=$val;
 
                     }
                     $linea['id']=$l;
@@ -80,6 +117,173 @@ class importar_agentes extends fs_controller
         $this->template = false;
         header('Content-Type: application/json');
         echo json_encode($this->resultado);
+   }
+   
+   public function guardar_empleados(){
+       $this->template = false;
+       $this->resultado = array();
+       $age0 = new agente();
+       if(isset($_POST['dnicif']) AND !empty($_POST['dnicif'])){
+           if(!$age0->get_by_dnicif($_POST['dnicif'])){
+               if($this->guardar_empleado()){
+                   $this->resultado['estado']='ingresado';
+                   $this->resultado['dnicif']=$_POST['dnicif'];
+               }else{
+                   $this->resultado['estado']='no_ingresado';
+                   $this->resultado['dnicif']=$_POST['dnicif'];
+               }
+           }else{
+               $this->resultado['estado']='existe';
+               $this->resultado['dnicif']=$_POST['dnicif'];
+           }
+       }
+       
+       header('Content-Type: application/json');
+       echo json_encode($this->resultado);
+   }
+   
+   public function guardar_empleado(){
+        if($_POST['sede'] != ''){
+            foreach($this->almacen->all() as $cod=>$val){
+                if($val->nombre == $this->mayusculas($_POST['sede'])){
+                    $sede = $val; 
+                }else{
+                    return false;
+                }
+            }
+        }
+        if($_POST['cargo'] != ''){
+            if($this->cargos->get_by_descripcion($_POST['codcargo'])){
+                $cargo = $this->cargos->get_by_descripcion(strtoupper($_POST['codcargo']));
+            }else{
+                $cargo->codcargo = NULL;
+                $cargo->descripcion = NULL;
+            }
+        }
+        
+        if($_POST['estado_civil'] != ''){
+            foreach($this->agente->estado_civil_agente() as $key=>$val){
+                if($val == $_POST['estado_civil']){
+                    $estado_civil = $key;
+                }
+            }
+        }
+        
+        if($_POST['codseguridadsocial'] != ''){
+            $codseguridadsocial = (strlen($_POST['codseguridadsocial'])<=4)?$this->seguridadsocial->get_by_nombre_corto($_POST['codseguridadsocial'])->codseguridadsocial:$this->seguridadsocial->get_by_nombre(strtoupper($_POST['codseguridadsocial']))->codseguridadsocial;
+        }
+        
+        if($_POST['codformacion'] != ''){
+            if(!$this->formacion->get_by_nombre($this->mayusculas($_POST['codformacion']))){
+                $codformacion = $this->formacion->get_by_nombre($this->mayusculas($_POST['codformacion']))->codformacion;
+            }else{
+                $codformacion = NULL;
+            }
+        }
+        
+        if($_POST['categoria'] != ''){
+            if(!$this->categoriaempleado->get_by_descripcion($this->mayusculas($_POST['categoria']))){
+                $codcategoria = $this->categoriaempleado->get_by_descripcion($this->mayusculas($_POST['categoria']))->codcategoria;
+            }else{
+                $codcategoria = NULL;
+            }
+        }
+        
+        if($_POST['codtipo'] != ''){
+            if(!$this->tipoempleado->get_by_descripcion($this->mayusculas($_POST['codtipo']))){
+                $codtipo = $this->tipoempleado->get_by_descripcion($this->mayusculas($_POST['codtipo']))->codtipo;
+            }else{
+                $codtipo = NULL;
+            }
+        }
+        
+        if($_POST['codgerencia'] != ''){
+            if(!$this->organizacion->get_by_descripcion_tipo($this->mayusculas($_POST['codgerencia']),'GERENCIA')){
+                $codgerencia = $this->organizacion->get_by_descripcion_tipo($this->mayusculas($_POST['codgerencia']),'GERENCIA')->codorganizacion;
+            }else{
+                $codgerencia = NULL;
+            }
+        }
+        
+        if($_POST['area'] != ''){
+            if(!$this->organizacion->get_by_descripcion_tipo($this->mayusculas($_POST['area']),'AREA')){
+                $codarea = $this->organizacion->get_by_descripcion_tipo($this->mayusculas($_POST['area']),'AREA')->codorganizacion;
+            }else{
+                $codarea = NULL;
+            }
+        }
+        
+        if($_POST['departamento'] != ''){
+            if(!$this->organizacion->get_by_descripcion_tipo($this->mayusculas($_POST['area']),'DEPARTAMENTO')){
+                $coddepartamento = $this->organizacion->get_by_descripcion_tipo($this->mayusculas($_POST['area']),'DEPARTAMENTO')->codorganizacion;
+            }else{
+                $coddepartamento = NULL;
+            }
+        }
+        
+        if($_POST['idsindicato'] != ''){
+            if(!$this->sindicalizacion->get_by_descripcion($this->mayusculas($_POST['idsindicato']))){
+                $idsindicato = $this->sindicalizacion->get_by_descripcion($this->mayusculas($_POST['idsindicato']))->idsindicato;
+            }else{
+                $idsindicato = NULL;
+            }
+        }
+        
+        
+        $age0 = new agente();
+        $age0->codalmacen = $sede;
+        $age0->idempresa = $this->empresa->id;
+        $age0->codagente = $age0->get_new_codigo();
+        $age0->nombre = $this->mayusculas($_POST['nombre']);
+        $age0->apellidos = $this->mayusculas($_POST['apellidos']);
+        $age0->segundo_apellido = $this->mayusculas($_POST['segundo_apellido']);
+        $age0->dnicif = $_POST['dnicif'];
+        $age0->telefono = $_POST['telefono'];
+        $age0->email = $this->minusculas($_POST['email']);
+        $age0->provincia = ($_POST['provincia'] != '')?$_POST['provincia']:$sede->provincia;
+        $age0->ciudad = ($_POST['ciudad'] != '')?$this->mayusculas($_POST['ciudad']):$sede->poblacion;
+        $age0->direccion = ($_POST['direccion'] != '')?$this->mayusculas($_POST['direccion']):$sede->direccion;
+        $age0->sexo = $this->mayusculas($_POST['sexo']);
+        $age0->f_nacimiento = $_POST['f_nacimiento'];
+        $age0->f_alta = (!empty($_POST['f_alta']))?$_POST['f_alta']:NULL;
+        $age0->f_baja = (!empty($_POST['f_baja']))?$_POST['f_baja']:NULL;
+        $age0->codcategoria = $codcategoria;
+        $age0->codtipo = $codtipo;
+        //$age0->codsupervisor = $_POST['codsupervisor'];
+        $age0->codgerencia = $codgerencia;
+        $age0->codcargo = $cargo->codcargo;
+        $age0->cargo = $cargo->descripcion;
+        $age0->coddepartamento = $coddepartamento;
+        $age0->codformacion = $codformacion;
+        $age0->carrera = $this->mayusculas($_POST['carrera']);
+        $age0->centroestudios = $this->mayusculas($_POST['centroestudios']);
+        $age0->codseguridadsocial = $codseguridadsocial;
+        $age0->seg_social = trim($_POST['seg_social']);
+        //$age0->codbanco = $_POST['codbanco'];
+        //$age0->cuenta_banco = $_POST['cuenta_banco'];
+        //$age0->porcomision = floatval($_POST['porcomision']);
+        $age0->dependientes = ($_POST['dependientes']!='')?$_POST['dependientes']:0;
+        $age0->idsindicato = $idsindicato;
+        $age0->estado = 'A';
+        $age0->estado_civil = $estado_civil;
+        $age0->fecha_creacion = date('d-m-y H:m:s');
+        $age0->usuario_creacion = $this->user->nick;
+         if( $age0->save() )
+         {
+             return true;
+         }
+         else
+         {
+            return false;
+         }
+   }
+   
+   private function mayusculas($string){
+       return strtoupper(trim(strip_tags(stripslashes($string))));
+   }
+   
+   private function minusculas($string){
+       return strtolower(trim(strip_tags(stripslashes($string))));
    }
 
     private function share_extensions(){

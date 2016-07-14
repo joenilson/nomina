@@ -184,6 +184,15 @@ class organizacion extends fs_model{
             return false;
         }
     }
+    
+    public function get_by_descripcion_tipo($descripcion,$tipo){
+        $data = $this->db->select("SELECT * FROM ".$this->table_name." WHERE descripcion = ".$this->var2str($descripcion)." AND tipo = ".$this->var2str($tipo).";");
+        if($data){
+            return new organizacion($data[0]);
+        }else{
+            return false;
+        }
+    }
 
     public function all(){
         $lista = array();

@@ -21,6 +21,12 @@
         <nulo>NO</nulo>
     </columna>
     <columna>
+        <nombre>nombre_corto</nombre>
+        <tipo>character varying(6)</tipo>
+        <nulo>NO</nulo>
+        <defecto>'0'::character varying</defecto>
+    </columna>
+    <columna>
         <nombre>tipo</nombre>
         <tipo>character varying(16)</tipo>
         <nulo>NO</nulo>
