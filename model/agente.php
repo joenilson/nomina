@@ -444,6 +444,17 @@ class agente extends fs_model
       else
          return FALSE;
    }
+   
+   public function get_by_dnicif($dnicif)
+   {
+      $a = $this->db->select("SELECT * FROM ".$this->table_name." WHERE dnicif = ".$this->var2str($dnicif).";");
+      if($a)
+      {
+         return new agente($a[0]);
+      }
+      else
+         return FALSE;
+   }
 
    public function exists()
    {
