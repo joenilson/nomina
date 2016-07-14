@@ -128,15 +128,18 @@ class admin_agente extends fs_controller
             //En la edición solo se permite campos no sensibles genéricos
             if( $this->user_can_edit() )
             {
-               $this->agente->nombre = $_POST['nombre'];
-               $this->agente->apellidos = $_POST['apellidos'];
-               $this->agente->segundo_apellido = $_POST['segundo_apellido'];
+               if($_POST['codcargo'] != ''){
+                  $cargo = $this->cargos->get($_POST['codcargo']);
+               }
+               $this->agente->nombre = $this->mayusculas($_POST['nombre']);
+               $this->agente->apellidos = $this->mayusculas($_POST['apellidos']);
+               $this->agente->segundo_apellido = $this->mayusculas($_POST['segundo_apellido']);
                $this->agente->dnicif = $_POST['dnicif'];
                $this->agente->telefono = $_POST['telefono'];
-               $this->agente->email = $_POST['email'];
+               $this->agente->email = $this->minusculas($_POST['email']);
                $this->agente->provincia = $_POST['provincia'];
-               $this->agente->ciudad = $_POST['ciudad'];
-               $this->agente->direccion = $_POST['direccion'];
+               $this->agente->ciudad = $this->mayusculas($_POST['ciudad']);
+               $this->agente->direccion = $this->mayusculas($_POST['direccion']);
                $this->agente->sexo = $_POST['sexo'];
 
                $this->agente->f_nacimiento = NULL;
@@ -162,9 +165,12 @@ class admin_agente extends fs_controller
                $this->agente->codsupervisor = $_POST['codsupervisor'];
                $this->agente->codgerencia = $_POST['codgerencia'];
                $this->agente->codcargo = $_POST['codcargo'];
+               $this->agente->cargo = $cargo->descripcion;
                $this->agente->codarea = $_POST['codarea'];
                $this->agente->coddepartamento = $_POST['coddepartamento'];
                $this->agente->codformacion = $_POST['codformacion'];
+               $this->agente->carrera = $this->mayusculas($_POST['carrera']);
+               $this->agente->centroestudios = $this->mayusculas($_POST['centroestudios']);
                $this->agente->codseguridadsocial = $_POST['codseguridadsocial'];
                $this->agente->seg_social = $_POST['seg_social'];
                $this->agente->codbanco = $_POST['codbanco'];
@@ -229,6 +235,14 @@ class admin_agente extends fs_controller
       }else{
          $this->new_error_msg('error : ' . $$this->upload_photo->error);
       }
+   }
+   
+    private function mayusculas($string){
+       return strtoupper(trim(strip_tags(stripslashes($string))));
+   }
+   
+   private function minusculas($string){
+       return strtolower(trim(strip_tags(stripslashes($string))));
    }
 
    public function url()

@@ -18,6 +18,8 @@
  */
 
 require_model('agente.php');
+require_model('cargos.php');
+require_model('organizacion.php');
 require_once 'helper_nomina.php';
 require_once('plugins/nomina/extras/PHPExcel/PHPExcel/IOFactory.php');
 require_once 'plugins/nomina/extras/verot/class.upload.php';
@@ -27,6 +29,8 @@ class admin_agentes extends fs_controller
    public $archivo;
    public $resultado;
    public $almacen;
+   public $cargos;
+   public $organizacion;
    public $foto_empleado;
    public $noimagen = "plugins/nomina/view/imagenes/no_foto.jpg";
    private $upload_photo;
@@ -42,7 +46,8 @@ class admin_agentes extends fs_controller
       $this->share_extensions();
       $this->agente = new agente();
       $this->almacen = new almacen();
-      
+      $this->cargos = new cargos();
+      $this->organizacion = new organizacion();
       if( isset($_GET['type']) ){
           $type = filter_input(INPUT_GET, 'type');
           switch ($type){
@@ -62,30 +67,36 @@ class admin_agentes extends fs_controller
 
       if( isset($_POST['nuevo']) AND $_POST['nuevo'] == 1 )
       {
-         $age0 = new agente();
-         $age0->codalmacen = $_POST['codalmacen'];
-         $age0->idempresa = $this->empresa->id;
-         $age0->codagente = $age0->get_new_codigo();
-         $age0->nombre = $_POST['nombre'];
-        $age0->apellidos = $_POST['apellidos'];
-        $age0->segundo_apellido = $_POST['segundo_apellido'];
+        if($_POST['codcargo'] != ''){
+            $cargo = $this->cargos->get($_POST['codcargo']);
+        }
+        $age0 = new agente();
+        $age0->codalmacen = $_POST['codalmacen'];
+        $age0->idempresa = $this->empresa->id;
+        $age0->codagente = $age0->get_new_codigo();
+        $age0->nombre = $this->mayusculas($_POST['nombre']);
+        $age0->apellidos = $this->mayusculas($_POST['apellidos']);
+        $age0->segundo_apellido = $this->mayusculas($_POST['segundo_apellido']);
         $age0->dnicif = $_POST['dnicif'];
         $age0->telefono = $_POST['telefono'];
-        $age0->email = $_POST['email'];
+        $age0->email = $this->minusculas($_POST['email']);
         $age0->provincia = $_POST['provincia'];
-        $age0->ciudad = $_POST['ciudad'];
-        $age0->direccion = $_POST['direccion'];
+        $age0->ciudad = $this->mayusculas($_POST['ciudad']);
+        $age0->direccion = $this->mayusculas($_POST['direccion']);
         $age0->sexo = $_POST['sexo'];
         $age0->f_nacimiento = $_POST['f_nacimiento'];
-        $age0->f_alta = $_POST['f_alta'];
+        $age0->f_alta = (!empty($_POST['f_alta']))?$_POST['f_alta']:NULL;
         $age0->f_baja = (!empty($_POST['f_baja']))?$_POST['f_baja']:NULL;
         $age0->codcategoria = $_POST['codcategoria'];
         $age0->codtipo = $_POST['codtipo'];
         $age0->codsupervisor = $_POST['codsupervisor'];
         $age0->codgerencia = $_POST['codgerencia'];
         $age0->codcargo = $_POST['codcargo'];
+        $age0->cargo = $cargo->descripcion;
         $age0->coddepartamento = $_POST['coddepartamento'];
         $age0->codformacion = $_POST['codformacion'];
+        $age0->carrera = $this->mayusculas($_POST['carrera']);
+        $age0->centroestudios = $this->mayusculas($_POST['centroestudios']);
         $age0->codseguridadsocial = $_POST['codseguridadsocial'];
         $age0->seg_social = $_POST['seg_social'];
         $age0->codbanco = $_POST['codbanco'];
@@ -194,7 +205,15 @@ class admin_agentes extends fs_controller
          $this->new_error_msg('error : ' . $$this->upload_photo->error);
       }
    }
-
+   
+   private function mayusculas($string){
+       return strtoupper(trim(strip_tags(stripslashes($string))));
+   }
+   
+   private function minusculas($string){
+       return strtolower(trim(strip_tags(stripslashes($string))));
+   }
+   
    private function share_extensions(){
        $fext = new fs_extension(array(
             'name' => 'nomina_jgrid_css',
