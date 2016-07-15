@@ -549,7 +549,7 @@ class agente extends fs_model
          {
             $sql = "INSERT INTO ".$this->table_name." (codalmacen,idempresa,codagente,nombre,apellidos,segundo_apellido,nombreap,dnicif,telefono,
                email,codcargo,cargo,codsupervisor,codgerencia,codcategoria,codtipo,codarea,coddepartamento,provincia,ciudad,direccion,f_nacimiento,
-               f_alta,f_baja,sexo,idsindicato,codseguridadsocial,seg_social,cuenta_banco,codbanco,carrera,centroestudios,dependientes,estado,estado_civil,banco,
+               f_alta,f_baja,sexo,idsindicato,codseguridadsocial,seg_social,cuenta_banco,codbanco,codformacion,carrera,centroestudios,dependientes,estado,estado_civil,banco,
                porcomision,pago_total,pago_neto,fecha_creacion,usuario_creacion)
                VALUES (".$this->var2str($this->codalmacen).
                     ",".$this->intval($this->idempresa).
@@ -581,6 +581,7 @@ class agente extends fs_model
                     ",".$this->var2str($this->seg_social).
                     ",".$this->var2str($this->cuenta_banco).
                     ",".$this->var2str($this->codbanco).
+                    ",".$this->var2str($this->codformacion).
                     ",".$this->var2str($this->carrera).
                     ",".$this->var2str($this->centroestudios).
                     ",".$this->var2str($this->dependientes).

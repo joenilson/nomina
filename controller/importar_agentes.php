@@ -189,7 +189,7 @@ class importar_agentes extends fs_controller
         }
 
         if($_POST['codformacion'] != ''){
-            if(!$this->formacion->get_by_nombre($this->mayusculas($_POST['codformacion']))){
+            if($this->formacion->get_by_nombre($this->mayusculas($_POST['codformacion']))){
                 $datos = $this->formacion->get_by_nombre($this->mayusculas($_POST['codformacion']));
                 if($datos){
                     $codformacion = $datos->codformacion;
@@ -204,7 +204,7 @@ class importar_agentes extends fs_controller
         }
 
         if($_POST['categoria'] != ''){
-            if(!$this->categoriaempleado->get_by_descripcion($this->mayusculas($_POST['categoria']))){
+            if($this->categoriaempleado->get_by_descripcion($this->mayusculas($_POST['categoria']))){
                 $datos = $this->categoriaempleado->get_by_descripcion($this->mayusculas($_POST['categoria']));
                 if($datos){
                     $codcategoria = $datos->codcategoria;
@@ -217,7 +217,7 @@ class importar_agentes extends fs_controller
         }
 
         if($_POST['codtipo'] != ''){
-            if(!$this->tipoempleado->get_by_descripcion($this->mayusculas($_POST['codtipo']))){
+            if($this->tipoempleado->get_by_descripcion($this->mayusculas($_POST['codtipo']))){
                 $codtipo = $this->tipoempleado->get_by_descripcion($this->mayusculas($_POST['codtipo']))->codtipo;
             }else{
                 $codtipo = NULL;
@@ -225,7 +225,7 @@ class importar_agentes extends fs_controller
         }
 
         if($_POST['gerencia'] != ''){
-            if(!$this->organizacion->get_by_descripcion_tipo($this->mayusculas($_POST['gerencia']),'GERENCIA')){
+            if($this->organizacion->get_by_descripcion_tipo($this->mayusculas($_POST['gerencia']),'GERENCIA')){
                 $codgerencia = $this->organizacion->get_by_descripcion_tipo($this->mayusculas($_POST['gerencia']),'GERENCIA')->codorganizacion;
             }else{
                 $codgerencia = NULL;
@@ -233,7 +233,7 @@ class importar_agentes extends fs_controller
         }
 
         if($_POST['area'] != ''){
-            if(!$this->organizacion->get_by_descripcion_tipo($this->mayusculas($_POST['area']),'AREA')){
+            if($this->organizacion->get_by_descripcion_tipo($this->mayusculas($_POST['area']),'AREA')){
                 $codarea = $this->organizacion->get_by_descripcion_tipo($this->mayusculas($_POST['area']),'AREA')->codorganizacion;
             }else{
                 $codarea = NULL;
@@ -241,8 +241,8 @@ class importar_agentes extends fs_controller
         }
 
         if($_POST['departamento'] != ''){
-            if(!$this->organizacion->get_by_descripcion_tipo($this->mayusculas($_POST['area']),'DEPARTAMENTO')){
-                $coddepartamento = $this->organizacion->get_by_descripcion_tipo($this->mayusculas($_POST['area']),'DEPARTAMENTO')->codorganizacion;
+            if($this->organizacion->get_by_descripcion_tipo($this->mayusculas($_POST['departamento']),'DEPARTAMENTO')){
+                $coddepartamento = $this->organizacion->get_by_descripcion_tipo($this->mayusculas($_POST['departamento']),'DEPARTAMENTO')->codorganizacion;
             }else{
                 $coddepartamento = NULL;
             }
@@ -251,7 +251,7 @@ class importar_agentes extends fs_controller
         }
 
         if($_POST['idsindicato'] != ''){
-            if(!$this->sindicalizacion->get_by_descripcion($this->mayusculas($_POST['idsindicato']))){
+            if($this->sindicalizacion->get_by_descripcion($this->mayusculas($_POST['idsindicato']))){
                 $idsindicato = $this->sindicalizacion->get_by_descripcion($this->mayusculas($_POST['idsindicato']))->idsindicato;
             }else{
                 $idsindicato = NULL;
@@ -278,9 +278,10 @@ class importar_agentes extends fs_controller
         $age0->codtipo = $codtipo;
         //$age0->codsupervisor = $_POST['codsupervisor'];
         $age0->codgerencia = $codgerencia;
+        $age0->codarea = $codarea;
+        $age0->coddepartamento = $coddepartamento;
         $age0->codcargo = $cargo->codcargo;
         $age0->cargo = $cargo->descripcion;
-        $age0->coddepartamento = $coddepartamento;
         $age0->codformacion = $codformacion;
         $age0->carrera = $this->mayusculas($_POST['carrera']);
         $age0->centroestudios = $this->mayusculas($_POST['centroestudios']);
@@ -295,14 +296,12 @@ class importar_agentes extends fs_controller
         $age0->estado_civil = $estado_civil;
         $age0->fecha_creacion = date('d-m-y H:m:s');
         $age0->usuario_creacion = $this->user->nick;
-         if( $age0->save() )
-         {
-             return true;
-         }
-         else
-         {
+        try {
+            $age0->save();
+            return true;
+        } catch (Exception $ex) {
             return false;
-         }
+        }
    }
 
    private function mayusculas($string){
