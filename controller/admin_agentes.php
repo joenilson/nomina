@@ -35,7 +35,7 @@ class admin_agentes extends fs_controller
    public $noimagen = "plugins/nomina/view/imagenes/no_foto.jpg";
    private $upload_photo;
    private $dir_empleados = "tmp/{FS_TMP_NAME}/nomina/empleados/";
-   
+
    public function __construct()
    {
       parent::__construct(__CLASS__, 'Empleados', 'admin', TRUE, TRUE);
@@ -48,6 +48,7 @@ class admin_agentes extends fs_controller
       $this->almacen = new almacen();
       $this->cargos = new cargos();
       $this->organizacion = new organizacion();
+      $this->cache->delete('m_agente_all');
       if( isset($_GET['type']) ){
           $type = filter_input(INPUT_GET, 'type');
           switch ($type){
@@ -180,7 +181,7 @@ class admin_agentes extends fs_controller
         header('Content-Type: application/json');
         echo json_encode($this->resultado);
    }
-   
+
    //Para guardar la foto hacemos uso de la libreria de class.upload.php que esta en extras/verot/
    //Con esta libreria estandarizamos todas las imagenes en PNG y les hacemos un resize a 120px
    public function guardar_foto(){
@@ -205,15 +206,15 @@ class admin_agentes extends fs_controller
          $this->new_error_msg('error : ' . $$this->upload_photo->error);
       }
    }
-   
+
    private function mayusculas($string){
        return strtoupper(trim(strip_tags(stripslashes($string))));
    }
-   
+
    private function minusculas($string){
        return strtolower(trim(strip_tags(stripslashes($string))));
    }
-   
+
    private function share_extensions(){
        $fext = new fs_extension(array(
             'name' => 'nomina_jgrid_css',

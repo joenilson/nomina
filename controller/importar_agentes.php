@@ -86,6 +86,8 @@ class importar_agentes extends fs_controller
     }
 
     private function importar_empleados(){
+
+        $agentes = new agente();
         $objPHPExcel = PHPExcel_IOFactory::load($this->archivo['tmp_name']);
         $l = 0;
         //foreach ($objPHPExcel->getWorksheetIterator() as $worksheet) {
@@ -97,18 +99,26 @@ class importar_agentes extends fs_controller
             $nrColumns = ord($highestColumn) - 64;
 
             for ($row = 1; $row <= $highestRow; ++$row) {
-
                 if($row!=1){
                     for ($col = 0; $col < count($this->arrayCabeceras); ++$col) {
                         $cell = $worksheet->getCellByColumnAndRow($col, $row);
                         $val = $cell->getValue();
+                        //Verificamos si tiene dnicif
+                        if($col==2 AND (!empty($val) AND $val != null)){
+                            $val = ($agentes->get_by_dnicif($val))?null:$val;
+                            $linea['estado']=($val)?'Nuevo':'Ya existe';
+                        }
+                        //Verificamos si tiene f_nacimiento
+                        if($col==9 AND (empty($val) OR $val == null)){
+                            $linea['estado']='Incompleto';
+                        }
                         if(PHPExcel_Shared_Date::isDateTime($cell)) {
                             $val = (is_null($val))?'':date('d-m-Y', PHPExcel_Shared_Date::ExcelToPHP($val));
                         }
                         $linea[$this->arrayCabeceras[$col]]=$val;
 
                     }
-                    $linea['id']=$l;
+                    $linea['rid']=$l;
                     $this->resultado[]=$linea;
                 }
                 $l++;
@@ -118,7 +128,7 @@ class importar_agentes extends fs_controller
         header('Content-Type: application/json');
         echo json_encode($this->resultado);
    }
-   
+
    public function guardar_empleados(){
        $this->template = false;
        $this->resultado = array();
@@ -134,61 +144,78 @@ class importar_agentes extends fs_controller
                }
            }else{
                $this->resultado['estado']='existe';
-               $this->resultado['dnicif']=$_POST['dnicif'];
+               $this->resultado['dnicif']=$age0->get_by_dnicif($_POST['dnicif']);
            }
        }
-       
+
        header('Content-Type: application/json');
        echo json_encode($this->resultado);
    }
-   
+
    public function guardar_empleado(){
         if($_POST['sede'] != ''){
+            $sede = false;
             foreach($this->almacen->all() as $cod=>$val){
+                //print_r(array('sede'=>$val->nombre));
                 if($val->nombre == $this->mayusculas($_POST['sede'])){
-                    $sede = $val; 
-                }else{
-                    return false;
+                    $sede = $val;
                 }
+            }
+            if(!$sede){
+                return false;
             }
         }
         if($_POST['cargo'] != ''){
-            if($this->cargos->get_by_descripcion($_POST['codcargo'])){
-                $cargo = $this->cargos->get_by_descripcion(strtoupper($_POST['codcargo']));
+            if($this->cargos->get_by_descripcion($_POST['cargo'])){
+                $cargo = $this->cargos->get_by_descripcion(strtoupper($_POST['cargo']));
             }else{
                 $cargo->codcargo = NULL;
                 $cargo->descripcion = NULL;
             }
         }
-        
+
         if($_POST['estado_civil'] != ''){
             foreach($this->agente->estado_civil_agente() as $key=>$val){
-                if($val == $_POST['estado_civil']){
+                if(strtoupper($val) == strtoupper($_POST['estado_civil'])){
                     $estado_civil = $key;
                 }
             }
+        }else{
+            $estado_civil = NULL;
         }
-        
+
         if($_POST['codseguridadsocial'] != ''){
             $codseguridadsocial = (strlen($_POST['codseguridadsocial'])<=4)?$this->seguridadsocial->get_by_nombre_corto($_POST['codseguridadsocial'])->codseguridadsocial:$this->seguridadsocial->get_by_nombre(strtoupper($_POST['codseguridadsocial']))->codseguridadsocial;
         }
-        
+
         if($_POST['codformacion'] != ''){
             if(!$this->formacion->get_by_nombre($this->mayusculas($_POST['codformacion']))){
-                $codformacion = $this->formacion->get_by_nombre($this->mayusculas($_POST['codformacion']))->codformacion;
+                $datos = $this->formacion->get_by_nombre($this->mayusculas($_POST['codformacion']));
+                if($datos){
+                    $codformacion = $datos->codformacion;
+                }else{
+                    $codformacion = NULL;
+                }
             }else{
                 $codformacion = NULL;
             }
+        }else{
+            $codformacion = NULL;
         }
-        
+
         if($_POST['categoria'] != ''){
             if(!$this->categoriaempleado->get_by_descripcion($this->mayusculas($_POST['categoria']))){
-                $codcategoria = $this->categoriaempleado->get_by_descripcion($this->mayusculas($_POST['categoria']))->codcategoria;
+                $datos = $this->categoriaempleado->get_by_descripcion($this->mayusculas($_POST['categoria']));
+                if($datos){
+                    $codcategoria = $datos->codcategoria;
+                }else{
+                    $codcategoria = NULL;
+                }
             }else{
                 $codcategoria = NULL;
             }
         }
-        
+
         if($_POST['codtipo'] != ''){
             if(!$this->tipoempleado->get_by_descripcion($this->mayusculas($_POST['codtipo']))){
                 $codtipo = $this->tipoempleado->get_by_descripcion($this->mayusculas($_POST['codtipo']))->codtipo;
@@ -196,15 +223,15 @@ class importar_agentes extends fs_controller
                 $codtipo = NULL;
             }
         }
-        
-        if($_POST['codgerencia'] != ''){
-            if(!$this->organizacion->get_by_descripcion_tipo($this->mayusculas($_POST['codgerencia']),'GERENCIA')){
-                $codgerencia = $this->organizacion->get_by_descripcion_tipo($this->mayusculas($_POST['codgerencia']),'GERENCIA')->codorganizacion;
+
+        if($_POST['gerencia'] != ''){
+            if(!$this->organizacion->get_by_descripcion_tipo($this->mayusculas($_POST['gerencia']),'GERENCIA')){
+                $codgerencia = $this->organizacion->get_by_descripcion_tipo($this->mayusculas($_POST['gerencia']),'GERENCIA')->codorganizacion;
             }else{
                 $codgerencia = NULL;
             }
         }
-        
+
         if($_POST['area'] != ''){
             if(!$this->organizacion->get_by_descripcion_tipo($this->mayusculas($_POST['area']),'AREA')){
                 $codarea = $this->organizacion->get_by_descripcion_tipo($this->mayusculas($_POST['area']),'AREA')->codorganizacion;
@@ -212,15 +239,17 @@ class importar_agentes extends fs_controller
                 $codarea = NULL;
             }
         }
-        
+
         if($_POST['departamento'] != ''){
             if(!$this->organizacion->get_by_descripcion_tipo($this->mayusculas($_POST['area']),'DEPARTAMENTO')){
                 $coddepartamento = $this->organizacion->get_by_descripcion_tipo($this->mayusculas($_POST['area']),'DEPARTAMENTO')->codorganizacion;
             }else{
                 $coddepartamento = NULL;
             }
+        }else{
+            $coddepartamento = NULL;
         }
-        
+
         if($_POST['idsindicato'] != ''){
             if(!$this->sindicalizacion->get_by_descripcion($this->mayusculas($_POST['idsindicato']))){
                 $idsindicato = $this->sindicalizacion->get_by_descripcion($this->mayusculas($_POST['idsindicato']))->idsindicato;
@@ -228,10 +257,8 @@ class importar_agentes extends fs_controller
                 $idsindicato = NULL;
             }
         }
-        
-        
         $age0 = new agente();
-        $age0->codalmacen = $sede;
+        $age0->codalmacen = $sede->codalmacen;
         $age0->idempresa = $this->empresa->id;
         $age0->codagente = $age0->get_new_codigo();
         $age0->nombre = $this->mayusculas($_POST['nombre']);
@@ -240,9 +267,9 @@ class importar_agentes extends fs_controller
         $age0->dnicif = $_POST['dnicif'];
         $age0->telefono = $_POST['telefono'];
         $age0->email = $this->minusculas($_POST['email']);
-        $age0->provincia = ($_POST['provincia'] != '')?$_POST['provincia']:$sede->provincia;
-        $age0->ciudad = ($_POST['ciudad'] != '')?$this->mayusculas($_POST['ciudad']):$sede->poblacion;
-        $age0->direccion = ($_POST['direccion'] != '')?$this->mayusculas($_POST['direccion']):$sede->direccion;
+        $age0->provincia = (isset($_POST['provincia']))?$_POST['provincia']:$sede->provincia;
+        $age0->ciudad = (isset($_POST['ciudad']))?$this->mayusculas($_POST['ciudad']):$sede->poblacion;
+        $age0->direccion = (isset($_POST['direccion']))?$this->mayusculas($_POST['direccion']):$sede->direccion;
         $age0->sexo = $this->mayusculas($_POST['sexo']);
         $age0->f_nacimiento = $_POST['f_nacimiento'];
         $age0->f_alta = (!empty($_POST['f_alta']))?$_POST['f_alta']:NULL;
@@ -277,11 +304,11 @@ class importar_agentes extends fs_controller
             return false;
          }
    }
-   
+
    private function mayusculas($string){
        return strtoupper(trim(strip_tags(stripslashes($string))));
    }
-   
+
    private function minusculas($string){
        return strtolower(trim(strip_tags(stripslashes($string))));
    }

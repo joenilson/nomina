@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 Joe Nilson <joenilson at gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -62,22 +62,16 @@ function getSelectedRows(gridid) {
     }
 }
 
-$(document).ready(function() {
-    if($('#modal_nuevo_agente').length === 1){
-        $('#modal_nuevo_agente').html('');
-    }
-    $("#b_nuevo_agente").click(function(event) {
-        event.preventDefault();
-        window.location.href = 'index.php?page=admin_agente&type=nuevo';
-    });
-    
-    $("#b_guardar_empleados").click(function(event) {
-        event.preventDefault();
-        var lista = getSelectedRows('grid_resultados_procesados');
-        for(var i = 0; i < 5; i++){
-            var dataFromTheRow = $('#grid_resultados_procesados').getRowData(lista[i]);
-            console.log(dataFromTheRow);
-            $.ajax({
+function procesar_seleccionados(){
+    $('#modal_estadistica_importacion').show();
+    var lista = getSelectedRows('grid_resultados_procesados');
+    var ingreso = 1;
+    var no_ingreso = 1;
+    var existe = 1;
+    var error = 1;
+    for(var i = 0; i < lista.length; i++){
+        var dataFromTheRow = $('#grid_resultados_procesados').getRowData(lista[i]);
+        $.ajax({
             type: 'POST',
             url : url_import,
             data : dataFromTheRow,
@@ -85,18 +79,84 @@ $(document).ready(function() {
             success : function(response) {
                 if(response.length !== 0){
                     data = response;
+                    if(data.estado === 'ingresado'){
+                        var pcj = (ingreso/lista.length)*100;
+                        document.getElementById("divProgress_ingreso").innerHTML = ingreso+' Registro(s) ingresados de '+lista.length;
+                        document.getElementById("progressor_ingreso").innerHTML = pcj.toFixed() + "%";
+                        document.getElementById('progressor_ingreso').style.width = pcj.toFixed() + "%";
+                        ingreso++;
+                    }else if(data.estado === 'no_ingresado'){
+                        var pcj = (no_ingreso/lista.length)*100;
+                        document.getElementById("divProgress_no_ingresado").innerHTML = no_ingreso+' Registro(s) no ingresados de '+lista.length;
+                        document.getElementById("progressor_no_ingresado").innerHTML = pcj.toFixed() + "%";
+                        document.getElementById('progressor_no_ingresado').style.width = pcj.toFixed() + "%";
+                        no_ingreso++;
+                    }else if(data.estado === 'existe'){
+                        var pcj = (existe/lista.length)*100;
+                        document.getElementById("divProgress_existe").innerHTML = existe+' Registro(s) ya existen de '+lista.length;
+                        document.getElementById("progressor_existe").innerHTML = pcj.toFixed() + "%";
+                        document.getElementById('progressor_existe').style.width = pcj.toFixed() + "%";
+                        existe++;
+                    }else {
+                        var pcj = (error/lista.length)*100;
+                        document.getElementById("divProgress_error").innerHTML = error+' Registro(s) con error de '+lista.length;
+                        document.getElementById("progressor_error").innerHTML = pcj.toFixed() + "%";
+                        document.getElementById('progressor_error').style.width = pcj.toFixed() + "%";
+                        error++;
+                    }
                 }else{
-                   console.log(response);
+                    alert(response);
                 }
             },
             error: function(response) {
                 alert(response);
             }
         });
-        }
-        console.log(lista);
+    }
+    alert('Proceso concluido!');
+    $('#b_cerrar_modal_estadistica_importacion').show();
+}
+
+$(document).ready(function() {
+    if($('#modal_nuevo_agente').length === 1){
+        $('#modal_nuevo_agente').html('');
+    }
+    $('#b_delete_agente').hide();
+    $("#b_nuevo_agente").click(function(event) {
+        event.preventDefault();
+        window.location.href = 'index.php?page=admin_agente&type=nuevo';
     });
-    
+    $("#b_cerrar_modal_estadistica_importacion").click(function(event){
+        event.preventDefault();
+        $('#modal_estadistica_importacion').hide();
+        window.location.href='index.php?page=admin_agentes';
+    });
+    $("#b_guardar_empleados").click(function(event) {
+        event.preventDefault();
+        bootbox.dialog({
+            message: "Esta seguro de haber revisado la información de los empleados?<br />"+
+                    "Si decide subir esta información, no podrá eliminar ningun registro.",
+            title: "Confirmar subir empleados",
+            buttons: {
+                success: {
+                    label: "Confirmar",
+                    className: "btn-success",
+                    callback: function() {
+                        this.hide();
+                        procesar_seleccionados();
+                    }
+                },
+                danger: {
+                    label: "Cancelar",
+                    className: "btn-danger",
+                    callback: function() {
+                        this.hide();
+                    }
+                }
+            }
+        });
+    });
+
     $(".image-input input:file").change(function (){
         var img = $('#imagen-empleado');
         var file = this.files[0];

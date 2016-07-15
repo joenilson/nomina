@@ -41,10 +41,11 @@
         $("#grid_resultados_procesados").jqGrid({
             datatype: "local",
             colModel: [
-                {label: 'Id', name: 'id', hidden: true},
+                {label: 'Id', name: 'rid', hidden: true, key: true},
+                {label: 'Estado', name: 'estado', width: 75},
                 {label: 'Sede', name: 'sede', width: 100},
                 {label: 'Empresa', name: 'empresa', width: 120},
-                {label: '{#FS_CIFNIF#}', name: 'dnicif', width: 90, key: true},
+                {label: '{#FS_CIFNIF#}', name: 'dnicif', width: 90},
                 {label: 'Apellido Paterno', name: 'apellidos', width: 120},
                 {label: 'Apellido Materno', name: 'segundo_apellido', width: 120},
                 {label: 'Nombres', name: 'nombre', width: 120},
@@ -77,7 +78,7 @@
             autowidth: true,
             shrinkToFit: false,
             height: 450,
-            rowNum: 250,
+            rowNum: 500,
             rowList: [250,500,750,1000],
             scrollPopUp: true,
             scrollLeftOffset: "5%",
@@ -92,10 +93,20 @@
             loadComplete: function(data) {
                 for (var i = 0; i < data.rows.length; i++) {
                     var rowData = data.rows[i];
-                    if (rowData.cifnif === null) {//update this to have your own check
-                        var checkbox = $("#jqg_grid_resultados_procesados_" + i);//update this with your own grid name
+                    //console.log(rowData);
+                    if (rowData.dnicif === null || rowData.estado !== 'Nuevo') {//update this to have your own check
+                        var checkbox = $("#jqg_grid_resultados_procesados_"+rowData.rid);//update this with your own grid name
                         checkbox.css("visibility", "hidden");
                         checkbox.attr("disabled", true);
+                        if(rowData.estado !== 'Incompleto'){
+                            $("#" + rowData.rid).find("td").addClass("danger");
+                        }else if(rowData.estado !== 'Ya existe'){
+                            $("#" + rowData.rid).find("td").addClass("warning");
+                        }
+
+                    //}
+                    //if (rowData.estado === 'Ya existe') {
+                        //$("#" + rowData.rid).find("td").addClass("warning");
                     }
                 }
             },
@@ -173,4 +184,40 @@
         </button>
     </div>
 </div>
+<div class="modal" id="modal_estadistica_importacion">
+      <div class="modal-dialog">
+         <div class="modal-content">
+            <div class="modal-header">
+               <h4 class="modal-title">
+                  <span class="fa fa-bar-chart-o"></span>
+                  &nbsp; Proceso de Importación de Empleados
+               </h4>
+            </div>
+            <div class="modal-body">
+                <div id="divProgress_ingreso" class="text-left"></div>
+                <div class="progress progress-popup">
+                   <div class="progress-bar progress-bar-success progress-bar-striped active" id="progressor_ingreso"></div>
+                </div>
+                <div id="divProgress_no_ingreso" class="text-left"></div>
+                <div class="progress progress-popup">
+                   <div class="progress-bar progress-bar-info progress-bar-striped active" id="progressor_no_ingreso"></div>
+                </div>
+                <div id="divProgress_existe" class="text-left"></div>
+                <div class="progress progress-popup">
+                   <div class="progress-bar progress-bar-warning progress-bar-striped active" id="progressor_existe"></div>
+                </div>
+                <div id="divProgress_error" class="text-left"></div>
+                <div class="progress progress-popup">
+                   <div class="progress-bar progress-bar-danger progress-bar-striped active" id="progressor_error"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+               <button class="btn btn-sm btn-danger" id="b_cerrar_modal_estadistica_importacion" type="button" style="display: none;">
+                   <span class="fa fa-close"></span>
+                  &nbsp; Cerrar
+               </button>
+            </div>
+         </div>
+      </div>
+   </div>
 {include="footer"}
