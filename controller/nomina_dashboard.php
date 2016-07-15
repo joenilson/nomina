@@ -33,7 +33,7 @@ require_model('organizacion.php');
  */
 class nomina_dashboard extends fs_controller{
     
-    public $logo_empresa = "tmp".DIRECTORY_SEPARATOR.FS_TMP_NAME.DIRECTORY_SEPARATOR."logo.png";
+    public $logo_empresa;
     public $agentes;
     public $almacen;
     public $cargos;
@@ -59,6 +59,8 @@ class nomina_dashboard extends fs_controller{
         $this->categoriaempleado = new categoriaempleado();
         $this->sindicalizacion = new sindicalizacion();
         $this->organizacion = new organizacion();
+        
+        $this->logo_empresa = "tmp".DIRECTORY_SEPARATOR.FS_TMP_NAME.DIRECTORY_SEPARATOR."logo.png";
     }
     
     //Empleados por Año
