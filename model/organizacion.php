@@ -233,5 +233,26 @@ class organizacion extends fs_model{
             $this->save();
         }
     }
+    
+    public function estadisticas_tipo($tipo){
+        $codigo = ($tipo=='GERENCIA')?'codgerencia':'codarea';
+        $codigo = ($tipo=='AREA')?'codarea':$codigo;
+        $codigo = ($tipo=='DEPARTAMENTO')?'coddepartamento':$codigo;
+        $sql = "select o.codorganizacion, descripcion, count(codagente) as total from ".$this->table_name." as o, agentes as a ".
+                "where o.tipo = ".$this->var2str($tipo)." and o.codorganizacion = a.$codigo and a.estado = 'A'".
+                "GROUP BY o.codorganizacion, descripcion ORDER BY descripcion ASC; ";
+        $data = $this->db->select($sql);
+        if($data){
+            $lista = array();
+            foreach($data as $d){
+                $valor = new stdClass();
+                $valor->codorganizacion = $d['codorganizacion'];
+                $valor->descripcion = $d['descripcion'];
+                $valor->total = $d['total'];
+                $lista[] = $valor;
+            }
+            return $lista;
+        }
+    }
 
 }
