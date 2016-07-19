@@ -36,7 +36,7 @@ class configuracion_nomina extends fs_controller{
     public $sindicalizacion;
     public $organizacion;
     public function __construct() {
-        parent::__construct(__CLASS__, 'Configuracion Nomina', 'nomina', TRUE, FALSE, FALSE);
+        parent::__construct(__CLASS__, 'Configuracion Nomina', 'nomina', TRUE, TRUE, FALSE);
     }
 
     protected function private_core() {
@@ -105,7 +105,7 @@ class configuracion_nomina extends fs_controller{
             }
         }
     }
-    
+
     public function share_extensions(){
         $fsext1 = new fs_extension(array(
             'name' => 'cargar_empleados_button',
@@ -230,7 +230,7 @@ class configuracion_nomina extends fs_controller{
                 'params' => ''
             ),
         );
-        
+
         foreach ($extensiones as $ext) {
             $fsext0 = new fs_extension($ext);
             if (!$fsext0->save()) {
