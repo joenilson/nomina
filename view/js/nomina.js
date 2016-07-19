@@ -50,6 +50,7 @@ function llenar_organizacion(obj,padre,destino){
 function getSelectedRows(gridid) {
     var grid = $("#"+gridid);
     var rowKey = grid.getGridParam("selrow");
+    console.log(rowKey);
     if (!rowKey)
         return 0;
     else {

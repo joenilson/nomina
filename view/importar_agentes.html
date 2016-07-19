@@ -27,7 +27,7 @@
                 success : function(datos) {
                     $('#grid_resultados_procesados').jqGrid()
                     .setGridParam({
-                    data: datos,
+                        data: datos,
                         datatype: "local",
                     });
                     $("#grid_resultados_procesados")[0].grid.endReq();
@@ -112,7 +112,7 @@
             },
             beforeSelectRow: function(rowid, e) {
                 var cbsdis = $("tr#" + rowid + ".jqgrow > td > input.cbox:disabled", this);
-                if (e.length === 0) {
+                if (cbsdis.length === 0) {
                     return true;    // allow select the row
                 } else {
                     return false;   // not allow select the row

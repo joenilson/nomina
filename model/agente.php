@@ -16,7 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+require_model('almacen.php');
+require_model('organizacion.php');
+require_model('tipoempleado.php');
+require_model('categoriaempleado.php');
 /**
  * El agente/empleado es el que se asocia a un albarán, factura o caja.
  * Cada usuario puede estar asociado a un agente, y un agente puede
@@ -246,6 +249,10 @@ class agente extends fs_model
     */
    public $fecha_modificacion;
 
+   public $almacen;
+   public $tipoempleado;
+   public $organizacion;
+   public $categoriaempleado;
    public function __construct($a=FALSE)
    {
       parent::__construct('agentes');
@@ -380,6 +387,10 @@ class agente extends fs_model
          $this->fecha_modificacion = NULL;
          $this->usuario_modificacion = NULL;
       }
+      $this->almacen = new almacen();
+      $this->organizacion = new organizacion();
+      $this->tipoempleado = new tipoempleado();
+      $this->categoriaempleado = new categoriaempleado();
    }
 
    protected function install()
@@ -388,6 +399,16 @@ class agente extends fs_model
       return "INSERT INTO ".$this->table_name." (codagente,nombre,apellidos,segundo_apellido,dnicif,sexo,estado,estado_civil)
          VALUES ('1','Juan','Perez','Prado','00000014Z','M','A','S'),".
               "('1','Maria','Ruiz','Diaz','00000019Z','F','A','D');";
+   }
+   
+   public function info_adicional($res){
+       $res->gerencia = $this->organizacion->get($res->codgerencia)->descripcion;
+       $res->area = $this->organizacion->get($res->codarea)->descripcion;
+       $res->departamento = ($res->coddepartamento != '')?$this->organizacion->get($res->coddepartamento)->descripcion:'';
+       $res->almacen_nombre = $this->almacen->get($res->codalmacen)->nombre;
+       $res->tipo = $this->tipoempleado->get($res->codtipo)->descripcion;
+       $res->categoria = ($res->codcategoria != '')?$this->categoriaempleado->get($res->codcategoria)->descripcion:'';       
+       return $res;
    }
 
    public function get_fullname()
@@ -439,7 +460,9 @@ class agente extends fs_model
       $a = $this->db->select("SELECT * FROM ".$this->table_name." WHERE codagente = ".$this->var2str($cod).";");
       if($a)
       {
-         return new agente($a[0]);
+         $valor = new agente($a[0]);
+         $res = $this->info_adicional($valor);
+         return $res;
       }
       else
          return FALSE;
@@ -549,7 +572,7 @@ class agente extends fs_model
          {
             $sql = "INSERT INTO ".$this->table_name." (codalmacen,idempresa,codagente,nombre,apellidos,segundo_apellido,nombreap,dnicif,telefono,
                email,codcargo,cargo,codsupervisor,codgerencia,codcategoria,codtipo,codarea,coddepartamento,provincia,ciudad,direccion,f_nacimiento,
-               f_alta,f_baja,sexo,idsindicato,codseguridadsocial,seg_social,cuenta_banco,codbanco,carrera,centroestudios,dependientes,estado,estado_civil,banco,
+               f_alta,f_baja,sexo,idsindicato,codseguridadsocial,seg_social,cuenta_banco,codbanco,codformacion,carrera,centroestudios,dependientes,estado,estado_civil,banco,
                porcomision,pago_total,pago_neto,fecha_creacion,usuario_creacion)
                VALUES (".$this->var2str($this->codalmacen).
                     ",".$this->intval($this->idempresa).
@@ -581,6 +604,7 @@ class agente extends fs_model
                     ",".$this->var2str($this->seg_social).
                     ",".$this->var2str($this->cuenta_banco).
                     ",".$this->var2str($this->codbanco).
+                    ",".$this->var2str($this->codformacion).
                     ",".$this->var2str($this->carrera).
                     ",".$this->var2str($this->centroestudios).
                     ",".$this->var2str($this->dependientes).
@@ -620,8 +644,11 @@ class agente extends fs_model
          $agentes = $this->db->select("SELECT * FROM ".$this->table_name." ORDER BY nombre ASC;");
          if($agentes)
          {
-            foreach($agentes as $a)
-               $listagentes[] = new agente($a);
+            foreach($agentes as $a){
+                $valor = new agente($a);
+                $res = $this->info_adicional($valor);
+                $listagentes[] = $res;
+            }
          }
          $this->cache->set('m_agente_all', $listagentes);
       }
@@ -680,5 +707,15 @@ class agente extends fs_model
         $estado_civil['V']='Viudo';
         $estado_civil['D']='Divorciado';
         return $estado_civil;
+    }
+    
+    public function estadistica_sexo($sexo){
+        $sql = "select count(sexo) as total from ".$this->table_name." where sexo = ".$this->var2str($sexo).";";
+        $data = $this->db->select($sql);
+        if($data){
+            $valor = new stdClass();
+            $valor->total = $data[0]['total'];
+            return $valor;
+        }
     }
 }

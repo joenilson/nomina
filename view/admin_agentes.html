@@ -1,4 +1,5 @@
 {include="header"}
+
 <script type="text/javascript">
    $(document).ready(function() {
       if(window.location.hash.substring(1) == 'nuevo')
@@ -6,6 +7,11 @@
          $("#modal_nuevo_agente").modal('show');
          document.f_nuevo_agente.snombre.focus();
       }
+      else
+      {
+         document.f_custom_search.query.focus();
+      }
+      
       $("#b_nuevo_agente").click(function(event) {
          event.preventDefault();
          $("#modal_nuevo_agente").modal('show');
@@ -14,7 +20,7 @@
    });
 </script>
 
-<div class="container-fluid hidden-print" style="margin-top: 10px;">
+<div class="container-fluid hidden-print">
    <div class="row">
       <div class="col-sm-6 col-xs-6">
          <div class="btn-group hidden-xs">
@@ -49,24 +55,164 @@
       <div class="col-sm-6 col-xs-6 text-right">
          <h2 style="margin-top: 0px;">
             <i class="fa fa-users" aria-hidden="true"></i> Empleados
+            <span class="badge">{$fsc->total_resultados}</span>
          </h2>
       </div>
    </div>
+   <form name="f_custom_search" action="{$fsc->url()}" method="post" class="form">
+      <div class="row">
+         <div class="col-sm-2">
+            <div class="input-group">
+               <input class="form-control input-sm" type="text" name="query" value="{$fsc->query}" autocomplete="off" placeholder="Buscar">
+               <span class="input-group-btn hidden-sm">
+                  <button class="btn btn-primary btn-sm" type="submit">
+                     <span class="glyphicon glyphicon-search"></span>
+                  </button>
+               </span>
+            </div>
+         </div>
+         <div class="col-sm-2">
+            <select name="provincia" class="form-control input-sm" onchange="this.form.submit()">
+               <option value="">Cualquier provincia</option>
+               <option value="">------</option>
+               {loop="$fsc->provincias()"}
+                  {if="$key===$fsc->provincia"}
+                  <option value="{$key}" selected="">{$value}</option>
+                  {else}
+                  <option value="{$key}">{$value}</option>
+                  {/if}
+               {/loop}
+            </select>
+         </div>
+         <div class="col-sm-2">
+            <select name="ciudad" class="form-control input-sm" onchange="this.form.submit()">
+               <option value="">Cualquier ciudad</option>
+               <option value="">------</option>
+               {loop="$fsc->ciudades()"}
+                  {if="$key===$fsc->ciudad"}
+                  <option value="{$key}" selected="">{$value}</option>
+                  {else}
+                  <option value="{$key}">{$value}</option>
+                  {/if}
+               {/loop}
+            </select>
+         </div>
+         <div class="col-sm-2">
+            <select name="almacen" class="form-control input-sm" onchange="this.form.submit()">
+               <option value="">Cualquier almacen</option>
+               <option value="">------</option>
+               {loop="$fsc->almacen->all()"}
+                  {if="$value->codalmacen===$fsc->codalmacen"}
+                  <option value="{$value->codalmacen}" selected="">{$value->nombre}</option>
+                  {else}
+                  <option value="{$value->codalmacen}">{$value->nombre}</option>
+                  {/if}
+               {/loop}
+            </select>
+         </div>
+         <div class="col-sm-2">
+            <select name="codcategoria" class="form-control input-sm" onchange="this.form.submit()">
+               <option value="">Cualquier categoria</option>
+               <option value="">------</option>
+               {loop="$fsc->categoriaempleado->all()"}
+                  {if="$value->codcategoria===$fsc->categoria"}
+                  <option value="{$value->codcategoria}" selected="">{$value->descripcion}</option>
+                  {else}
+                  <option value="{$value->codcategoria}">{$value->descripcion}</option>
+                  {/if}
+               {/loop}
+            </select>
+         </div>
+         <div class="col-sm-2">
+            <select name="codtipo" class="form-control input-sm" onchange="this.form.submit()">
+               <option value="">Cualquier contrato</option>
+               <option value="">------</option>
+               {loop="$fsc->tipoempleado->all()"}
+                  {if="$value->codtipo===$fsc->tipo"}
+                  <option value="{$value->codtipo}" selected="">{$value->descripcion}</option>
+                  {else}
+                  <option value="{$value->codtipo}">{$value->descripcion}</option>
+                  {/if}
+               {/loop}
+            </select>
+         </div>
+      </div>
+      <div class="row">
+         <div class="col-sm-2 pull-right">
+            <div class="input-group">
+               <div class="input-group-addon">
+                  <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+               </div>
+               <select name="orden" class="form-control input-sm" onchange="this.form.submit()">
+                  <option value="nombre ASC">Orden: nombre</option>
+                  <option value="nombre DESC"{if="$fsc->orden=='nombre DESC'"} selected=""{/if}>Orden: nombre descendente</option>
+                  <option value="f_alta ASC"{if="$fsc->orden=='f_alta ASC'"} selected=""{/if}>Orden: fecha</option>
+                  <option value="f_alta DESC"{if="$fsc->orden=='f_alta DESC'"} selected=""{/if}>Orden: fecha descendente</option>
+                  <option value="codalmacen ASC"{if="$fsc->orden=='codalmacen ASC'"} selected=""{/if}>Orden: almacen</option>
+                  <option value="codalmacen DESC"{if="$fsc->orden=='codalmacen DESC'"} selected=""{/if}>Orden: almacen descendente</option>
+                  <option value="cargo ASC"{if="$fsc->orden=='cargo ASC'"} selected=""{/if}>Orden: cargo</option>
+                  <option value="cargo DESC"{if="$fsc->orden=='cargo DESC'"} selected=""{/if}>Orden: cargo descendente</option>
+                  <option value="codcategoria ASC"{if="$fsc->orden=='codcategoria ASC'"} selected=""{/if}>Orden: categoria</option>
+                  <option value="codcategoria DESC"{if="$fsc->orden=='codcategoria DESC'"} selected=""{/if}>Orden: categoria descendente</option>
+               </select>
+            </div>
+         </div>
+      </div>
+   </form>
 </div>
+
+<br/>
 
 <div class="table-responsive">
    <table class="table table-hover">
       <thead>
-         <tr>
-            <th class="text-left">Nombre + Apellidos</th>
+          <tr>
+            <th class="text-left">
+                Nombre + Apellidos
+                {if="$fsc->orden=='nombre DESC'"}
+                &nbsp;<span class="fa fa-sort-amount-desc"></span>
+                {elseif="$fsc->orden=='nombre ASC'"}
+                &nbsp;<span class="fa fa-sort-amount-asc"></span>
+                {/if}
+            </th>
             <th class="text-left">{#FS_CIFNIF#}</th>
-            <th class="text-left">Cargo</th>
+            <th class="text-left">
+                Almacén
+                {if="$fsc->orden=='codalmacen DESC'"}
+                &nbsp;<span class="fa fa-sort-amount-desc"></span>
+                {elseif="$fsc->orden=='codalmacen ASC'"}
+                &nbsp;<span class="fa fa-sort-amount-asc"></span>
+                {/if}
+            </th>
+            <th class="text-left">
+                Cargo
+                {if="$fsc->orden=='cargo DESC'"}
+                &nbsp;<span class="fa fa-sort-amount-desc"></span>
+                {elseif="$fsc->orden=='cargo ASC'"}
+                &nbsp;<span class="fa fa-sort-amount-asc"></span>
+                {/if}                
+            </th>
+            <th class="text-left">
+                Categoria
+                {if="$fsc->orden=='codcategoria DESC'"}
+                &nbsp;<span class="fa fa-sort-amount-desc"></span>
+                {elseif="$fsc->orden=='codcategoria ASC'"}
+                &nbsp;<span class="fa fa-sort-amount-asc"></span>
+                {/if}                
+            </th>
             <th class="text-left">Teléfono</th>
             <th class="text-left">Nacimiento</th>
-            <th class="text-right">Fecha Alta</th>
+            <th class="text-right">
+                Fecha Alta
+                {if="$fsc->orden=='f_alta DESC'"}
+                &nbsp;<span class="fa fa-sort-amount-desc"></span>
+                {elseif="$fsc->orden=='f_alta ASC'"}
+                &nbsp;<span class="fa fa-sort-amount-asc"></span>
+                {/if}
+            </th>
          </tr>
       </thead>
-      {loop="$fsc->agente->all()"}
+      {loop="$fsc->resultados"}
       <tr class='clickableRow{if="$value->f_baja"} danger{/if}' href='{$value->url()}'>
          <td>
             {$value->get_fullname()}
@@ -75,7 +221,9 @@
             {/if}
          </td>
          <td>{$value->dnicif}</td>
+         <td>{$value->almacen_nombre}</td>
          <td>{$value->cargo}</td>
+         <td>{$value->categoria}</td>
          <td>{if="$value->telefono==''"}-{else}{$value->telefono}{/if}</td>
          <td>{$value->f_nacimiento}</td>
          <td class="text-right">{$value->f_alta}</td>
@@ -86,6 +234,20 @@
       </tr>
       {/loop}
    </table>
+</div>
+
+<div class="container-fluid">
+   <div class="row">
+      <div class="col-sm-12 text-center">
+         <ul class="pagination">
+            {loop="$fsc->paginas()"}
+            <li{if="$value['actual']"} class="active"{/if}>
+               <a href="{$value['url']}">{$value['num']}</a>
+            </li>
+            {/loop}
+         </ul>
+      </div>
+   </div>
 </div>
 
 <form class="form-horizontal" role="form" name="f_nuevo_agente" action="{$fsc->url()}" method="post">
@@ -140,4 +302,5 @@
       </div>
    </div>
 </form>
+
 {include="footer"}
