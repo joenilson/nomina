@@ -18,10 +18,12 @@
  */
 require_model('agente.php');
 require_model('cargos.php');
-require_model('organizacion.php');
+require_model('seguridadsocial.php');
 require_model('tipoempleado.php');
 require_model('categoriaempleado.php');
 require_model('sindicalizacion.php');
+require_model('formacion.php');
+require_model('organizacion.php');
 /**
  * Description of configuracion_nomina
  *
@@ -35,11 +37,17 @@ class configuracion_nomina extends fs_controller{
     public $categoriaempleado;
     public $sindicalizacion;
     public $organizacion;
+    public $formacion;
+    public $seguridadsocial;
+    public $existe;
+    public $dir;
+    public $creada;
     public function __construct() {
         parent::__construct(__CLASS__, 'Configuracion Nomina', 'nomina', TRUE, TRUE, FALSE);
     }
 
     protected function private_core() {
+        $this->allow_delete = $this->user->allow_delete_on(__CLASS__);
         $this->share_extensions();
         $this->agente = new agente();
         $this->cargo = new cargos();
@@ -47,15 +55,103 @@ class configuracion_nomina extends fs_controller{
         $this->categoriaempleado = new categoriaempleado();
         $this->sindicalizacion = new sindicalizacion();
         $this->organizacion = new organizacion();
+        if(isset($_REQUEST['type'])){
+            switch($_REQUEST['type']){
+                case "cargos":
+                    $this->template = 'configuracion/nomina_cargos';
+                    if(isset($_POST['codcargo'])){
+                        $this->tratar_cargos();
+                    }
+                    break;
+                case "categorias":
+                    $this->template = 'configuracion/nomina_categoriaempleado';
+                    break;
+                case "dependientes":
+                    $this->template = 'configuracion/nomina_dependientes';
+                    break;
+                case "formacion":
+                    $this->template = 'configuracion/nomina_formacion';
+                    break;
+                case "organizacion":
+                    $this->template = 'configuracion/nomina_organizacion';
+                    break;
+                case "seguridadsocial":
+                    $this->template = 'configuracion/nomina_seguridadsocial';
+                    break;
+                case "sindicalizacion":
+                    $this->template = 'configuracion/nomina_sindicalizacion';
+                    break;
+                case "tipoempleado":
+                    $this->template = 'configuracion/nomina_tipoempleado';
+                    break;
+                default:
+                    break;
+            }
+        }
         //Cargamos los datos por primera vez
         $this->fix_info();
         //Movemos Cargo a la tabla de cargos y banco al campo cuenta_banco
         $this->trasladar_datos();
         //Validamos si existen las carpetas de almacenamiento de datos
         // imagenes de empleados
+        $this->creada = false;
+        $basepath = dirname(dirname(dirname(__DIR__)));
+        $this->dir_nomina = $basepath."/tmp/".FS_TMP_NAME."nomina";
+        $this->dir_empleados =$this->dir_nomina.DIRECTORY_SEPARATOR."empleados";
+        $this->dir_archivos =$this->dir_nomina.DIRECTORY_SEPARATOR."archivos";
+        //Validamos si existe el directorio raiz dentro de la carpeta tmp para la nomina
+        if(!is_dir($this->dir_nomina)){
+            mkdir($this->dir_nomina);
+        }
+        //Validamos si existe el directorio para las imagenes de los empleados
+        $this->creada = false;
+        if(!is_dir($this->dir_empleados)){
+            $this->existe = "NO";
+            if(mkdir($this->dir_empleados)){
+                $this->existe = "SI";
+                $this->creada = true;
+            }
+        }else{
+            $this->existe = "SI";
+            $this->creada = true;
+        }
         // archivos generados
+        // $this->creada = false;
+        if(!is_dir($this->dir_archivos)){
+            $this->existe = "NO";
+            if(mkdir($this->dir_archivos)){
+                $this->existe = "SI";
+                $this->creada = true;
+            }
+        }else{
+            $this->existe = "SI";
+            $this->creada = true;
+        }
         // formatos de presentacion
         //@TODO
+
+    }
+
+    public function tratar_cargos(){
+        $c0 = new cargos();
+        $c0->codcargo = filter_input(INPUT_POST, 'codcargo');
+        $c0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
+        $c0->padre = filter_input(INPUT_POST, 'padre');
+        $c0->estado = filter_input(INPUT_POST, 'estado');
+        $estado = $c0->save();
+        if($estado){
+            $this->new_message("Datos guardados correctamente.");
+        }else{
+            $this->new_error_msg("El cargo con el Id ".$c0->codcargo." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+        }
+    }
+
+    private function mayusculas($string){
+        return strtoupper(trim(strip_tags(stripslashes($string))));
+    }
+
+    private function minusculas($string){
+        return strtolower(trim(strip_tags(stripslashes($string))));
     }
 
     protected function fix_info(){
@@ -96,7 +192,6 @@ class configuracion_nomina extends fs_controller{
             }
         }
 
-        $lista_cargos = $this->cargo->all();
         foreach ($agentes as $agente){
             $c0 = $this->cargo->get_by_descripcion(strtoupper(trim($agente->cargo)));
             if(is_null($agente->codcargo) AND ($c0)){
@@ -225,6 +320,87 @@ class configuracion_nomina extends fs_controller{
                 'name' => 'importar_agentes_css',
                 'page_from' => __CLASS__,
                 'page_to' => 'importar_agentes',
+                'type' => 'head',
+                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="plugins/nomina/view/css/nomina.css"/>',
+                'params' => ''
+            ),
+            //Tabs de Configuracion
+            array(
+                'name' => 'config_nomina_cargos',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'tab',
+                'text' => '<span class="fa fa-gear" aria-hidden="true"></span> &nbsp; Cargos',
+                'params' => '&type=cargos'
+            ),
+            array(
+                'name' => 'config_nomina_categorias',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'tab',
+                'text' => '<span class="fa fa-gear" aria-hidden="true"></span> &nbsp; Categorias',
+                'params' => '&type=categorias'
+            ),
+            array(
+                'name' => 'config_nomina_dependientes',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'tab',
+                'text' => '<span class="fa fa-gear" aria-hidden="true"></span> &nbsp; Dependientes',
+                'params' => '&type=dependientes'
+            ),
+            array(
+                'name' => 'config_nomina_formacion',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'tab',
+                'text' => '<span class="fa fa-gear" aria-hidden="true"></span> &nbsp; Formacion',
+                'params' => '&type=formacion'
+            ),
+            array(
+                'name' => 'config_nomina_organizacion',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'tab',
+                'text' => '<span class="fa fa-gear" aria-hidden="true"></span> &nbsp; Estructura Org.',
+                'params' => '&type=organizacion'
+            ),
+            array(
+                'name' => 'config_nomina_seguridadsocial',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'tab',
+                'text' => '<span class="fa fa-gear" aria-hidden="true"></span> &nbsp; Seguridad Social',
+                'params' => '&type=seguridadsocial'
+            ),
+            array(
+                'name' => 'config_nomina_sindicalizacion',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'tab',
+                'text' => '<span class="fa fa-gear" aria-hidden="true"></span> &nbsp; Sindicalizacion',
+                'params' => '&type=sindicalizacion'
+            ),
+            array(
+                'name' => 'config_nomina_tipoempleado',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'tab',
+                'text' => '<span class="fa fa-gear" aria-hidden="true"></span> &nbsp; Tipo de Contratos',
+                'params' => '&type=tipoempleado'
+            ),
+            array(
+                'name' => 'configurar_nomina_js',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<script src="plugins/nomina/view/js/nomina.js" type="text/javascript"></script>',
+                'params' => ''
+            ),
+            array(
+                'name' => 'configurar_nomina_css',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
                 'type' => 'head',
                 'text' => '<link rel="stylesheet" type="text/css" media="screen" href="plugins/nomina/view/css/nomina.css"/>',
                 'params' => ''

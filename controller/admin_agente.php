@@ -46,7 +46,7 @@ class admin_agente extends fs_controller
    public $foto_empleado;
    public $noimagen = "plugins/nomina/view/imagenes/no_foto.jpg";
    private $upload_photo;
-   private $dir_empleados = "tmp/{FS_TMP_NAME}/nomina/empleados/";
+   private $dir_empleados;
 
    /*
     * Esta página está en la carpeta admin, pero no se necesita ser admin para usarla.
@@ -60,7 +60,7 @@ class admin_agente extends fs_controller
    protected function private_core()
    {
       $this->ppage = $this->page->get('admin_agentes');
-
+      $this->dir_empleados = "tmp/".FS_TMP_NAME."/nomina/empleados/";
       /// ¿El usuario tiene permiso para eliminar en esta página?
       $this->allow_delete = $this->user->allow_delete_on(__CLASS__);
 
@@ -73,7 +73,7 @@ class admin_agente extends fs_controller
       $this->sindicalizacion = new sindicalizacion();
       $this->organizacion = new organizacion();
       $this->seguridadsocial = new seguridadsocial();
-      
+
       $this->agente = FALSE;
       if( isset($_GET['cod']) )
       {
@@ -236,11 +236,11 @@ class admin_agente extends fs_controller
          $this->new_error_msg('error : ' . $$this->upload_photo->error);
       }
    }
-   
+
     private function mayusculas($string){
        return strtoupper(trim(strip_tags(stripslashes($string))));
    }
-   
+
    private function minusculas($string){
        return strtolower(trim(strip_tags(stripslashes($string))));
    }

@@ -101,6 +101,7 @@ class cargos extends fs_model{
     public function save() {
         if($this->exists()){
             $this->update();
+            return true;
         }else{
             //INSERT DATA
             $sql = "INSERT INTO ".$this->table_name." (codcargo, descripcion, padre, estado) VALUES (".
@@ -116,9 +117,9 @@ class cargos extends fs_model{
         $sql = "UPDATE ".$this->table_name." SET ".
             " padre = ".$this->var2str($this->padre).
             ", estado = ".$this->var2str($this->estado).
-            ", descripcion = ".$this->intval($this->descripcion).
+            ", descripcion = ".$this->var2str($this->descripcion).
             " WHERE codcargo = ".$this->var2str($this->codcargo).";";
-        return $this->db->exec($sql);
+        $this->db->exec($sql);
     }
 
     public function get($codcargo){
@@ -141,7 +142,7 @@ class cargos extends fs_model{
 
     public function all(){
         $lista = array();
-        $data = $this->db->select("SELECT * FROM ".$this->table_name.";");
+        $data = $this->db->select("SELECT * FROM ".$this->table_name." ORDER BY descripcion;");
         if($data){
             foreach($data as $d){
                 $lista[] = new cargos($d);

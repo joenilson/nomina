@@ -37,7 +37,7 @@ class admin_agentes extends fs_controller
    public $orden;
    public $provincia;
    public $resultados;
-   public $total_resultados;   
+   public $total_resultados;
    public $archivo;
    public $resultado;
    public $almacen;
@@ -50,7 +50,7 @@ class admin_agentes extends fs_controller
    public $foto_empleado;
    public $noimagen = "plugins/nomina/view/imagenes/no_foto.jpg";
    private $upload_photo;
-   private $dir_empleados = "tmp/{FS_TMP_NAME}/nomina/empleados/";
+   private $dir_empleados;
 
    public function __construct()
    {
@@ -59,6 +59,8 @@ class admin_agentes extends fs_controller
 
    protected function private_core()
    {
+      $this->allow_delete = $this->user->allow_delete_on(__CLASS__);
+      $this->dir_empleados = "tmp/".FS_TMP_NAME."/nomina/empleados/";
       $this->share_extensions();
       $this->agente = new agente();
       $this->almacen = new almacen();
@@ -67,7 +69,7 @@ class admin_agentes extends fs_controller
       $this->tipoempleado = new tipoempleado();
       $this->categoriaempleado = new categoriaempleado();
       $this->cache->delete('m_agente_all');
-      
+
       if( isset($_GET['type']) ){
           $type = filter_input(INPUT_GET, 'type');
           switch ($type){
@@ -164,52 +166,52 @@ class admin_agentes extends fs_controller
           $this->archivo = $_FILES['empleados'];
           $this->importar_empleados();
       }
-      
+
       $this->offset = 0;
       if( isset($_GET['offset']) )
       {
          $this->offset = intval($_GET['offset']);
       }
-      
+
       $this->ciudad = '';
       if( isset($_REQUEST['ciudad']) )
       {
          $this->ciudad = $_REQUEST['ciudad'];
       }
-      
+
       $this->provincia = '';
       if( isset($_REQUEST['provincia']) )
       {
          $this->provincia = $_REQUEST['provincia'];
       }
-      
+
       $this->codalmacen = '';
       if( isset($_REQUEST['almacen']) )
       {
          $this->codalmacen = $_REQUEST['almacen'];
       }
-      
+
       $this->tipo = '';
       if( isset($_REQUEST['codtipo']) )
       {
          $this->tipo = $_REQUEST['codtipo'];
       }
-      
+
       $this->categoria = '';
       if( isset($_REQUEST['codcategoria']) )
       {
          $this->categoria = $_REQUEST['codcategoria'];
       }
-      
+
       $this->orden = 'nombre ASC';
       if( isset($_REQUEST['orden']) )
       {
          $this->orden = $_REQUEST['orden'];
       }
-      
+
       $this->buscar();
    }
-   
+
    public function paginas()
    {
       $url = $this->url()."&query=".$this->query
@@ -220,12 +222,12 @@ class admin_agentes extends fs_controller
                  ."&provincia=".$this->provincia
                  ."&offset=".($this->offset+FS_ITEM_LIMIT)
                  ."&orden=".$this->orden;
-      
+
       $paginas = array();
       $i = 0;
       $num = 0;
       $actual = 1;
-      
+
       /// añadimos todas la página
       while($num < $this->total_resultados)
       {
@@ -234,21 +236,21 @@ class admin_agentes extends fs_controller
              'num' => $i + 1,
              'actual' => ($num == $this->offset)
          );
-         
+
          if($num == $this->offset)
          {
             $actual = $i;
          }
-         
+
          $i++;
          $num += FS_ITEM_LIMIT;
       }
-      
+
       /// ahora descartamos
       foreach($paginas as $j => $value)
       {
          $enmedio = intval($i/2);
-         
+
          /**
           * descartamos todo excepto la primera, la última, la de enmedio,
           * la actual, las 5 anteriores y las 5 siguientes
@@ -258,7 +260,7 @@ class admin_agentes extends fs_controller
             unset($paginas[$j]);
          }
       }
-      
+
       if( count($paginas) > 1 )
       {
          return $paginas;
@@ -268,11 +270,11 @@ class admin_agentes extends fs_controller
          return array();
       }
    }
-   
+
    public function ciudades()
    {
       $final = array();
-      
+
       if( $this->db->table_exists('agentes') )
       {
          $ciudades = array();
@@ -282,7 +284,7 @@ class admin_agentes extends fs_controller
             $sql = "SELECT DISTINCT ciudad FROM agentes WHERE lower(provincia) = "
                     .$this->agente->var2str($this->provincia)." ORDER BY ciudad ASC;";
          }
-         
+
          $data = $this->db->select($sql);
          if($data)
          {
@@ -291,7 +293,7 @@ class admin_agentes extends fs_controller
                $ciudades[] = $d['ciudad'];
             }
          }
-         
+
          /// usamos las minúsculas para filtrar
          foreach($ciudades as $ciu)
          {
@@ -301,19 +303,19 @@ class admin_agentes extends fs_controller
             }
          }
       }
-      
+
       return $final;
    }
-   
+
    public function provincias()
    {
       $final = array();
-      
+
       if( $this->db->table_exists('agentes') )
       {
          $provincias = array();
          $sql = "SELECT DISTINCT provincia FROM agentes ORDER BY provincia ASC;";
-         
+
          $data = $this->db->select($sql);
          if($data)
          {
@@ -322,7 +324,7 @@ class admin_agentes extends fs_controller
                $provincias[] = $d['provincia'];
             }
          }
-         
+
          foreach($provincias as $pro)
          {
             if($pro != '')
@@ -331,17 +333,17 @@ class admin_agentes extends fs_controller
             }
          }
       }
-      
+
       return $final;
    }
-   
+
    private function buscar()
    {
       $this->total_resultados = 0;
       $query = mb_strtolower( $this->agente->no_html($this->query), 'UTF8' );
       $sql = " FROM agentes";
       $and = ' WHERE ';
-      
+
       if( is_numeric($query) )
       {
          $sql .= $and."(codagente LIKE '%".$query."%'"
@@ -358,42 +360,42 @@ class admin_agentes extends fs_controller
                  . " OR lower(email) LIKE '%".$buscar."%')";
          $and = ' AND ';
       }
-      
+
       if($this->ciudad != '')
       {
          $sql .= $and."lower(ciudad) = ".$this->agente->var2str( mb_strtolower($this->ciudad, 'UTF8') );
          $and = ' AND ';
       }
-      
+
       if($this->provincia != '')
       {
          $sql .= $and."lower(provincia) = ".$this->agente->var2str( mb_strtolower($this->provincia, 'UTF8') );
          $and = ' AND ';
       }
-      
+
       if($this->codalmacen != '')
       {
          $sql .= $and."codalmacen = ".$this->agente->var2str( $this->codalmacen );
          $and = ' AND ';
       }
-      
+
       if($this->categoria != '')
       {
          $sql .= $and."codcategoria = ".$this->agente->var2str( $this->categoria );
          $and = ' AND ';
       }
-      
+
       if($this->tipo != '')
       {
          $sql .= $and."codtipo = ".$this->agente->var2str( $this->tipo );
          $and = ' AND ';
       }
-      
+
       $data = $this->db->select("SELECT COUNT(codagente) as total".$sql.';');
       if($data)
       {
          $this->total_resultados = intval($data[0]['total']);
-         
+
          $data2 = $this->db->select_limit("SELECT *".$sql." ORDER BY ".$this->orden, FS_ITEM_LIMIT, $this->offset);
          if($data2)
          {
