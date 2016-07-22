@@ -11,6 +11,12 @@
         <nulo>NO</nulo>
     </columna>
     <columna>
+        <nombre>codcategoria</nombre>
+        <tipo>character varying(6)</tipo>
+        <nulo>NO</nulo>
+        <defecto>'0'::character varying</defecto>
+    </columna>
+    <columna>
         <nombre>descripcion</nombre>
         <tipo>character varying(100)</tipo>
         <nulo>NO</nulo>

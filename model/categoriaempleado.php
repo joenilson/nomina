@@ -36,6 +36,12 @@ class categoriaempleado extends fs_model{
     public $descripcion;
 
     /**
+     * Para poder sacar un listado con jerarquias se necesita un orden
+     * @var type $orden Integer
+     */
+    public $orden;
+
+    /**
      * Si se va desactivar una categoria de empleado se debe colocar aquí su estado
      * @var type $estado Boolean
      */
@@ -45,26 +51,28 @@ class categoriaempleado extends fs_model{
         if($t){
             $this->codcategoria = $t['codcategoria'];
             $this->descripcion = $t['descripcion'];
+            $this->orden = $t['orden'];
             $this->estado = $this->str2bool($t['estado']);
         }else{
             $this->codcategoria = NULL;
             $this->descripcion = NULL;
+            $this->orden = NULL;
             $this->estado = FALSE;
         }
     }
 
     protected function install() {
         return "INSERT INTO ".$this->table_name.
-                " (codcategoria, descripcion, estado) VALUES".
-                " ('1','GERENTE GENERAL',TRUE),".
-                " ('2','GERENTE',TRUE),".
-                " ('3','JEFE',TRUE),".
-                " ('4','COORDINADOR',TRUE),".
-                " ('5','SUPERVISOR / ENCARGADO',TRUE),".
-                " ('6','ANALISTA',TRUE),".
-                " ('7','ASISTENTE',TRUE),".
-                " ('8','AUXILIAR / OPERARIO',TRUE),".
-                " ('9','PRACTICANTE',TRUE);";
+                " (codcategoria, descripcion, orden, estado) VALUES".
+                " ('1','GERENTE GENERAL',1,TRUE),".
+                " ('2','GERENTE',2,TRUE),".
+                " ('3','JEFE',3,TRUE),".
+                " ('4','COORDINADOR',4,TRUE),".
+                " ('5','SUPERVISOR / ENCARGADO',5,TRUE),".
+                " ('6','ANALISTA',6,TRUE),".
+                " ('7','ASISTENTE',7,TRUE),".
+                " ('8','AUXILIAR / OPERARIO',8,TRUE),".
+                " ('9','PRACTICANTE',9,TRUE);";
     }
 
     public function url()
@@ -97,11 +105,13 @@ class categoriaempleado extends fs_model{
     public function save() {
         if($this->exists()){
             $this->update();
+            return true;
         }else{
             //INSERT DATA
-            $sql = "INSERT INTO ".$this->table_name." (codcategoria, descripcion, estado) VALUES (".
+            $sql = "INSERT INTO ".$this->table_name." (codcategoria, descripcion, orden, estado) VALUES (".
                 $this->var2str($this->get_new_codigo()).", ".
                 $this->var2str($this->descripcion).", ".
+                $this->intval($this->orden).", ".
                 $this->var2str($this->estado).");";
             return $this->db->exec($sql);
         }
@@ -109,10 +119,11 @@ class categoriaempleado extends fs_model{
 
     public function update(){
         $sql = "UPDATE ".$this->table_name." SET ".
-            ", estado = ".$this->var2str($this->estado).
-            ", descripcion = ".$this->intval($this->descripcion).
+            " estado = ".$this->var2str($this->estado).
+            ", orden = ".$this->intval($this->orden).
+            ", descripcion = ".$this->var2str($this->descripcion).
             " WHERE codcategoria = ".$this->var2str($this->codcategoria).";";
-        return $this->db->exec($sql);
+        $this->db->exec($sql);
     }
 
     public function get($codcategoria){
@@ -135,7 +146,7 @@ class categoriaempleado extends fs_model{
 
     public function all(){
         $lista = array();
-        $data = $this->db->select("SELECT * FROM ".$this->table_name.";");
+        $data = $this->db->select("SELECT * FROM ".$this->table_name." ORDER BY orden;");
         if($data){
             foreach($data as $d){
                 $lista[] = new categoriaempleado($d);
@@ -158,6 +169,47 @@ class categoriaempleado extends fs_model{
         }else{
             $this->save();
         }
+    }
+
+    public function get_maxorden(){
+        $sql = "SELECT max(orden) as orden FROM ".$this->table_name.";";
+        $data = $this->db->select($sql);
+        if($data){
+            return $data[0]['orden']+1;
+        }else{
+            return 1;
+        }
+    }
+
+    public function reordenar($reorden){
+        if($this->orden != $reorden){
+            $posicion_inicial = ($this->orden > $reorden)?$reorden:$this->orden;
+            $sql = "SELECT * from ".$this->table_name." where orden >= ".$this->intval($posicion_inicial)." ORDER BY orden;";
+            //echo $sql;
+            $data = $this->db->select($sql);
+            if($data){
+                $posicion_actual = $posicion_inicial;
+                foreach($data as $d){
+                    $value = new categoriaempleado($d);
+                    $value->orden = $this->comparar($value, $posicion_actual, $reorden);
+                    $value->update();
+                    $posicion_actual++;
+                }
+            }
+        }
+    }
+
+    private function comparar($value, $posicion, $reorden){
+        if($value->codcategoria == $this->codcategoria){
+            $valor = $reorden;
+        }else{
+            if($value->orden == $reorden){
+                $valor = $this->orden;
+            }else{
+                $valor = $posicion;
+            }
+        }
+        return $valor;
     }
 
 }

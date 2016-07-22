@@ -55,8 +55,8 @@ class configuracion_nomina extends fs_controller{
         $this->categoriaempleado = new categoriaempleado();
         $this->sindicalizacion = new sindicalizacion();
         $this->organizacion = new organizacion();
-        if(isset($_REQUEST['type'])){
-            switch($_REQUEST['type']){
+        if(isset($_GET['type'])){
+            switch($_GET['type']){
                 case "cargos":
                     $this->template = 'configuracion/nomina_cargos';
                     if(isset($_POST['codcargo'])){
@@ -65,6 +65,9 @@ class configuracion_nomina extends fs_controller{
                     break;
                 case "categorias":
                     $this->template = 'configuracion/nomina_categoriaempleado';
+                    if(isset($_REQUEST['codcategoria'])){
+                        $this->tratar_categorias();
+                    }
                     break;
                 case "dependientes":
                     $this->template = 'configuracion/nomina_dependientes';
@@ -135,6 +138,7 @@ class configuracion_nomina extends fs_controller{
     public function tratar_cargos(){
         $c0 = new cargos();
         $c0->codcargo = filter_input(INPUT_POST, 'codcargo');
+        $c0->codcategoria = filter_input(INPUT_POST, 'codcategoria');
         $c0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
         $c0->padre = filter_input(INPUT_POST, 'padre');
         $c0->estado = filter_input(INPUT_POST, 'estado');
@@ -143,6 +147,25 @@ class configuracion_nomina extends fs_controller{
             $this->new_message("Datos guardados correctamente.");
         }else{
             $this->new_error_msg("El cargo con el Id ".$c0->codcargo." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+        }
+    }
+
+    public function tratar_categorias(){
+        $ca0 = new categoriaempleado();
+        if(isset($_GET['reorden']) AND !empty($_GET['reorden'])){
+            $categoria_reordenar = $ca0->get(filter_input(INPUT_GET, 'codcategoria'));
+            $categoria_reordenar->reordenar(filter_input(INPUT_GET, 'reorden'));
+        }else{
+            $ca0->codcategoria = filter_input(INPUT_POST, 'codcategoria');
+            $ca0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
+            $ca0->orden = (filter_input(INPUT_POST, 'orden')==0)?$ca0->get_maxorden():filter_input(INPUT_POST, 'orden');
+            $ca0->estado = filter_input(INPUT_POST, 'estado');
+            $estado = $ca0->save();
+            if($estado){
+                $this->new_message("Datos guardados correctamente.");
+            }else{
+                $this->new_error_msg("La Categoria con el Id ".$ca0->codcategoria." No pudo ser guardada, revise los datos e intente nuevamente. Error: ".$estado);
+            }
         }
     }
 
@@ -187,6 +210,7 @@ class configuracion_nomina extends fs_controller{
                 $c0 = new cargos();
                 $c0->descripcion = strtoupper(trim($cargo));
                 $c0->padre = NULL;
+                $c0->codcategoria = NULL;
                 $c0->estado = TRUE;
                 $c0->corregir();
             }

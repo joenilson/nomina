@@ -15,13 +15,97 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<form class="form" role="form" action="{$fsc->url()}" method="post">
-    <div class="panel panel-primary">
-        <div class="panel-heading">
-            <h3 class="panel-title">Configuraci&oacute;n de Categorias</h3>
-        </div>
-        <div class="panel-body">
-            Lista básica
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h3 class="panel-title">Configuraci&oacute;n de Categorias</h3>
+    </div>
+    <div class="panel-body">
+        <div class="container">
+            <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Descripcion:</th>
+                        <th class="text-center">Orden</th>
+                        <th class="text-center">Estado</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <form class="form" role="form" action="{$fsc->url()}&type=categorias" method="POST">
+                    <tr class="info">
+                        <td>
+                            <input type="hidden" name="codcategoria" value="">
+                        </td>
+                        <td>
+                            <input type="text" name="descripcion" value="" autocomplete="off" class="form-control input-sm">
+                        </td>
+                        <td>
+                            <input type="hidden" name="orden" value="0">
+                        </td>
+                        <td>
+                            <input type="hidden" name="estado" value="true">
+                        </td>
+                        <td>
+                            <button type="submit" class="btn btn-sm btn-primary">
+                                <span class="fa fa-save"></span> Nuevo
+                            </button>
+                        </td>
+                    </tr>
+                </form>
+                {$registros=(count($fsc->categoriaempleado->all()))}
+                {$registro=1}
+                {loop="$fsc->categoriaempleado->all()"}
+                <form class="form" role="form" action="{$fsc->url()}&type=categorias" method="POST">
+                <tr>
+                    <td>
+                        <input type="text" name="codcategoria" value="{$value->codcategoria}" readonly="true">
+                    </td>
+                    <td>
+                        <input type="text" name="descripcion" value="{$value->descripcion}" autocomplete="off" class="form-control input-sm">
+                    </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="hidden" name="orden" value="{$value->orden}" autocomplete="off" class="form-control input-sm">
+                            <div class="input-group-btn">
+                                {if="$registro==1"}
+                                <a class="btn btn-sm btn-default" href="{$fsc->url()}&type=categorias&codcategoria={$value->codcategoria}&reorden={$value->orden+1}">
+                                    <span class="fa fa-arrow-down"></span>
+                                </a>
+                                {elseif="$registro==$registros"}
+                                    <a class="btn btn-sm btn-default" href="{$fsc->url()}&type=categorias&codcategoria={$value->codcategoria}&reorden={$value->orden-1}">
+                                        <span class="fa fa-arrow-up"></span>
+                                    </a>
+                                {else}
+                                <a class="btn btn-sm btn-default" href="{$fsc->url()}&type=categorias&codcategoria={$value->codcategoria}&reorden={$value->orden-1}">
+                                    <span class="fa fa-arrow-up"></span>
+                                </a>
+                                <a class="btn btn-sm btn-default" href="{$fsc->url()}&type=categorias&codcategoria={$value->codcategoria}&reorden={$value->orden+1}">
+                                    <span class="fa fa-arrow-down"></span>
+                                </a>
+                                {/if}
+                            </div>
+                        </div>
+                        {$registro=$registro+1}
+                    </td>
+                    <td class="text-center">
+                        <input type="checkbox" onchange="this.value=(this.value==='true')?'false':'true';" name="estado" value="{if="$value->estado"}true{else}false{/if}" {if="$value->estado"}checked{/if} class="checkbox-control">
+                    </td>
+                    <td class="text-right">
+                        {if="$fsc->allow_delete"}
+                        <button class="btn btn-sm btn-danger">
+                            <span class="fa fa-trash"></span>
+                        </button>
+                        {/if}
+                        <button class="btn btn-sm btn-primary">
+                            <span class="fa fa-save"></span>
+                        </button>
+                    </td>
+                </tr>
+                </form>
+                {/loop}
+                </tbody>
+            </table>
         </div>
     </div>
-</form>
+</div>

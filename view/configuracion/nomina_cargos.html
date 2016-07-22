@@ -15,86 +15,99 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<form class="form" role="form" action="{$fsc->url()}" method="post">
-    <div class="panel panel-primary">
-        <div class="panel-heading">
-            <h3 class="panel-title">Configuraci&oacute;n de Cargos</h3>
-        </div>
-        <div class="panel-body">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Descripcion:</th>
-                        <th>Responde a:</th>
-                        <th class="text-center">Estado</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <form class="form" role="form" action="{$fsc->url()}" method="POST">
-                    <tr class="info">
-                        <td>
-                            <input type="hidden" name="type" value="cargos">
-                            <input type="hidden" name="codcargo" value="">
-                        </td>
-                        <td>
-                            <input type="text" name="descripcion" value="" autocomplete="off" class="form-control input-sm">
-                        </td>
-                        <td>
-                            <select class="form-control input-sm" name="padre">
-                                <option value="">---------</option>
-                                {loop="$fsc->cargo->all()"}
-                                <option value="{$value->codcargo}">{$value->descripcion}</option>
-                                {/loop}
-                            </select>
-                        </td>
-                        <td>
-                            <input type="hidden" name="estado" value="true">
-                        </td>
-                        <td>
-                            <button type="submit" class="btn btn-sm btn-primary">
-                                <span class="fa fa-save"></span> Nuevo
-                            </button>
-                        </td>
-                    </tr>
-                </form>
-                {loop="$fsc->cargo->all()"}
-                <form class="form" role="form" action="{$fsc->url()}" method="POST">
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h3 class="panel-title">Configuraci&oacute;n de Cargos</h3>
+    </div>
+    <div class="panel-body">
+        <table class="table table-condensed">
+            <thead>
                 <tr>
+                    <th>Id</th>
+                    <th>Descripcion:</th>
+                    <th>Responde a:</th>
+                    <th>Categor&iacute;a:</th>
+                    <th class="text-center">Estado</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <form class="form" role="form" action="{$fsc->url()}&type=cargos" method="POST">
+                <tr class="info">
                     <td>
-                        <input type="hidden" name="type" value="cargos">
-                        <input type="text" name="codcargo" value="{$value->codcargo}" readonly="true">
+                        <input type="hidden" name="codcargo" value="">
                     </td>
                     <td>
-                        <input type="text" name="descripcion" value="{$value->descripcion}" autocomplete="off" class="form-control input-sm">
+                        <input type="text" name="descripcion" value="" autocomplete="off" class="form-control input-sm">
                     </td>
                     <td>
                         <select class="form-control input-sm" name="padre">
-                            <option value="">Ninguno</option>
+                            <option value="">---------</option>
                             {loop="$fsc->cargo->all()"}
-                            <option value="{$value2->codcargo}" {if="$value1->padre==$value2->codcargo"}selected{/if}>{$value2->descripcion}</option>
+                            <option value="{$value->codcargo}">{$value->descripcion}</option>
                             {/loop}
                         </select>
                     </td>
-                    <td class="text-center">
-                        <input type="checkbox" name="estado" value="{if="$value->estado"}true{else}false{/if}" {if="$value->estado"}checked{/if} class="checkbox-control">
+                    <td>
+                    <select class="form-control input-sm" required name="codcategoria">
+                        <option value="">---------</option>
+                        {loop="$fsc->categoriaempleado->all()"}
+                        <option value="{$value->codcategoria}">{$value->descripcion}</option>
+                        {/loop}
+                    </select>
+                </td>
+                    <td>
+                        <input type="hidden" name="estado" value="true">
                     </td>
-                    <td class="text-right">
-                        {if="$fsc->allow_delete"}
-                        <button class="btn btn-sm btn-danger">
-                            <span class="fa fa-trash"></span>
-                        </button>
-                        {/if}
-                        <button class="btn btn-sm btn-primary">
-                            <span class="fa fa-save"></span>
+                    <td>
+                        <button type="submit" class="btn btn-sm btn-primary">
+                            <span class="fa fa-save"></span> Nuevo
                         </button>
                     </td>
                 </tr>
-                </form>
-                {/loop}
-                </tbody>
-            </table>
-        </div>
+            </form>
+            {loop="$fsc->cargo->all()"}
+            <form class="form" role="form" action="{$fsc->url()}&type=cargos" method="POST">
+            <tr>
+                <td>
+                    <input type="text" name="codcargo" value="{$value->codcargo}" readonly="true">
+                </td>
+                <td>
+                    <input type="text" name="descripcion" value="{$value->descripcion}" autocomplete="off" class="form-control input-sm">
+                </td>
+                <td>
+                    <select class="form-control input-sm" name="padre">
+                        <option value="">Ninguno</option>
+                        {loop="$fsc->cargo->all()"}
+                        <option value="{$value2->codcargo}" {if="$value1->padre==$value2->codcargo"}selected{/if}>{$value2->descripcion}</option>
+                        {/loop}
+                    </select>
+                </td>
+                <td>
+                    <select class="form-control input-sm" name="codcategoria">
+                        <option value="">Ninguno</option>
+                        {loop="$fsc->categoriaempleado->all()"}
+                        <option value="{$value2->codcategoria}" {if="$value1->codcategoria==$value2->codcategoria"}selected{/if}>{$value2->descripcion}</option>
+                        {/loop}
+                    </select>
+                </td>
+                <td class="text-center">
+                    <input type="checkbox" name="estado" value="{if="$value->estado"}true{else}false{/if}" {if="$value->estado"}checked{/if} class="checkbox-control">
+                </td>
+                <td class="text-right">
+                    {if="$fsc->allow_delete"}
+                    <button class="btn btn-sm btn-danger">
+                        <span class="fa fa-trash"></span>
+                    </button>
+                    {/if}
+                    <button class="btn btn-sm btn-primary">
+                        <span class="fa fa-save"></span>
+                    </button>
+                </td>
+            </tr>
+            </form>
+            {/loop}
+            </tbody>
+        </table>
     </div>
-</form>
+</div>

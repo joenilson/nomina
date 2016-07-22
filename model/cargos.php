@@ -41,6 +41,12 @@ class cargos extends fs_model{
     public $descripcion;
 
     /**
+     * Un cargo debe pertenecer a una categoria
+     * @var type $codcategoria Categoria
+     */
+    public $codcategoria;
+
+    /**
      * Si se va desactivar un cargo se debe colocar aquí su estado
      * @var type $estado Boolean
      */
@@ -51,17 +57,19 @@ class cargos extends fs_model{
             $this->codcargo = $t['codcargo'];
             $this->descripcion = $t['descripcion'];
             $this->padre = $t['padre'];
+            $this->codcategoria = $t['codcategoria'];
             $this->estado = $this->str2bool($t['estado']);
         }else{
             $this->codcargo = NULL;
             $this->descripcion = NULL;
             $this->padre = NULL;
+            $this->codcategoria = NULL;
             $this->estado = FALSE;
         }
     }
 
     protected function install() {
-        return "INSERT INTO ".$this->table_name." (codcargo, descripcion, padre, estado) VALUES ('1','GERENTE GENERAL',NULL,TRUE)";
+        return "INSERT INTO ".$this->table_name." (codcargo, descripcion, padre, codcategoria, estado) VALUES ('1','GERENTE GENERAL',NULL,'1',TRUE)";
     }
 
     public function url()
@@ -104,10 +112,11 @@ class cargos extends fs_model{
             return true;
         }else{
             //INSERT DATA
-            $sql = "INSERT INTO ".$this->table_name." (codcargo, descripcion, padre, estado) VALUES (".
+            $sql = "INSERT INTO ".$this->table_name." (codcargo, descripcion, padre, codcategoria, estado) VALUES (".
                 $this->var2str($this->get_new_codigo()).", ".
                 $this->var2str($this->descripcion).", ".
                 $this->var2str($this->padre).", ".
+                $this->var2str($this->codcategoria).", ".
                 $this->var2str($this->estado).");";
             return $this->db->exec($sql);
         }
@@ -115,7 +124,8 @@ class cargos extends fs_model{
 
     public function update(){
         $sql = "UPDATE ".$this->table_name." SET ".
-            " padre = ".$this->var2str($this->padre).
+            " codcategoria = ".$this->var2str($this->codcategoria).
+            ", padre = ".$this->var2str($this->padre).
             ", estado = ".$this->var2str($this->estado).
             ", descripcion = ".$this->var2str($this->descripcion).
             " WHERE codcargo = ".$this->var2str($this->codcargo).";";
@@ -133,6 +143,15 @@ class cargos extends fs_model{
 
     public function get_by_descripcion($descripcion){
         $data = $this->db->select("SELECT * FROM ".$this->table_name." WHERE descripcion = ".$this->var2str($descripcion).";");
+        if($data){
+            return new cargos($data[0]);
+        }else{
+            return false;
+        }
+    }
+
+    public function get_by_categoria($codcategoria){
+        $data = $this->db->select("SELECT * FROM ".$this->table_name." WHERE codcategoria = ".$this->var2str($codcategoria).";");
         if($data){
             return new cargos($data[0]);
         }else{

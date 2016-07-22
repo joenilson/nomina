@@ -20,6 +20,12 @@
         <tipo>boolean</tipo>
         <nulo>YES</nulo>
     </columna>
+    <columna>
+        <nombre>orden</nombre>
+        <tipo>integer</tipo>
+        <nulo>NO</nulo>
+        <defecto>0</defecto>
+    </columna>
     <restriccion>
         <nombre>hr_categoriaempleado_pkey</nombre>
         <consulta>PRIMARY KEY (codcategoria)</consulta>
