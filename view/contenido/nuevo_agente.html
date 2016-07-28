@@ -148,7 +148,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </fieldset>
                         <fieldset>
                             <legend>Datos Organizacionales:</legend>
-                            <div class="col-sm-2">
+                            <div class="col-sm-3">
                                 <div class="form-group">
                                     <label class="label label-sm label-default" for="codalmacen">
                                         <a href="{$fsc->almacen->url()}">Almacén:</a>
@@ -161,7 +161,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-sm-2">
+                            <div class="col-sm-3">
                                 <div class="form-group">
                                     <label class="label label-sm label-default" for="codcargo">
                                         <a href="{$fsc->cargos->url()}">Cargo ocupado:</a>
@@ -170,19 +170,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                         <option value="">--------</option>
                                         {loop="$fsc->cargos->all()"}
                                         <option value="{$value->codcargo}" {if="$fsc->agente->codcargo==$value->codcargo"}selected{/if}>{$value->descripcion}</option>
-                                        {/loop}
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-sm-2">
-                                <div class="form-group">
-                                    <label class="label label-sm label-default" for="codcategoria">
-                                        <a href="{$fsc->categoriaempleado->url()}">Categoria de empleado:</a>
-                                    </label>
-                                    <select name="codcategoria" required class="form-control input-sm">
-                                        <option value="">--------</option>
-                                        {loop="$fsc->categoriaempleado->all()"}
-                                        <option value="{$value->codcategoria}" {if="$fsc->agente->codcategoria==$value->codcategoria"}selected{/if}>{$value->descripcion}</option>
                                         {/loop}
                                     </select>
                                 </div>

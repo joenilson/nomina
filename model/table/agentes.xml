@@ -61,11 +61,6 @@
         <nulo>YES</nulo>
     </columna>
     <columna>
-        <nombre>codcategoria</nombre>
-        <tipo>character varying(6)</tipo>
-        <nulo>YES</nulo>
-    </columna>
-    <columna>
         <nombre>coddepartamento</nombre>
         <tipo>character varying(6)</tipo>
         <nulo>YES</nulo>

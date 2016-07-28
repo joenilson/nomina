@@ -54,7 +54,7 @@ class importar_agentes extends fs_controller
    public $resultado;
    public $arrayCabeceras = array('sede','empresa','dnicif','nombreap','apellidos',
             'segundo_apellido','nombre','sexo','estado_civil','f_nacimiento','direccion'
-            ,'telefono','f_alta','f_baja','gerencia','area','departamento','cargo','categoria'
+            ,'telefono','f_alta','f_baja','gerencia','area','departamento','cargo'
             ,'codseguridadsocial','seg_social','dependientes','codformacion','carrera'
             ,'centroestudios','idsindicato','codtipo','pago_total','pago_neto','email');
     public function __construct() {
@@ -203,19 +203,6 @@ class importar_agentes extends fs_controller
             $codformacion = NULL;
         }
 
-        if($_POST['categoria'] != ''){
-            if($this->categoriaempleado->get_by_descripcion($this->mayusculas($_POST['categoria']))){
-                $datos = $this->categoriaempleado->get_by_descripcion($this->mayusculas($_POST['categoria']));
-                if($datos){
-                    $codcategoria = $datos->codcategoria;
-                }else{
-                    $codcategoria = NULL;
-                }
-            }else{
-                $codcategoria = NULL;
-            }
-        }
-
         if($_POST['codtipo'] != ''){
             if($this->tipoempleado->get_by_descripcion($this->mayusculas($_POST['codtipo']))){
                 $codtipo = $this->tipoempleado->get_by_descripcion($this->mayusculas($_POST['codtipo']))->codtipo;
@@ -274,7 +261,6 @@ class importar_agentes extends fs_controller
         $age0->f_nacimiento = $_POST['f_nacimiento'];
         $age0->f_alta = (!empty($_POST['f_alta']))?$_POST['f_alta']:NULL;
         $age0->f_baja = (!empty($_POST['f_baja']))?$_POST['f_baja']:NULL;
-        $age0->codcategoria = $codcategoria;
         $age0->codtipo = $codtipo;
         //$age0->codsupervisor = $_POST['codsupervisor'];
         $age0->codgerencia = $codgerencia;

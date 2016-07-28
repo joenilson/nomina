@@ -109,7 +109,6 @@ class admin_agentes extends fs_controller
         $age0->f_nacimiento = $_POST['f_nacimiento'];
         $age0->f_alta = (!empty($_POST['f_alta']))?$_POST['f_alta']:NULL;
         $age0->f_baja = (!empty($_POST['f_baja']))?$_POST['f_baja']:NULL;
-        $age0->codcategoria = $_POST['codcategoria'];
         $age0->codtipo = $_POST['codtipo'];
         $age0->codsupervisor = $_POST['codsupervisor'];
         $age0->codgerencia = $_POST['codgerencia'];
@@ -341,7 +340,7 @@ class admin_agentes extends fs_controller
    {
       $this->total_resultados = 0;
       $query = mb_strtolower( $this->agente->no_html($this->query), 'UTF8' );
-      $sql = " FROM agentes";
+      $sql = " FROM agentes, hr_cargos ";
       $and = ' WHERE ';
 
       if( is_numeric($query) )
@@ -381,7 +380,10 @@ class admin_agentes extends fs_controller
 
       if($this->categoria != '')
       {
-         $sql .= $and."codcategoria = ".$this->agente->var2str( $this->categoria );
+         $sql .= $and."hr_cargos.codcargo = agentes.codcargo AND hr_cargos.codcategoria = ".$this->agente->var2str( $this->categoria );
+         $and = ' AND ';
+      }else{
+          $sql .= $and."hr_cargos.codcargo = agentes.codcargo ";
          $and = ' AND ';
       }
 
@@ -407,41 +409,6 @@ class admin_agentes extends fs_controller
             }
          }
       }
-   }
-
-   private function importar_empleados(){
-        $objPHPExcel = PHPExcel_IOFactory::load($this->archivo['tmp_name']);
-        $arrayCabeceras = array('sede','empresa','cifnif','nombreap','apellidos',
-            'segundo_apellido','nombre','sexo','estado_civil','f_nacimiento','direccion'
-            ,'telefono','f_alta','f_baja','gerencia','area','departamento','cargo','categoria'
-            ,'codseguridadsocial','seg_social','dependientes','codformacion','carrera'
-            ,'centroestudios','idsindicato','codtipo','pago_total','pago_neto');
-        foreach ($objPHPExcel->getWorksheetIterator() as $worksheet) {
-            $worksheetTitle     = $worksheet->getTitle();
-            $highestRow         = $worksheet->getHighestRow(); // e.g. 10
-            $highestColumn      = $worksheet->getHighestColumn(); // e.g 'F'
-            $highestColumnIndex = PHPExcel_Cell::columnIndexFromString($highestColumn);
-            $nrColumns = ord($highestColumn) - 64;
-            for ($row = 1; $row <= $highestRow; ++ $row) {
-                $celda = ($row==1)?'th':'td';
-                if($row!=1){
-                    for ($col = 0; $col < count($arrayCabeceras); ++$col) {
-                        $cell = $worksheet->getCellByColumnAndRow($col, $row);
-                        $val = $cell->getValue();
-                        if(PHPExcel_Shared_Date::isDateTime($cell)) {
-                            $val = date('d-m-Y', PHPExcel_Shared_Date::ExcelToPHP($val));
-                        }
-
-                        //$dataType = PHPExcel_Cell_DataType::dataTypeForValue($val);
-                        $linea[$arrayCabeceras[$col]]=$val;
-                    }
-                    $this->resultado[]=$linea;
-                }
-            }
-        }
-        $this->template = false;
-        header('Content-Type: application/json');
-        echo json_encode($this->resultado);
    }
 
    //Para guardar la foto hacemos uso de la libreria de class.upload.php que esta en extras/verot/

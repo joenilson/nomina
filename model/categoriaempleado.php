@@ -185,7 +185,6 @@ class categoriaempleado extends fs_model{
         if($this->orden != $reorden){
             $posicion_inicial = ($this->orden > $reorden)?$reorden:$this->orden;
             $sql = "SELECT * from ".$this->table_name." where orden >= ".$this->intval($posicion_inicial)." ORDER BY orden;";
-            //echo $sql;
             $data = $this->db->select($sql);
             if($data){
                 $posicion_actual = $posicion_inicial;

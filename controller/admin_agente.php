@@ -160,7 +160,6 @@ class admin_agente extends fs_controller
                   $this->agente->f_baja = $_POST['f_baja'];
                }
 
-               $this->agente->codcategoria = $_POST['codcategoria'];
                $this->agente->codtipo = $_POST['codtipo'];
                $this->agente->codsupervisor = $_POST['codsupervisor'];
                $this->agente->codgerencia = $_POST['codgerencia'];

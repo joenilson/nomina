@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require_model('almacen.php');
+require_model('cargos.php');
 require_model('organizacion.php');
 require_model('tipoempleado.php');
 require_model('categoriaempleado.php');
@@ -97,12 +98,6 @@ class agente extends fs_model
     * @var $idempresa Empresa
     */
    public $idempresa;
-
-   /**
-    * Categoria de empleado que es Jefe, Administrativo, Obrero, Empleado, etc
-    * @var $codcategoria CategoriaEmpleado
-    */
-   public $codcategoria;
 
    /**
     * Tipo de empleado que es Por contrato, Fijo, Temporal, etc
@@ -248,10 +243,14 @@ class agente extends fs_model
     * @var type $fecha_modificacion
     */
    public $fecha_modificacion;
-
+   /*
+    * Campos auxliares externos
+    */
    public $almacen;
+   public $cargos;
    public $tipoempleado;
    public $organizacion;
+   public $codcategoria;
    public $categoriaempleado;
    public function __construct($a=FALSE)
    {
@@ -283,7 +282,6 @@ class agente extends fs_model
          $this->seg_social = $a['seg_social'];
          $this->banco = $a['banco'];
          $this->cargo =$a['cargo'];
-         $this->codcategoria = $a['codcategoria'];
          $this->codtipo = $a['codtipo'];
          $this->codgerencia = $a['codgerencia'];
          $this->codarea = $a['codarea'];
@@ -366,7 +364,6 @@ class agente extends fs_model
          $this->f_baja = NULL;
          $this->f_nacimiento = Date('d-m-Y');
          $this->sexo = NULL;
-         $this->codcategoria = NULL;
          $this->codtipo = NULL;
          $this->codgerencia = NULL;
          $this->codarea = NULL;
@@ -388,6 +385,7 @@ class agente extends fs_model
          $this->usuario_modificacion = NULL;
       }
       $this->almacen = new almacen();
+      $this->cargos = new cargos();
       $this->organizacion = new organizacion();
       $this->tipoempleado = new tipoempleado();
       $this->categoriaempleado = new categoriaempleado();
@@ -400,14 +398,21 @@ class agente extends fs_model
          VALUES ('1','Juan','Perez','Prado','00000014Z','M','A','S'),".
               "('1','Maria','Ruiz','Diaz','00000019Z','F','A','D');";
    }
-   
+
    public function info_adicional($res){
        $res->gerencia = $this->organizacion->get($res->codgerencia)->descripcion;
        $res->area = $this->organizacion->get($res->codarea)->descripcion;
        $res->departamento = ($res->coddepartamento != '')?$this->organizacion->get($res->coddepartamento)->descripcion:'';
        $res->almacen_nombre = $this->almacen->get($res->codalmacen)->nombre;
        $res->tipo = $this->tipoempleado->get($res->codtipo)->descripcion;
-       $res->categoria = ($res->codcategoria != '')?$this->categoriaempleado->get($res->codcategoria)->descripcion:'';       
+       $res->codcategoria = '';
+       $res->categoria = '';
+       if($res->codcargo){
+           $info_cargos = $this->cargos->get($res->codcargo);
+           $info_categoria = $this->categoriaempleado->get($info_cargos->codcategoria);
+           $res->codcategoria = $info_cargos->codcategoria;
+           $res->categoria = $info_categoria->descripcion;
+       }
        return $res;
    }
 
@@ -467,7 +472,7 @@ class agente extends fs_model
       else
          return FALSE;
    }
-   
+
    public function get_by_dnicif($dnicif)
    {
       $a = $this->db->select("SELECT * FROM ".$this->table_name." WHERE dnicif = ".$this->var2str($dnicif).";");
@@ -538,7 +543,6 @@ class agente extends fs_model
                     ", cargo = ".$this->var2str($this->cargo).
                     ", codsupervisor = ".$this->var2str($this->codsupervisor).
                     ", codgerencia = ".$this->var2str($this->codgerencia).
-                    ", codcategoria = ".$this->var2str($this->codcategoria).
                     ", codtipo = ".$this->var2str($this->codtipo).
                     ", codarea = ".$this->var2str($this->codarea).
                     ", coddepartamento = ".$this->var2str($this->coddepartamento).
@@ -571,7 +575,7 @@ class agente extends fs_model
          else
          {
             $sql = "INSERT INTO ".$this->table_name." (codalmacen,idempresa,codagente,nombre,apellidos,segundo_apellido,nombreap,dnicif,telefono,
-               email,codcargo,cargo,codsupervisor,codgerencia,codcategoria,codtipo,codarea,coddepartamento,provincia,ciudad,direccion,f_nacimiento,
+               email,codcargo,cargo,codsupervisor,codgerencia,codtipo,codarea,coddepartamento,provincia,ciudad,direccion,f_nacimiento,
                f_alta,f_baja,sexo,idsindicato,codseguridadsocial,seg_social,cuenta_banco,codbanco,codformacion,carrera,centroestudios,dependientes,estado,estado_civil,banco,
                porcomision,pago_total,pago_neto,fecha_creacion,usuario_creacion)
                VALUES (".$this->var2str($this->codalmacen).
@@ -588,7 +592,6 @@ class agente extends fs_model
                     ",".$this->var2str($this->cargo).
                     ",".$this->var2str($this->codsupervisor).
                     ",".$this->var2str($this->codgerencia).
-                    ",".$this->var2str($this->codcategoria).
                     ",".$this->var2str($this->codtipo).
                     ",".$this->var2str($this->codarea).
                     ",".$this->var2str($this->coddepartamento).
@@ -708,7 +711,7 @@ class agente extends fs_model
         $estado_civil['D']='Divorciado';
         return $estado_civil;
     }
-    
+
     public function estadistica_sexo($sexo){
         $sql = "select count(sexo) as total from ".$this->table_name." where sexo = ".$this->var2str($sexo).";";
         $data = $this->db->select($sql);

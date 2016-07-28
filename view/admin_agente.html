@@ -212,7 +212,6 @@
                                           <option value="{$value->codcargo}" {if="$fsc->agente->codcargo==$value->codcargo"}selected{/if}>{$value->descripcion}</option>
                                           {/loop}
                                       </select>
-
                                    </div>
                                 </div>
                                 <div class="col-sm-2">
@@ -220,12 +219,7 @@
                                       <label class="label label-sm label-default" for="codcategoria">
                                           <a href="{$fsc->categoriaempleado->url()}">Categoria de empleado:</a>
                                       </label>
-                                      <select name="codcategoria" required class="form-control input-sm">
-                                          <option value="">--------</option>
-                                          {loop="$fsc->categoriaempleado->all()"}
-                                          <option value="{$value->codcategoria}" {if="$fsc->agente->codcategoria==$value->codcategoria"}selected{/if}>{$value->descripcion}</option>
-                                          {/loop}
-                                      </select>
+                                      <input type="text" class="form-control input-sm" readonly value="{$fsc->agente->categoria}">
                                    </div>
                                 </div>
                                 <div class="col-sm-3">
@@ -447,7 +441,7 @@
                                       </div>
                                    </div>
                                 </div>
-                                
+
                           </fieldset>
                       </div>
                       <div class="panel-footer" style="text-align: right;">

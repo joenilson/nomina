@@ -11,7 +11,7 @@
       {
          document.f_custom_search.query.focus();
       }
-      
+
       $("#b_nuevo_agente").click(function(event) {
          event.preventDefault();
          $("#modal_nuevo_agente").modal('show');
@@ -190,7 +190,7 @@
                 &nbsp;<span class="fa fa-sort-amount-desc"></span>
                 {elseif="$fsc->orden=='cargo ASC'"}
                 &nbsp;<span class="fa fa-sort-amount-asc"></span>
-                {/if}                
+                {/if}
             </th>
             <th class="text-left">
                 Categoria
@@ -198,7 +198,7 @@
                 &nbsp;<span class="fa fa-sort-amount-desc"></span>
                 {elseif="$fsc->orden=='codcategoria ASC'"}
                 &nbsp;<span class="fa fa-sort-amount-asc"></span>
-                {/if}                
+                {/if}
             </th>
             <th class="text-left">Teléfono</th>
             <th class="text-left">Nacimiento</th>
@@ -230,7 +230,7 @@
       </tr>
       {else}
       <tr class="warning">
-         <td colspan="6">Sin resultados.</td>
+         <td colspan="8">Sin resultados.</td>
       </tr>
       {/loop}
    </table>
