@@ -18,12 +18,15 @@
  */
 require_model('agente.php');
 require_model('cargos.php');
-require_model('seguridadsocial.php');
-require_model('tipoempleado.php');
 require_model('categoriaempleado.php');
-require_model('sindicalizacion.php');
+require_model('estadocivil.php');
 require_model('formacion.php');
+require_model('generaciones.php');
 require_model('organizacion.php');
+require_model('seguridadsocial.php');
+require_model('sindicalizacion.php');
+require_model('tipoempleado.php');
+require_model('tipodependientes.php');
 /**
  * Description of configuracion_nomina
  *
@@ -33,10 +36,16 @@ class configuracion_nomina extends fs_controller{
     public $agente;
     public $cargo;
     public $cargos;
+    public $estadocivil;
+    public $estadosciviles;
+    public $generacion;
+    public $generaciones;
     public $tipoempleado;
+    public $tipodependientes;
     public $categoriaempleado;
     public $sindicalizacion;
     public $organizacion;
+    public $organizacion_actual;
     public $formacion;
     public $seguridadsocial;
     public $existe;
@@ -51,9 +60,14 @@ class configuracion_nomina extends fs_controller{
         $this->share_extensions();
         $this->agente = new agente();
         $this->cargo = new cargos();
+        $this->estadosciviles = new estadocivil();
+        $this->formacion = new formacion();
+        $this->generaciones = new generaciones();
         $this->tipoempleado = new tipoempleado();
+        $this->tipodependientes = new tipodependientes();
         $this->categoriaempleado = new categoriaempleado();
         $this->sindicalizacion = new sindicalizacion();
+        $this->seguridadsocial = new seguridadsocial();
         $this->organizacion = new organizacion();
         if(isset($_GET['type'])){
             switch($_GET['type']){
@@ -71,21 +85,57 @@ class configuracion_nomina extends fs_controller{
                     break;
                 case "dependientes":
                     $this->template = 'configuracion/nomina_dependientes';
+                    if(isset($_POST['coddependiente'])){
+                        $this->tratar_dependientes();
+                    }
                     break;
                 case "formacion":
                     $this->template = 'configuracion/nomina_formacion';
+                    if(isset($_POST['codformacion'])){
+                        $this->tratar_formaciones();
+                    }
                     break;
                 case "organizacion":
                     $this->template = 'configuracion/nomina_organizacion';
                     break;
                 case "seguridadsocial":
                     $this->template = 'configuracion/nomina_seguridadsocial';
+                    if(isset($_POST['codseguridadsocial'])){
+                        $this->tratar_seguridadsocial();
+                    }
                     break;
                 case "sindicalizacion":
                     $this->template = 'configuracion/nomina_sindicalizacion';
+                    if(isset($_POST['idsindicato'])){
+                        $this->tratar_sindicalizacion();
+                    }
                     break;
                 case "tipoempleado":
                     $this->template = 'configuracion/nomina_tipoempleado';
+                    if(isset($_POST['codtipo'])){
+                        $this->tratar_tipoempleado();
+                    }
+                    break;
+                case "ausencias":
+                    $this->template = 'configuracion/nomina_ausencias';
+                    break;
+                case "generaciones":
+                    $this->template = 'configuracion/nomina_generaciones';
+                    if(isset($_POST['codgeneracion'])){
+                        $this->tratar_generaciones();
+                    }
+                    break;
+                case "movimientos":
+                    $this->template = 'configuracion/nomina_movimientos';
+                    if(isset($_POST['codmovimiento'])){
+                        $this->tratar_movimientos();
+                    }
+                    break;
+                case "estadocivil":
+                    $this->template = 'configuracion/nomina_estadocivil';
+                    if(isset($_POST['codestadocivil'])){
+                        $this->tratar_estadosciviles();
+                    }
                     break;
                 default:
                     break;
@@ -166,6 +216,104 @@ class configuracion_nomina extends fs_controller{
             }else{
                 $this->new_error_msg("La Categoria con el Id ".$ca0->codcategoria." No pudo ser guardada, revise los datos e intente nuevamente. Error: ".$estado);
             }
+        }
+    }
+    
+    public function tratar_generaciones(){
+        $gen0 = new generaciones();
+        $gen0->codgeneracion = filter_input(INPUT_POST, 'codgeneracion');
+        $gen0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
+        $gen0->inicio_generacion = filter_input(INPUT_POST, 'inicio_generacion');
+        $gen0->fin_generacion = filter_input(INPUT_POST, 'fin_generacion');
+        $gen0->estado = filter_input(INPUT_POST, 'estado');
+        $estado = $gen0->save();
+        if($estado){
+            $this->new_message("Datos guardados correctamente.");
+        }else{
+            $this->new_error_msg("La información con el Id ".$gen0->codgeneracion." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+        }
+    }
+    
+    public function tratar_estadosciviles(){
+        $estciv0 = new estadocivil();
+        $estciv0->codestadocivil = filter_input(INPUT_POST, 'codestadocivil');
+        $estciv0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
+        $estado = $estciv0->save();
+        if($estado){
+            $this->new_message("Datos guardados correctamente.");
+        }else{
+            $this->new_error_msg("La información con el Id ".$estciv0->codestadocivil." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+        }
+    }
+    
+    public function tratar_movimientos(){
+        
+    }
+    
+    public function tratar_formaciones(){
+        $form0 = new formacion();
+        $form0->codformacion = filter_input(INPUT_POST, 'codformacion');
+        $form0->nombre = $this->mayusculas(filter_input(INPUT_POST, 'nombre'));
+        $form0->estado = filter_input(INPUT_POST, 'estado');
+        $estado = $form0->save();
+        if($estado){
+            $this->new_message("Datos guardados correctamente.");
+        }else{
+            $this->new_error_msg("La información con el Id ".$form0->codformacion." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+        }
+    }
+    
+    public function tratar_dependientes(){
+        $dep0 = new tipodependientes();
+        $dep0->coddependiente = filter_input(INPUT_POST, 'coddependiente');
+        $dep0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
+        $dep0->estado = filter_input(INPUT_POST, 'estado');
+        $estado = $dep0->save();
+        if($estado){
+            $this->new_message("Datos guardados correctamente.");
+        }else{
+            $this->new_error_msg("La información con el Id ".$dep0->coddependiente." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+        }
+    }
+    
+    public function tratar_seguridadsocial(){
+        $ss0 = new seguridadsocial();
+        $ss0->codseguridadsocial = filter_input(INPUT_POST, 'codseguridadsocial');
+        $ss0->nombre = $this->mayusculas(filter_input(INPUT_POST, 'nombre'));
+        $ss0->nombre_corto = $this->mayusculas(filter_input(INPUT_POST, 'nombre_corto'));
+        $ss0->tipo = $this->mayusculas(filter_input(INPUT_POST, 'tipo'));
+        $ss0->estado = filter_input(INPUT_POST, 'estado');
+        $estado = $dep0->save();
+        if($estado){
+            $this->new_message("Datos guardados correctamente.");
+        }else{
+            $this->new_error_msg("La información con el Id ".$dep0->codseguridadsocial." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+        }
+    }
+    
+    public function tratar_sindicalizacion(){
+        $sind0 = new sindicalizacion();
+        $sind0->idsindicato = filter_input(INPUT_POST, 'idsindicato');
+        $sind0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
+        $sind0->estado = filter_input(INPUT_POST, 'estado');
+        $estado = $sind0->save();
+        if($estado){
+            $this->new_message("Datos guardados correctamente.");
+        }else{
+            $this->new_error_msg("La información con el Id ".$sind0->idsindicato." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+        }
+    }
+    
+    public function tratar_tipoempleado(){
+        $te0 = new tipoempleado();
+        $te0->codtipo = filter_input(INPUT_POST, 'codtipo');
+        $te0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
+        $te0->estado = filter_input(INPUT_POST, 'estado');
+        $estado = $te0->save();
+        if($estado){
+            $this->new_message("Datos guardados correctamente.");
+        }else{
+            $this->new_error_msg("La información con el Id ".$te0->codtipo." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
         }
     }
 
@@ -413,6 +561,38 @@ class configuracion_nomina extends fs_controller{
                 'text' => '<span class="fa fa-gear" aria-hidden="true"></span> &nbsp; Tipo de Contratos',
                 'params' => '&type=tipoempleado'
             ),
+            array(
+                'name' => 'config_nomina_generaciones',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'tab',
+                'text' => '<span class="fa fa-gear" aria-hidden="true"></span> &nbsp; Generaciones',
+                'params' => '&type=generaciones'
+            ),
+            array(
+                'name' => 'config_nomina_movimientos',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'tab',
+                'text' => '<span class="fa fa-gear" aria-hidden="true"></span> &nbsp; Tipo de Movimientos',
+                'params' => '&type=movimientos'
+            ),
+            array(
+                'name' => 'config_nomina_ausencias',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'tab',
+                'text' => '<span class="fa fa-gear" aria-hidden="true"></span> &nbsp; Tipo de Ausencias',
+                'params' => '&type=ausencias'
+            ),            
+            array(
+                'name' => 'config_nomina_estadocivil',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'tab',
+                'text' => '<span class="fa fa-gear" aria-hidden="true"></span> &nbsp; Estados Civiles',
+                'params' => '&type=estadocivil'
+            ),            
             array(
                 'name' => 'configurar_nomina_js',
                 'page_from' => __CLASS__,

@@ -44,7 +44,7 @@ class seguridadsocial extends fs_model{
     /**
      * Aqui ponemos el tipo de Seguridad Social, puede ser
      * PRIVADO
-     * GOBIERNO
+     * PUBLICO
      * @var type $tipo Seguridad Social
      */
     public $tipo;
@@ -74,7 +74,7 @@ class seguridadsocial extends fs_model{
     protected function install() {
         return "INSERT INTO ".$this->table_name.
             " (codseguridadsocial, nombre, tipo, estado, nombre_corto) VALUES".
-            " ('1','SEGURIDAD SOCIAL PUBLICA','GOBIERNO',TRUE, '0'),".
+            " ('1','SEGURIDAD SOCIAL PUBLICA','PUBLICO',TRUE, '0'),".
             " ('2','SEGURO PRIVADO','PRIVADO',TRUE, '0');";
     }
 
@@ -108,6 +108,7 @@ class seguridadsocial extends fs_model{
     public function save() {
         if($this->exists()){
             $this->update();
+            return true;
         }else{
             //INSERT DATA
             $sql = "INSERT INTO ".$this->table_name." (codseguridadsocial, nombre, nombre_corto, tipo, estado) VALUES (".
@@ -122,12 +123,12 @@ class seguridadsocial extends fs_model{
 
     public function update(){
         $sql = "UPDATE ".$this->table_name." SET ".
-            ", estado = ".$this->var2str($this->estado).
+            " estado = ".$this->var2str($this->estado).
             ", tipo = ".$this->var2str($this->tipo).
             ", nombre = ".$this->var2str($this->nombre).
-            ", nombre = ".$this->var2str($this->nombre_corto).
+            ", nombre_corto = ".$this->var2str($this->nombre_corto).
             " WHERE codseguridadsocial = ".$this->var2str($this->codseguridadsocial).";";
-        return $this->db->exec($sql);
+        $this->db->exec($sql);
     }
 
     public function get($codseguridadsocial){
@@ -168,7 +169,7 @@ class seguridadsocial extends fs_model{
 
     public function all(){
         $lista = array();
-        $data = $this->db->select("SELECT * FROM ".$this->table_name.";");
+        $data = $this->db->select("SELECT * FROM ".$this->table_name." ORDER BY nombre;");
         if($data){
             foreach($data as $d){
                 $lista[] = new seguridadsocial($d);
@@ -181,7 +182,7 @@ class seguridadsocial extends fs_model{
 
     public function all_activos(){
         $lista = array();
-        $data = $this->db->select("SELECT * FROM ".$this->table_name." WHERE estado = TRUE;");
+        $data = $this->db->select("SELECT * FROM ".$this->table_name." WHERE estado = TRUE ORDER BY nombre;");
         if($data){
             foreach($data as $d){
                 $lista[] = new seguridadsocial($d);

@@ -18,36 +18,36 @@
  */
 
 /**
- * Description of sindicalizacion
+ * Description of formacion
  *
  * @author Joe Nilson <joenilson at gmail dot com>
  */
-class sindicalizacion extends fs_model{
+class tipodependientes extends fs_model{
     /**
-     * El codigo a generar del sindicalizacion
-     * @var type $idsindicato TipoEmpleado
+     * El codigo a generar del TipoDependiente
+     * @var type $coddependiente TipoDependiente
      */
-    public $idsindicato;
+    public $coddependiente;
 
     /**
-     * Se coloca la descripción del sindicalizacion
-     * @var type $descripcion TipoEmpleado
+     * Se coloca la descripción del TipoDependiente
+     * @var type $descripcion TipoDependiente
      */
     public $descripcion;
 
     /**
-     * Si se va desactivar un tipo de empleado se debe colocar aquí su estado
+     * Si se va desactivar un tipo de dependiente se debe colocar aquí su estado
      * @var type $estado Boolean
      */
     public $estado;
     public function __construct($t = FALSE) {
-        parent::__construct('hr_sindicalizacion');
+        parent::__construct('hr_tipodependientes');
         if($t){
-            $this->idsindicato = $t['idsindicato'];
+            $this->coddependiente = $t['coddependiente'];
             $this->descripcion = $t['descripcion'];
             $this->estado = $this->str2bool($t['estado']);
         }else{
-            $this->idsindicato = NULL;
+            $this->coddependiente = NULL;
             $this->descripcion = NULL;
             $this->estado = FALSE;
         }
@@ -55,19 +55,19 @@ class sindicalizacion extends fs_model{
 
     protected function install() {
         return "INSERT INTO ".$this->table_name.
-                " (idsindicato, descripcion, estado) VALUES".
-                " ('1','NO AFILIADO',TRUE),".
-                " ('2','UNIFICADO',TRUE);";
+                " (coddependiente, descripcion, estado) VALUES ".
+                " ('1','CONYUGUE',TRUE),".
+                " ('2','HIJO (A)',TRUE);";
     }
 
     public function url()
     {
-        return "index.php?page=admin_sindicalizacion";
+        return "index.php?page=admin_formacion";
     }
 
     public function get_new_codigo()
     {
-        $sql = "SELECT MAX(".$this->db->sql_to_int('idsindicato').") as cod FROM ".$this->table_name.";";
+        $sql = "SELECT MAX(".$this->db->sql_to_int('coddependiente').") as cod FROM ".$this->table_name.";";
         $cod = $this->db->select($sql);
         if($cod)
         {
@@ -80,10 +80,10 @@ class sindicalizacion extends fs_model{
     }
 
     public function exists() {
-        if(is_null($this->idsindicato)){
+        if(is_null($this->coddependiente)){
             return false;
         }else{
-            return $this->db->select("SELECT * FROM ".$this->table_name." WHERE idsindicato = ".$this->var2str($this->idsindicato).";");
+            return $this->db->select("SELECT * FROM ".$this->table_name." WHERE coddependiente = ".$this->var2str($this->coddependiente).";");
         }
     }
 
@@ -93,7 +93,7 @@ class sindicalizacion extends fs_model{
             return true;
         }else{
             //INSERT DATA
-            $sql = "INSERT INTO ".$this->table_name." (idsindicato, descripcion, estado) VALUES (".
+            $sql = "INSERT INTO ".$this->table_name." (coddependiente, descripcion, estado) VALUES (".
                 $this->var2str($this->get_new_codigo()).", ".
                 $this->var2str($this->descripcion).", ".
                 $this->var2str($this->estado).");";
@@ -105,14 +105,14 @@ class sindicalizacion extends fs_model{
         $sql = "UPDATE ".$this->table_name." SET ".
             " estado = ".$this->var2str($this->estado).
             ", descripcion = ".$this->var2str($this->descripcion).
-            " WHERE idsindicato = ".$this->var2str($this->idsindicato).";";
+            " WHERE coddependiente = ".$this->var2str($this->coddependiente).";";
         $this->db->exec($sql);
     }
 
-    public function get($idsindicato){
-        $data = $this->db->select("SELECT * FROM ".$this->table_name." WHERE idsindicato = ".$this->var2str($idsindicato).";");
+    public function get($coddependiente){
+        $data = $this->db->select("SELECT * FROM ".$this->table_name." WHERE coddependiente = ".$this->var2str($coddependiente).";");
         if($data){
-            return new sindicalizacion($data[0]);
+            return new tipodependientes($data[0]);
         }else{
             return false;
         }
@@ -121,7 +121,7 @@ class sindicalizacion extends fs_model{
     public function get_by_descripcion($descripcion){
         $data = $this->db->select("SELECT * FROM ".$this->table_name." WHERE descripcion = ".$this->var2str($descripcion).";");
         if($data){
-            return new sindicalizacion($data[0]);
+            return new tipodependientes($data[0]);
         }else{
             return false;
         }
@@ -129,10 +129,10 @@ class sindicalizacion extends fs_model{
 
     public function all(){
         $lista = array();
-        $data = $this->db->select("SELECT * FROM ".$this->table_name." ORDER BY idsindicato;");
+        $data = $this->db->select("SELECT * FROM ".$this->table_name." ORDER BY descripcion;");
         if($data){
             foreach($data as $d){
-                $lista[] = new sindicalizacion($d);
+                $lista[] = new tipodependientes($d);
             }
             return $lista;
         }else{
@@ -145,7 +145,7 @@ class sindicalizacion extends fs_model{
     }
 
     public function corregir(){
-        $sql = "SELECT idsindicato FROM ".$this->table_name." WHERE descripcion = ".$this->var2str($this->descripcion);
+        $sql = "SELECT coddependiente FROM ".$this->table_name." WHERE descripcion = ".$this->var2str($this->descripcion);
         $data = $this->db->select($sql);
         if($data){
             $this->update();

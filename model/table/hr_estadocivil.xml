@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Document   : hr_estadocivil.xml
+    Description:
+        Estructura de la tabla hr_estadocivil.
+-->
+<tabla>
+    <columna>
+        <nombre>codestadocivil</nombre>
+        <tipo>character varying(3)</tipo>
+        <nulo>NO</nulo>
+    </columna>
+    <columna>
+        <nombre>descripcion</nombre>
+        <tipo>character varying(90)</tipo>
+        <nulo>NO</nulo>
+    </columna>
+    <restriccion>
+        <nombre>estadocivil_pkey</nombre>
+        <consulta>PRIMARY KEY (codestadocivil)</consulta>
+    </restriccion>
+</tabla>

@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <div class="panel panel-primary">
     <div class="panel-heading">
-        <h3 class="panel-title">Configuraci&oacute;n de Formacion</h3>
+        <h3 class="panel-title">Configuraci&oacute;n de Estado Civil</h3>
     </div>
     <div class="panel-body">
         <div class="container">
@@ -30,16 +30,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </tr>
                 </thead>
                 <tbody>
-                <form class="form" role="form" action="{$fsc->url()}&type=formacion" method="POST">
+                <form class="form" role="form" action="{$fsc->url()}&type=estadocivil" method="POST">
                     <tr class="info">
                         <td>
-                            <input type="hidden" name="codformacion" value="">
+                            <input type="text" name="codestadocivil" value="" autocomplete="off" class="form-control input-sm">
                         </td>
                         <td>
-                            <input type="text" name="nombre" value="" autocomplete="off" class="form-control input-sm">
-                        </td>
-                        <td>
-                            <input type="hidden" name="estado" value="true">
+                            <input type="text" name="descripcion" value="" autocomplete="off" class="form-control input-sm">
                         </td>
                         <td>
                             <button type="submit" class="btn btn-sm btn-primary">
@@ -48,17 +45,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </td>
                     </tr>
                 </form>
-                {loop="$fsc->formacion->all()"}
-                <form class="form" role="form" action="{$fsc->url()}&type=formacion" method="POST">
+                {loop="$fsc->estadosciviles->all()"}
+                <form class="form" role="form" action="{$fsc->url()}&type=estadocivil" method="POST">
                     <tr>
                         <td>
-                            <input type="text" name="codformacion" value="{$value->codformacion}" readonly="true" class="form-control input-sm">
+                            <input type="text" name="codestadocivil" value="{$value->codestadocivil}" readonly="true" class="form-control input-sm">
                         </td>
                         <td>
-                            <input type="text" name="nombre" value="{$value->nombre}" autocomplete="off" class="form-control input-sm">
-                        </td>
-                        <td class="text-center">
-                            <input type="checkbox" onchange="this.value=(this.value==='true')?'false':'true';" name="estado" value="{if="$value->estado"}true{else}false{/if}" {if="$value->estado"}checked{/if} class="checkbox-control">
+                            <input type="text" name="descripcion" value="{$value->descripcion}" autocomplete="off" class="form-control input-sm">
                         </td>
                         <td class="text-right">
                             {if="$fsc->allow_delete"}

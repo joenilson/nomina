@@ -18,56 +18,52 @@
  */
 
 /**
- * Description of sindicalizacion
+ * Description of estadocivil
  *
  * @author Joe Nilson <joenilson at gmail dot com>
  */
-class sindicalizacion extends fs_model{
+class estadocivil extends fs_model{
     /**
-     * El codigo a generar del sindicalizacion
-     * @var type $idsindicato TipoEmpleado
+     * El codigo a generar del estadocivil
+     * @var type $codestadocivil EstadoCivil
      */
-    public $idsindicato;
+    public $codestadocivil;
 
     /**
-     * Se coloca la descripción del sindicalizacion
-     * @var type $descripcion TipoEmpleado
+     * Se coloca la descripción del estadocivil
+     * @var type $descripcion EstadoCivil
      */
     public $descripcion;
 
-    /**
-     * Si se va desactivar un tipo de empleado se debe colocar aquí su estado
-     * @var type $estado Boolean
-     */
-    public $estado;
     public function __construct($t = FALSE) {
-        parent::__construct('hr_sindicalizacion');
+        parent::__construct('hr_estadocivil');
         if($t){
-            $this->idsindicato = $t['idsindicato'];
+            $this->codestadocivil = $t['codestadocivil'];
             $this->descripcion = $t['descripcion'];
-            $this->estado = $this->str2bool($t['estado']);
         }else{
-            $this->idsindicato = NULL;
+            $this->codestadocivil = NULL;
             $this->descripcion = NULL;
-            $this->estado = FALSE;
         }
     }
 
     protected function install() {
         return "INSERT INTO ".$this->table_name.
-                " (idsindicato, descripcion, estado) VALUES".
-                " ('1','NO AFILIADO',TRUE),".
-                " ('2','UNIFICADO',TRUE);";
+                " (codestadocivil, descripcion) VALUES".
+                " ('S','SOLTERO (A)'),".
+                " ('CO','CONVIVIENTE'),".
+                " ('C','CASADO (A)'),".
+                " ('D','DIVORCIADO (A)'),".
+                " ('V','VIUDO (A)');";
     }
 
     public function url()
     {
-        return "index.php?page=admin_sindicalizacion";
+        return "index.php?page=admin_estadocivil";
     }
 
     public function get_new_codigo()
     {
-        $sql = "SELECT MAX(".$this->db->sql_to_int('idsindicato').") as cod FROM ".$this->table_name.";";
+        $sql = "SELECT MAX(".$this->db->sql_to_int('codestadocivil').") as cod FROM ".$this->table_name.";";
         $cod = $this->db->select($sql);
         if($cod)
         {
@@ -80,10 +76,10 @@ class sindicalizacion extends fs_model{
     }
 
     public function exists() {
-        if(is_null($this->idsindicato)){
+        if(is_null($this->codestadocivil)){
             return false;
         }else{
-            return $this->db->select("SELECT * FROM ".$this->table_name." WHERE idsindicato = ".$this->var2str($this->idsindicato).";");
+            return $this->db->select("SELECT * FROM ".$this->table_name." WHERE codestadocivil = ".$this->var2str($this->codestadocivil).";");
         }
     }
 
@@ -93,26 +89,24 @@ class sindicalizacion extends fs_model{
             return true;
         }else{
             //INSERT DATA
-            $sql = "INSERT INTO ".$this->table_name." (idsindicato, descripcion, estado) VALUES (".
+            $sql = "INSERT INTO ".$this->table_name." (codestadocivil, descripcion) VALUES (".
                 $this->var2str($this->get_new_codigo()).", ".
-                $this->var2str($this->descripcion).", ".
-                $this->var2str($this->estado).");";
+                $this->var2str($this->descripcion).");";
             return $this->db->exec($sql);
         }
     }
 
     public function update(){
         $sql = "UPDATE ".$this->table_name." SET ".
-            " estado = ".$this->var2str($this->estado).
-            ", descripcion = ".$this->var2str($this->descripcion).
-            " WHERE idsindicato = ".$this->var2str($this->idsindicato).";";
+            " descripcion = ".$this->var2str($this->descripcion).
+            " WHERE codestadocivil = ".$this->var2str($this->codestadocivil).";";
         $this->db->exec($sql);
     }
 
-    public function get($idsindicato){
-        $data = $this->db->select("SELECT * FROM ".$this->table_name." WHERE idsindicato = ".$this->var2str($idsindicato).";");
+    public function get($codestadocivil){
+        $data = $this->db->select("SELECT * FROM ".$this->table_name." WHERE codestadocivil = ".$this->var2str($codestadocivil).";");
         if($data){
-            return new sindicalizacion($data[0]);
+            return new estadocivil($data[0]);
         }else{
             return false;
         }
@@ -121,7 +115,7 @@ class sindicalizacion extends fs_model{
     public function get_by_descripcion($descripcion){
         $data = $this->db->select("SELECT * FROM ".$this->table_name." WHERE descripcion = ".$this->var2str($descripcion).";");
         if($data){
-            return new sindicalizacion($data[0]);
+            return new estadocivil($data[0]);
         }else{
             return false;
         }
@@ -129,10 +123,10 @@ class sindicalizacion extends fs_model{
 
     public function all(){
         $lista = array();
-        $data = $this->db->select("SELECT * FROM ".$this->table_name." ORDER BY idsindicato;");
+        $data = $this->db->select("SELECT * FROM ".$this->table_name." ORDER BY descripcion;");
         if($data){
             foreach($data as $d){
-                $lista[] = new sindicalizacion($d);
+                $lista[] = new estadocivil($d);
             }
             return $lista;
         }else{
@@ -145,7 +139,7 @@ class sindicalizacion extends fs_model{
     }
 
     public function corregir(){
-        $sql = "SELECT idsindicato FROM ".$this->table_name." WHERE descripcion = ".$this->var2str($this->descripcion);
+        $sql = "SELECT codestadocivil FROM ".$this->table_name." WHERE descripcion = ".$this->var2str($this->descripcion);
         $data = $this->db->select($sql);
         if($data){
             $this->update();

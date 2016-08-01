@@ -15,13 +15,88 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<form class="form" role="form" action="{$fsc->url()}" method="post">
-    <div class="panel panel-primary">
-        <div class="panel-heading">
-            <h3 class="panel-title">Configuraci&oacute;n de Seguridad Social</h3>
-        </div>
-        <div class="panel-body">
-            Lista básica
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h3 class="panel-title">Configuraci&oacute;n de Seguridad Social</h3>
+    </div>
+    <div class="panel-body">
+        <div class="container">
+            <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Nombre:</th>
+                        <th>Abreviatura:</th>
+                        <th>Tipo:</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                <form class="form" role="form" action="{$fsc->url()}&type=seguridadsocial" method="POST">
+                    <tr class="info">
+                        <td>
+                            <input type="hidden" name="codseguridadsocial" value="">
+                        </td>
+                        <td>
+                            <input type="text" name="nombre" value="" autocomplete="off" class="form-control input-sm">
+                        </td>
+                        <td>
+                            <input type="text" name="nombre_corto" value="" autocomplete="off" class="form-control input-sm">
+                        </td>
+                        <td>
+                            <select class="form-control input-sm" name="tipo" required>
+                                <option value="">-----------</option>
+                                <option value="PUBLICO">PUBLICO</option>
+                                <option value="PRIVADO">PRIVADO</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="hidden" name="estado" value="true">
+                        </td>
+                        <td>
+                            <button type="submit" class="btn btn-sm btn-primary">
+                                <span class="fa fa-save"></span> Nuevo
+                            </button>
+                        </td>
+                    </tr>
+                </form>
+                {loop="$fsc->seguridadsocial->all()"}
+                <form class="form" role="form" action="{$fsc->url()}&type=seguridadsocial" method="POST">
+                    <tr>
+                        <td>
+                            <input type="text" name="codseguridadsocial" value="{$value->codseguridadsocial}" readonly="true" class="form-control input-sm">
+                        </td>
+                        <td>
+                            <input type="text" name="nombre" value="{$value->nombre}" autocomplete="off" class="form-control input-sm">
+                        </td>
+                        <td>
+                            <input type="text" name="nombre_corto" value="{$value->nombre_corto}" autocomplete="off" class="form-control input-sm">
+                        </td>
+                        <td>
+                            <select class="form-control input-sm" name="tipo" required>
+                                <option value="">-----------</option>
+                                <option value="PUBLICO" {if="$value->tipo=='PUBLICO'"}selected{/if}>PUBLICO</option>
+                                <option value="PRIVADO" {if="$value->tipo=='PRIVADO'"}selected{/if}>PRIVADO</option>
+                            </select>
+                        </td>
+                        <td class="text-center">
+                            <input type="checkbox" onchange="this.value = (this.value === 'true') ? 'false' : 'true';" name="estado" value="{if="$value->estado"}true{else}false{/if}" {if="$value->estado"}checked{/if} class="checkbox-control">
+                        </td>
+                        <td class="text-right">
+                            {if="$fsc->allow_delete"}
+                            <button class="btn btn-sm btn-danger">
+                                <span class="fa fa-trash"></span>
+                            </button>
+                            {/if}
+                            <button class="btn btn-sm btn-primary">
+                                <span class="fa fa-save"></span>
+                            </button>
+                        </td>
+                    </tr>
+                </form>
+                {/loop}
+                </tbody>
+            </table>
         </div>
     </div>
-</form>
+</div>

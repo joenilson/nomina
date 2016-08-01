@@ -98,6 +98,7 @@ class tipoempleado extends fs_model{
     public function save() {
         if($this->exists()){
             $this->update();
+            return true;
         }else{
             //INSERT DATA
             $sql = "INSERT INTO ".$this->table_name." (codtipo, descripcion, estado) VALUES (".
@@ -110,10 +111,10 @@ class tipoempleado extends fs_model{
 
     public function update(){
         $sql = "UPDATE ".$this->table_name." SET ".
-            ", estado = ".$this->var2str($this->estado).
-            ", descripcion = ".$this->intval($this->descripcion).
+            " estado = ".$this->var2str($this->estado).
+            ", descripcion = ".$this->var2str($this->descripcion).
             " WHERE codtipo = ".$this->var2str($this->codtipo).";";
-        return $this->db->exec($sql);
+        $this->db->exec($sql);
     }
 
     public function get($codtipo){
@@ -136,7 +137,7 @@ class tipoempleado extends fs_model{
 
     public function all(){
         $lista = array();
-        $data = $this->db->select("SELECT * FROM ".$this->table_name.";");
+        $data = $this->db->select("SELECT * FROM ".$this->table_name." ORDER BY descripcion;");
         if($data){
             foreach($data as $d){
                 $lista[] = new tipoempleado($d);
@@ -148,7 +149,13 @@ class tipoempleado extends fs_model{
     }
 
     public function delete(){
-        return false;
+        $sql = "DELETE FROM ".$this->table_name." WHERE codtipo = ".$this->codtipo.";";
+        $data = $this->db->exec($sql);
+        if($data){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     public function corregir(){
