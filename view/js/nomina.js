@@ -47,6 +47,27 @@ function llenar_organizacion(obj,padre,destino){
     }
 }
 
+function cargarEstructura(){
+    var listado = '';
+    $.ajax({
+        type: 'GET',
+        url : url_estructura,
+        data : 'subtype=arbol_estructura',
+        async: false,
+        success : function(response) {
+            if(response.length !== 0){
+                listado = response;
+            }else{
+               alert('¡No hay una estructura asignada para este padre!');
+            }
+        },
+        error: function(response) {
+            alert(response);
+        }
+    });
+    return listado;
+}
+
 function getSelectedRows(gridid) {
     var grid = $("#"+gridid);
     var rowKey = grid.getGridParam("selrow");

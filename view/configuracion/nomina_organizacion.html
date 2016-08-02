@@ -15,13 +15,65 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<form class="form" role="form" action="{$fsc->url()}" method="post">
-    <div class="panel panel-primary">
-        <div class="panel-heading">
-            <h3 class="panel-title">Configuraci&oacute;n de Estructura Organizacional</h3>
-        </div>
-        <div class="panel-body">
-            Lista básica
-        </div>
+<script>
+    var url_estructura = '{$fsc->url()}&type=organizacion';
+    $(document).ready(function() {
+        $('#tree').treeview({data: cargarEstructura()});
+    });
+    
+</script>
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h3 class="panel-title">Configuraci&oacute;n de Estructura Organizacional</h3>
     </div>
-</form>
+    <div class="panel-body">
+        <div class='row' style="margin-bottom: 5px;">
+            <div class="col-sm-6">
+                <div class="btn-group">
+                    <button class="btn btn-sm btn-primary">
+                        <span class="fa fa-plus"></span>
+                        Agregar Gerencia
+                    </button>
+                    <button class="btn btn-sm btn-info">
+                        <span class="fa fa-plus"></span>
+                        Agregar Area
+                    </button>
+                    <button class="btn btn-sm btn-warning">
+                        <span class="fa fa-plus"></span>
+                        Agregar Departamento
+                    </button>
+                </div>
+            </div>
+            <div class="col-sm-3"></div>
+        </div>
+        <div id="tree">
+
+        </div>
+        <ul class="list-group">
+            {loop="$fsc->organizacion->all_tipo('GERENCIA')"}
+            <li class="list-group-item list-group-item-success">
+                <b>GERENCIA:</b> <a href="#"> {$value->descripcion}</a>
+                <span class="pull-right">
+                    <button class="btn btn-sm btn-danger">
+                        <span class="fa fa-trash"></span>
+                    </button>
+                </span>
+                <ul class="list-group">
+                    {loop="$fsc->organizacion->get_by_padre('AREA', $value->codorganizacion)"}
+                    <li class="list-group-item list-group-item-info">
+                        <b>AREA:</b> <a href="#">{$value2->descripcion}</a>
+                        <ul class="list-group">
+                            {loop="$fsc->organizacion->get_by_padre('DEPARTAMENTO', $value2->codorganizacion)"}
+                            <li class="list-group-item list-group-item-warning">
+                                <b>DEPARTAMENTO:</b> <a href="#">{$value3->descripcion}</a>
+                            </li>
+                            {/loop}
+                        </ul>
+                    </li>
+                    {/loop}
+                </ul>
+            </li>
+            {/loop}
+        </ul>
+    </div>
+</div>

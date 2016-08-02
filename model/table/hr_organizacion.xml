@@ -23,7 +23,8 @@
     <columna>
         <nombre>padre</nombre>
         <tipo>character varying(6)</tipo>
-        <nulo>YES</nulo>
+        <nulo>NO</nulo>
+        <defecto>'0'::character varying</defecto>
     </columna>
     <columna>
         <nombre>tipo</nombre>

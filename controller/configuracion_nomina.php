@@ -97,6 +97,12 @@ class configuracion_nomina extends fs_controller{
                     break;
                 case "organizacion":
                     $this->template = 'configuracion/nomina_organizacion';
+                    if(isset($_POST['codorganizacion'])){
+                        $this->tratar_organizacion();
+                    }
+                    if(isset($_GET['subtype'])){
+                        $this->tareas_organizacion();
+                    }
                     break;
                 case "seguridadsocial":
                     $this->template = 'configuracion/nomina_seguridadsocial';
@@ -314,6 +320,20 @@ class configuracion_nomina extends fs_controller{
             $this->new_message("Datos guardados correctamente.");
         }else{
             $this->new_error_msg("La información con el Id ".$te0->codtipo." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+        }
+    }
+    
+    public function tratar_organizacion(){
+        
+    }
+    
+    public function tareas_organizacion(){
+        $subtype = filter_input(INPUT_GET, 'subtype');
+        if($subtype == 'arbol_estructura'){
+            $estructura = $this->organizacion->all_estructura();
+            $this->template = false;
+            header('Content-Type: application/json');
+            echo json_encode($estructura);
         }
     }
 
@@ -607,6 +627,22 @@ class configuracion_nomina extends fs_controller{
                 'page_to' => __CLASS__,
                 'type' => 'head',
                 'text' => '<link rel="stylesheet" type="text/css" media="screen" href="plugins/nomina/view/css/nomina.css"/>',
+                'params' => ''
+            ),
+            array(
+                'name' => 'treeview_nomina_js',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<script src="plugins/nomina/view/js/bootstrap-treeview.min.js" type="text/javascript"></script>',
+                'params' => ''
+            ),
+            array(
+                'name' => 'treeview_nomina_css',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="plugins/nomina/view/css/bootstrap-treeview.min.css"/>',
                 'params' => ''
             ),
         );

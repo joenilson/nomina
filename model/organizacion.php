@@ -79,7 +79,7 @@ class organizacion extends fs_model{
 
     protected function install() {
             return "INSERT INTO ".$this->table_name." (codorganizacion, descripcion, padre, tipo, estado) VALUES".
-                " ('1','GERENCIA GENERAL',NULL,'GERENCIA',TRUE),".
+                " ('1','GERENCIA GENERAL','0','GERENCIA',TRUE),".
                 " ('2','GERENCIA DE ADM Y FINANZAS','1','GERENCIA',TRUE),".
                 " ('3','GERENCIA DE COMERCIAL','1','GERENCIA',TRUE),".
                 " ('4','CONTABILIDAD','2','AREA',TRUE),".
@@ -193,6 +193,73 @@ class organizacion extends fs_model{
             return false;
         }
     }
+    
+    public function get_estructura($padre){
+        $sql = "SELECT * FROM ".$this->table_name." WHERE estado = TRUE and padre = ".$this->var2str($padre)." ORDER BY padre";
+        $data = $this->db->select($sql);
+        $estructura = array();
+        if($data){
+            foreach($data as $d){
+                $linea = new organizacion($d);
+                $valores = new stdClass();
+                $valores->id = $linea->codorganizacion;
+                $valores->text = $linea->descripcion;
+                $estructura[] = $valores;
+            }
+            return $estructura;
+        }else{
+            return false;
+        }
+    }
+    
+    public function all_estructura(){
+        $inicio = $this->get_estructura('0');
+        $org = array();
+        if($inicio){
+            foreach ($inicio as $i){
+                $gerencias = $this->get_estructura($i->id);
+                if($gerencias){
+                    $i->nodes = array();
+                    foreach($gerencias as $g){
+                        $areas = $this->get_estructura($g->id);
+                        if($areas){
+                            $g->nodes = array();
+                            foreach($areas as $a){
+                                $departamentos = $this->get_estructura($a->id);
+                                if($departamentos){
+                                    $a->nodes = array();
+                                    foreach($departamentos as $d){
+                                        $a->nodes[] = $d;
+                                    }
+                                    $g->nodes[] = $a;
+                                }
+                            }
+                            $i->nodes[] = $g;
+                        }
+                    }
+                    $org[] = $i;
+                }
+            }
+            return $org;
+        }
+        
+    }
+    
+    public function tiene_hijos($padre){
+        $sql = "SELECT * FROM ".$this->table_name." WHERE padre = ".$this->var2str($padre).";";
+        $data = $this->db->select($sql);
+        if($data){
+            $lista = array();
+            foreach ($data as $d){
+                $linea = new organizacion($d);
+                $lista[] = $linea;
+            }
+            return $lista;
+        }else{
+            return false;
+        }
+              
+    }
 
     public function all(){
         $lista = array();
@@ -209,7 +276,7 @@ class organizacion extends fs_model{
 
     public function all_tipo($tipo){
         $lista = array();
-        $data = $this->db->select("SELECT * FROM ".$this->table_name." WHERE tipo = ".$this->var2str($tipo).";");
+        $data = $this->db->select("SELECT * FROM ".$this->table_name." WHERE tipo = ".$this->var2str($tipo)." ORDER BY padre DESC;");
         if($data){
             foreach($data as $d){
                 $lista[] = new organizacion($d);
