@@ -46,34 +46,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             </div>
             <div class="col-sm-3"></div>
         </div>
-        <div id="tree">
+        <div class="row">
+            <div class="col-sm-6" id="tree">
 
+            </div>
+            <div class="col-sm-3">
+                Botones de acciones
+            </div>
+            <div class="col-sm-3">
+                
+            </div>
         </div>
-        <ul class="list-group">
-            {loop="$fsc->organizacion->all_tipo('GERENCIA')"}
-            <li class="list-group-item list-group-item-success">
-                <b>GERENCIA:</b> <a href="#"> {$value->descripcion}</a>
-                <span class="pull-right">
-                    <button class="btn btn-sm btn-danger">
-                        <span class="fa fa-trash"></span>
-                    </button>
-                </span>
-                <ul class="list-group">
-                    {loop="$fsc->organizacion->get_by_padre('AREA', $value->codorganizacion)"}
-                    <li class="list-group-item list-group-item-info">
-                        <b>AREA:</b> <a href="#">{$value2->descripcion}</a>
-                        <ul class="list-group">
-                            {loop="$fsc->organizacion->get_by_padre('DEPARTAMENTO', $value2->codorganizacion)"}
-                            <li class="list-group-item list-group-item-warning">
-                                <b>DEPARTAMENTO:</b> <a href="#">{$value3->descripcion}</a>
-                            </li>
-                            {/loop}
-                        </ul>
-                    </li>
-                    {/loop}
-                </ul>
-            </li>
-            {/loop}
-        </ul>
+        
     </div>
 </div>

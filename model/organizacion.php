@@ -195,7 +195,7 @@ class organizacion extends fs_model{
     }
     
     public function get_estructura($padre){
-        $sql = "SELECT * FROM ".$this->table_name." WHERE estado = TRUE and padre = ".$this->var2str($padre)." ORDER BY padre";
+        $sql = "SELECT * FROM ".$this->table_name." WHERE estado = TRUE and padre = ".$this->var2str($padre)." ORDER BY descripcion";
         $data = $this->db->select($sql);
         $estructura = array();
         if($data){
@@ -230,15 +230,17 @@ class organizacion extends fs_model{
                                     $a->nodes = array();
                                     foreach($departamentos as $d){
                                         $a->nodes[] = $d;
-                                    }
-                                    $g->nodes[] = $a;
+                                    }   
                                 }
+                                $g->nodes[] = $a;
                             }
-                            $i->nodes[] = $g;
                         }
+                        $i->nodes[] = $g;
+                        
                     }
                     $org[] = $i;
                 }
+                
             }
             return $org;
         }
