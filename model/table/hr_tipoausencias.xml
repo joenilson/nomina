@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Document   : hr_tipoausencias.xml
+    Description:
+        Estructura de la tabla hr_tipoausencias.
+-->
+<tabla>
+    <columna>
+        <nombre>aplicar_descuento</nombre>
+        <tipo>boolean</tipo>
+        <nulo>NO</nulo>
+        <defecto>false</defecto>
+    </columna>
+    <columna>
+        <nombre>codausencia</nombre>
+        <tipo>character varying(6)</tipo>
+        <nulo>NO</nulo>
+    </columna>
+    <columna>
+        <nombre>descripcion</nombre>
+        <tipo>character varying(100)</tipo>
+        <nulo>NO</nulo>
+    </columna>
+    <columna>
+        <nombre>estado</nombre>
+        <tipo>boolean</tipo>
+        <nulo>NO</nulo>
+        <defecto>true</defecto>
+    </columna>
+    <restriccion>
+        <nombre>hr_tipoausencias_pkey</nombre>
+        <consulta>PRIMARY KEY (codausencia)</consulta>
+    </restriccion>
+</tabla>

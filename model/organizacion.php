@@ -125,14 +125,14 @@ class organizacion extends fs_model{
             return false;
         }else{
             return $this->db->select("SELECT * FROM ".$this->table_name." WHERE ".
-                " codorganizacion = ".$this->var2str($this->codorganizacion).
-                "AND tipo = ".$this->var2str($this->tipo).";");
+                " codorganizacion = ".$this->var2str($this->codorganizacion).";");
         }
     }
 
     public function save() {
         if($this->exists()){
             $this->update();
+            return true;
         }else{
             //INSERT DATA
             $sql = "INSERT INTO ".$this->table_name." (codorganizacion, descripcion, padre, tipo, estado) VALUES (".
@@ -149,9 +149,10 @@ class organizacion extends fs_model{
         $sql = "UPDATE ".$this->table_name." SET ".
             " padre = ".$this->var2str($this->padre).
             ", estado = ".$this->var2str($this->estado).
-            ", descripcion = ".$this->intval($this->descripcion).
-            " WHERE codorganizacion = ".$this->var2str($this->codorganizacion)." AND tipo = ".$this->var2str($this->tipo).";";
-        return $this->db->exec($sql);
+            ", descripcion = ".$this->var2str($this->descripcion).
+            ", tipo = ".$this->var2str($this->tipo).
+            " WHERE codorganizacion = ".$this->var2str($this->codorganizacion).";";
+        $this->db->exec($sql);
     }
 
     public function get($codorganizacion){
@@ -203,7 +204,11 @@ class organizacion extends fs_model{
                 $linea = new organizacion($d);
                 $valores = new stdClass();
                 $valores->id = $linea->codorganizacion;
+                $valores->padre = $linea->padre;
+                $valores->tipo = $linea->tipo;
+                $valores->estado = $linea->estado;
                 $valores->text = $linea->descripcion;
+                $valores->tags = array(ucfirst(strtolower($linea->tipo)));
                 $estructura[] = $valores;
             }
             return $estructura;
@@ -265,7 +270,7 @@ class organizacion extends fs_model{
 
     public function all(){
         $lista = array();
-        $data = $this->db->select("SELECT * FROM ".$this->table_name.";");
+        $data = $this->db->select("SELECT * FROM ".$this->table_name." order by padre;");
         if($data){
             foreach($data as $d){
                 $lista[] = new organizacion($d);

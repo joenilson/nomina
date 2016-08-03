@@ -25,8 +25,10 @@ require_model('generaciones.php');
 require_model('organizacion.php');
 require_model('seguridadsocial.php');
 require_model('sindicalizacion.php');
+require_model('tipoausencias.php');
 require_model('tipoempleado.php');
 require_model('tipodependientes.php');
+require_model('tipomovimiento.php');
 /**
  * Description of configuracion_nomina
  *
@@ -40,8 +42,10 @@ class configuracion_nomina extends fs_controller{
     public $estadosciviles;
     public $generacion;
     public $generaciones;
+    public $tipoausencias;
     public $tipoempleado;
     public $tipodependientes;
+    public $tipomovimiento;
     public $categoriaempleado;
     public $sindicalizacion;
     public $organizacion;
@@ -63,8 +67,10 @@ class configuracion_nomina extends fs_controller{
         $this->estadosciviles = new estadocivil();
         $this->formacion = new formacion();
         $this->generaciones = new generaciones();
+        $this->tipoausencias = new tipoausencias();
         $this->tipoempleado = new tipoempleado();
         $this->tipodependientes = new tipodependientes();
+        $this->tipomovimiento = new tipomovimiento();
         $this->categoriaempleado = new categoriaempleado();
         $this->sindicalizacion = new sindicalizacion();
         $this->seguridadsocial = new seguridadsocial();
@@ -124,6 +130,9 @@ class configuracion_nomina extends fs_controller{
                     break;
                 case "ausencias":
                     $this->template = 'configuracion/nomina_ausencias';
+                    if(isset($_POST['codausencia'])){
+                        $this->tratar_ausencias();
+                    }
                     break;
                 case "generaciones":
                     $this->template = 'configuracion/nomina_generaciones';
@@ -190,6 +199,20 @@ class configuracion_nomina extends fs_controller{
         //@TODO
 
     }
+    
+    public function tratar_ausencias(){
+        $au0 = new tipoausencias();
+        $au0->codausencia = filter_input(INPUT_POST, 'codausencia');
+        $au0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
+        $au0->aplicar_descuento = (isset($_POST['aplicar_descuento']))?filter_input(INPUT_POST, 'aplicar_descuento'):'false';
+        $au0->estado = filter_input(INPUT_POST, 'estado');
+        $estado = $au0->save();
+        if($estado){
+            $this->new_message("Datos guardados correctamente.");
+        }else{
+            $this->new_error_msg("La información con el Id ".$au0->codausencia." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+        }
+    }
 
     public function tratar_cargos(){
         $c0 = new cargos();
@@ -253,7 +276,16 @@ class configuracion_nomina extends fs_controller{
     }
     
     public function tratar_movimientos(){
-        
+        $tmov0 = new tipomovimiento();
+        $tmov0->codmovimiento = filter_input(INPUT_POST, 'codmovimiento');
+        $tmov0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
+        $tmov0->estado = filter_input(INPUT_POST, 'estado');
+        $estado = $tmov0->save();
+        if($estado){
+            $this->new_message("Datos guardados correctamente.");
+        }else{
+            $this->new_error_msg("La información con el Id ".$tmov0->codmovimiento." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+        }
     }
     
     public function tratar_formaciones(){
@@ -324,6 +356,18 @@ class configuracion_nomina extends fs_controller{
     }
     
     public function tratar_organizacion(){
+        $org0 = new organizacion();
+        $org0->codorganizacion = filter_input(INPUT_POST, 'codorganizacion');
+        $org0->padre = filter_input(INPUT_POST, 'padre');
+        $org0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
+        $org0->tipo = $this->mayusculas(filter_input(INPUT_POST, 'tipo'));
+        $org0->estado = filter_input(INPUT_POST, 'estado');
+        $estado = $org0->save();
+        if($estado){
+            $this->new_message("Datos guardados correctamente.");
+        }else{
+            $this->new_error_msg("La información con el Id ".$org0->codorganizacion." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+        }
         
     }
     

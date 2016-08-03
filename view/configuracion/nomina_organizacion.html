@@ -17,10 +17,76 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <script>
     var url_estructura = '{$fsc->url()}&type=organizacion';
-    $(document).ready(function() {
-        $('#tree').treeview({data: cargarEstructura()});
+
+    $(document).ready(function () {
+        $('#btn-edit-selected').attr('disabled', true);
+        $('#tree').treeview({
+            highlightSelected: true,
+            showTags: true,
+            data: cargarEstructura(),
+            onNodeSelected: function (event, node) {
+                $('#node-id').val(node.nodeId);
+                $('#btn-edit-selected').attr('disabled', false);
+            },
+            onNodeUnselected: function (event, node) {
+                $('#node-id').val('');
+                $('#btn-edit-selected').attr('disabled', true);
+            }
+        });
+
+        var search = function (e) {
+            var pattern = $('#input-search').val();
+            var options = {
+                ignoreCase: $('#chk-ignore-case').is(':checked'),
+                exactMatch: $('#chk-exact-match').is(':checked'),
+                revealResults: $('#chk-reveal-results').is(':checked')
+            };
+            var results = $('#tree').treeview('search', [pattern, options]);
+
+            var output = '<p>' + results.length + ' matches found</p>';
+            $.each(results, function (index, result) {
+                output += '<p>- ' + result.text + '</p>';
+            });
+            $('#search-output').html(output);
+        };
+
+        $('#btn-search').on('click', search);
+        $('#input-search').on('keyup', search);
+
+        $('#btn-clear-search').on('click', function (e) {
+            $('#tree').treeview('clearSearch');
+            $('#input-search').val('');
+            $('#search-output').html('');
+        });
+
+        $('#btn-expand-all').on('click', function (e) {
+            $('#tree').treeview('expandAll', {levels: 3, silent: true});
+        });
+
+        $('#btn-collapse-all').on('click', function (e) {
+            $('#tree').treeview('collapseAll', {silent: true});
+        });
+
+        $('#btn-edit-selected').on('click', function (e) {
+            var nodeId = $('#node-id').val();
+            var nodo = $('#tree').treeview('getNode', nodeId);
+            f_edit_node.codorganizacion.value = nodo.id;
+            f_edit_node.descripcion.value = nodo.text;
+            f_edit_node.padre.value = nodo.padre;
+            f_edit_node.tipo.value = nodo.tipo.toUpperCase();
+            f_edit_node.estado.checked = (nodo.estado) ? true : false;
+            f_edit_node.estado.value = (nodo.estado) ? "true" : "false";
+            $('#modal-edit-node').modal('show');
+        });
+        
+        $('#btn-add-org').on('click', function (e){
+            $('#modal-edit-node').modal('show');
+        });
+        
+        $('#modal-edit-node').on('hidden.bs.modal', function () {
+            document.f_edit_node.reset();
+        });
     });
-    
 </script>
 <div class="panel panel-primary">
     <div class="panel-heading">
@@ -29,34 +95,122 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <div class="panel-body">
         <div class='row' style="margin-bottom: 5px;">
             <div class="col-sm-6">
-                <div class="btn-group">
-                    <button class="btn btn-sm btn-primary">
-                        <span class="fa fa-plus"></span>
-                        Agregar Gerencia
-                    </button>
-                    <button class="btn btn-sm btn-info">
-                        <span class="fa fa-plus"></span>
-                        Agregar Area
-                    </button>
-                    <button class="btn btn-sm btn-warning">
-                        <span class="fa fa-plus"></span>
-                        Agregar Departamento
-                    </button>
-                </div>
+
             </div>
             <div class="col-sm-3"></div>
         </div>
         <div class="row">
+            <input type="hidden" id="node-id" value="">
             <div class="col-sm-6" id="tree">
 
             </div>
             <div class="col-sm-3">
-                Botones de acciones
-            </div>
-            <div class="col-sm-3">
-                
+                <div class="form-group">
+                    <label for="input-search" class="sr-only">Search Tree:</label>
+                    <input type="text" class="form-control input-sm" id="input-search" placeholder="Escriba su busqueda..." value="">
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" class="checkbox" id="chk-ignore-case" value="false">
+                        Ignorar Mayusculas/Minusculas
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" class="checkbox" id="chk-exact-match" value="false">
+                        Busqueda Exacta
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" class="checkbox" id="chk-reveal-results" value="false">
+                        Mostrar Resultados
+                    </label>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-sm btn-success" id="btn-search">Buscar</button>
+                    <button type="button" class="btn btn-sm btn-default" id="btn-clear-search">Limpiar</button>
+                    <!-- </form> -->
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-sm btn-success" id="btn-expand-all">Expandir Todo</button>
+                    <button type="button" class="btn btn-sm btn-danger" id="btn-collapse-all">Contraer Todo</button>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-sm btn-info" id="btn-edit-selected">
+                        <span class="fa fa-edit"></span>
+                        Editar Seleccionado
+                    </button>
+                    <button type="button" id="btn-add-org" class="btn btn-sm btn-primary">
+                        <span class="fa fa-plus"></span>
+                        Agregar Unidad Organizativa
+                    </button>
+                </div>
             </div>
         </div>
-        
+        <div class="col-sm-3">
+
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+
+<div class="modal fade" id="modal-edit-node" tabindex="-1" role="dialog" aria-labelledby="modalEditNode">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content"> 
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Estructura Organizacional</h4>
+            </div>
+
+            <div class="modal-body">
+                <form class="form" name="f_edit_node" action="{$fsc->url()}&type=organizacion" method="POST">
+                    <div class="row">
+                        <div class="form-group">
+                            <input type="hidden" name="codorganizacion" value="">
+                            <label for="f_descripcion" class="col-sm-2 control-label">Descripcion</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control input-sm" name="descripcion" id="f_descripcion" placeholder="Descripcion">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="f_padre" class="col-sm-2 control-label">Padre</label>
+                            <div class="col-sm-10">
+                                <select name="padre" id="f_padre" class="form-control input-sm">
+                                    <option value="0">Ninguno</option>
+                                    {loop="$fsc->organizacion->all()"}
+                                    <option value="{$value->codorganizacion}">{$value->tipo} - {$value->descripcion}</option>
+                                    {/loop}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="f_tipo" class="col-sm-2 control-label">Tipo</label>
+                            <div class="col-sm-10">
+                                <select name="tipo" id="f_tipo" required class="form-control input-sm">
+                                    <option value="">-------------</option>
+                                    <option value="GERENCIA">Gerencia</option>
+                                    <option value="AREA">Area</option>
+                                    <option value="DEPARTAMENTO">Departamento</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="estado" value="" onchange="this.value = (this.value === 'true') ? 'false' : 'true';"> Activo
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <button type="button" class="btn btn-sm btn-default pull-left" data-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-sm btn-primary pull-right" id="btn-modal-submit">Guardar Cambios</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
