@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Document   : hr_tipopago.xml
+    Description:
+        Estructura de la tabla hr_tipopago.
+-->
+<tabla>
+    <columna>
+        <nombre>codpago</nombre>
+        <tipo>character varying(6)</tipo>
+        <nulo>NO</nulo>
+    </columna>
+    <columna>
+        <nombre>descripcion</nombre>
+        <tipo>character varying(100)</tipo>
+        <nulo>NO</nulo>
+    </columna>
+    <columna>
+        <nombre>es_basico</nombre>
+        <tipo>boolean</tipo>
+        <nulo>NO</nulo>
+        <defecto>false</defecto>
+    </columna>
+    <columna>
+        <nombre>estado</nombre>
+        <tipo>boolean</tipo>
+        <nulo>NO</nulo>
+        <defecto>true</defecto>
+    </columna>
+    <restriccion>
+        <nombre>hr_tipopago_pkey</nombre>
+        <consulta>PRIMARY KEY (codpago)</consulta>
+    </restriccion>
+</tabla>

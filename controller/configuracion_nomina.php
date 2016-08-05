@@ -29,6 +29,7 @@ require_model('tipoausencias.php');
 require_model('tipoempleado.php');
 require_model('tipodependientes.php');
 require_model('tipomovimiento.php');
+require_model('tipopago.php');
 /**
  * Description of configuracion_nomina
  *
@@ -46,6 +47,7 @@ class configuracion_nomina extends fs_controller{
     public $tipoempleado;
     public $tipodependientes;
     public $tipomovimiento;
+    public $tipopago;
     public $categoriaempleado;
     public $sindicalizacion;
     public $organizacion;
@@ -75,6 +77,7 @@ class configuracion_nomina extends fs_controller{
         $this->sindicalizacion = new sindicalizacion();
         $this->seguridadsocial = new seguridadsocial();
         $this->organizacion = new organizacion();
+        $this->tipopago = new tipopago();
         if(isset($_GET['type'])){
             switch($_GET['type']){
                 case "cargos":
@@ -150,6 +153,12 @@ class configuracion_nomina extends fs_controller{
                     $this->template = 'configuracion/nomina_estadocivil';
                     if(isset($_POST['codestadocivil'])){
                         $this->tratar_estadosciviles();
+                    }
+                    break;
+                case "pagos":
+                    $this->template = 'configuracion/nomina_pagos';
+                    if(isset($_POST['codpago'])){
+                        $this->tratar_pagos();
                     }
                     break;
                 default:
@@ -286,6 +295,21 @@ class configuracion_nomina extends fs_controller{
         }else{
             $this->new_error_msg("La información con el Id ".$tmov0->codmovimiento." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
         }
+    }
+    
+    public function tratar_pagos(){
+        $tp0 = new tipopago();
+        $tp0->codpago = filter_input(INPUT_POST, 'codpago');
+        $tp0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
+        $tp0->es_basico = (isset($_POST['es_basico']))?filter_input(INPUT_POST, 'es_basico'):'false';
+        $tp0->estado = filter_input(INPUT_POST, 'estado');
+        $estado = $tp0->save();
+        if($estado){
+            $this->new_message("Datos guardados correctamente.");
+        }else{
+            $this->new_error_msg("La información con el Id ".$tp0->codpago." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+        }
+        
     }
     
     public function tratar_formaciones(){
@@ -656,6 +680,14 @@ class configuracion_nomina extends fs_controller{
                 'type' => 'tab',
                 'text' => '<span class="fa fa-gear" aria-hidden="true"></span> &nbsp; Estados Civiles',
                 'params' => '&type=estadocivil'
+            ),            
+            array(
+                'name' => 'config_nomina_pagos',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'tab',
+                'text' => '<span class="fa fa-gear" aria-hidden="true"></span> &nbsp; Tipos de Pago',
+                'params' => '&type=pagos'
             ),            
             array(
                 'name' => 'configurar_nomina_js',

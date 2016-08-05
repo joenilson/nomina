@@ -1,0 +1,88 @@
+{include="header2"}
+<!--
+Copyright (C) 2016 Joe Nilson <joenilson at gmail dot com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h3 class="panel-title">Configuraci&oacute;n de Tipo de Pago</h3>
+    </div>
+    <div class="panel-body">
+        <div class="container">
+            <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Descripcion:</th>
+                        <th>Es Básico?:</th>
+                        <th>Activo?:</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <form class="form" role="form" action="{$fsc->url()}&type=pagos" method="POST">
+                        <tr class="info">
+                            <td>
+                                <input type="hidden" name="codpago" value="">
+                            </td>
+                            <td>
+                                <input type="text" name="descripcion" value="" autocomplete="off" class="form-control input-sm">
+                            </td>
+                            <td class="text-center">
+                                <input type="checkbox" name="es_basico" value="false" onchange="this.value=(this.value==='true')?'false':'true';">
+                            </td>
+                            <td>
+                                <input type="hidden" name="estado" value="true">
+                            </td>
+                            <td>
+                                <button type="submit" class="btn btn-sm btn-primary">
+                                    <span class="fa fa-save"></span> Nuevo
+                                </button>
+                            </td>
+                        </tr>
+                    </form>
+                    {loop="$fsc->tipopago->all()"}
+                    <form class="form" role="form" action="{$fsc->url()}&type=pagos" method="POST">
+                        <tr>
+                            <td>
+                                <input type="text" name="codpago" value="{$value->codpago}" readonly="true" class="form-control input-sm">
+                            </td>
+                            <td>
+                                <input type="text" name="descripcion" value="{$value->descripcion}" autocomplete="off" class="form-control input-sm">
+                            </td>
+                            <td class="text-center">
+                                <input type="checkbox" onchange="this.value=(this.value==='true')?'false':'true';" name="es_basico" value="{if="$value->es_basico"}true{else}false{/if}" {if="$value->es_basico"}checked{/if} class="checkbox-control">
+                            </td>
+                            <td class="text-center">
+                                <input type="checkbox" onchange="this.value=(this.value==='true')?'false':'true';" name="estado" value="{if="$value->estado"}true{else}false{/if}" {if="$value->estado"}checked{/if} class="checkbox-control">
+                            </td>
+                            <td class="text-right">
+                                {if="$fsc->allow_delete"}
+                                <button class="btn btn-sm btn-danger">
+                                    <span class="fa fa-trash"></span>
+                                </button>
+                                {/if}
+                                <button class="btn btn-sm btn-primary">
+                                    <span class="fa fa-save"></span>
+                                </button>
+                            </td>
+                        </tr>
+                    </form>
+                    {/loop}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
