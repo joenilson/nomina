@@ -20,6 +20,7 @@ require_model('agente.php');
 require_model('almacen.php');
 require_model('cargos.php');
 require_model('bancos.php');
+require_model('generaciones.php');
 require_model('seguridadsocial.php');
 require_model('tipoempleado.php');
 require_model('categoriaempleado.php');
@@ -37,6 +38,7 @@ class nomina_dashboard extends fs_controller{
     public $agentes;
     public $almacen;
     public $cargos;
+    public $generaciones;
     public $seguridadsocial;
     public $tipoempleado;
     public $categoriaempleado;
@@ -59,6 +61,7 @@ class nomina_dashboard extends fs_controller{
         $this->categoriaempleado = new categoriaempleado();
         $this->sindicalizacion = new sindicalizacion();
         $this->organizacion = new organizacion();
+        $this->generaciones = new generaciones();
         
         $this->logo_empresa = "tmp".DIRECTORY_SEPARATOR.FS_TMP_NAME.DIRECTORY_SEPARATOR."logo.png";
     }

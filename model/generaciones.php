@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+require_model('agente.php');
 /**
  * Description of generaciones
  *
@@ -53,6 +53,8 @@ class generaciones extends fs_model{
      */
     public $estado;
     
+    public $agentes;
+    
     public function __construct($t = FALSE) {
         parent::__construct('hr_generaciones');
         if($t){
@@ -68,6 +70,8 @@ class generaciones extends fs_model{
             $this->fin_generacion = NULL;
             $this->estado = FALSE;
         }
+        
+        $this->agentes = new agente();
     }
 
     protected function install() {
@@ -176,6 +180,22 @@ class generaciones extends fs_model{
 
     public function delete(){
         return false;
+    }
+    
+    public function resumen_generaciones(){
+        $agentes = $this->agentes->all();
+        $lista = array();
+        foreach($agentes as $a){
+            $dateEmpleado = new DateTime($a->f_nacimiento);
+            $datos = $this->get_by_year($dateEmpleado->format('Y'));
+            if(!isset($lista[$datos->codgeneracion])){
+                $lista[$datos->codgeneracion] = new stdClass();
+                $lista[$datos->codgeneracion]->cantidad = 0;
+            }
+            $lista[$datos->codgeneracion]->descripcion = $datos->descripcion;
+            $lista[$datos->codgeneracion]->cantidad += 1;
+        }
+        return $lista;
     }
 
     public function corregir(){

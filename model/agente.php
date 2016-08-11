@@ -413,7 +413,43 @@ class agente extends fs_model
            $res->codcategoria = $info_cargos->codcategoria;
            $res->categoria = $info_categoria->descripcion;
        }
+       $res->edad = $this->edad($res->f_nacimiento);
+       $res->permanencia = $this->permanencia($res->f_alta, $res->f_baja);
        return $res;
+   }
+   
+   public function edad($f_nac){
+        $from = new DateTime($f_nac);
+        $to   = new DateTime('today');
+        $edad = $from->diff($to)->y;
+        return $edad;
+   }
+   
+   public function permanencia($f_alta,$f_baja){
+        $f_fin = (!empty($f_baja))?$f_baja:'today';
+        $from = new DateTime($f_alta);
+        $to   = new DateTime($f_fin);
+        $dateDiff = $from->diff($to);
+        $years = $dateDiff->y;
+        $months = $dateDiff->m;
+        $days = $dateDiff->d;
+        $permanencia = "";
+        if($years != 0){
+            $string = ($years>1)?" años ":" año ";
+            $permanencia .= $years.$string;
+        }
+        
+        if($months != 0 ){
+            $string = ($months>1)?" meses ":" mes ";
+            $permanencia .= $months.$string;
+        }
+        
+        if($days != 0 ){
+            $string = ($days>1)?" dias ":" dia ";
+            $permanencia .= $days.$string;
+        }
+        
+        return $permanencia;
    }
 
    public function get_fullname()
@@ -431,7 +467,7 @@ class agente extends fs_model
 
    public function set_foto($nombre_foto){
       if($nombre_foto){
-         $sql = "UPDATE ".$this->table_name." SET FOTO = ".$this->var2str($nombre_foto).";";
+         $sql = "UPDATE ".$this->table_name." SET FOTO = ".$this->var2str($nombre_foto)." WHERE codagente = ".$this->var2str($this->codagente).";";
          return $this->db->exec($sql);
       }else{
          return false;
@@ -449,7 +485,7 @@ class agente extends fs_model
       else
          return 1;
    }
-
+   
    public function url()
    {
       if( is_null($this->codagente) )
