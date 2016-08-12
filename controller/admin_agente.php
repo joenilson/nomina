@@ -231,6 +231,7 @@ class admin_agente extends fs_controller
       if ($this->upload_photo->processed) {
          $this->upload_photo->clean();
          $this->agente->set_foto($newname.".png");
+         $this->agente->foto = $newname.".png";
       }else{
          $this->new_error_msg('error : ' . $$this->upload_photo->error);
       }

@@ -22,10 +22,12 @@ require_model('categoriaempleado.php');
 require_model('estadocivil.php');
 require_model('formacion.php');
 require_model('generaciones.php');
+require_model('motivocese.php');
 require_model('organizacion.php');
 require_model('seguridadsocial.php');
 require_model('sindicalizacion.php');
 require_model('tipoausencias.php');
+require_model('tipocese.php');
 require_model('tipoempleado.php');
 require_model('tipodependientes.php');
 require_model('tipomovimiento.php');
@@ -43,7 +45,9 @@ class configuracion_nomina extends fs_controller{
     public $estadosciviles;
     public $generacion;
     public $generaciones;
+    public $motivocese;
     public $tipoausencias;
+    public $tipocese;
     public $tipoempleado;
     public $tipodependientes;
     public $tipomovimiento;
@@ -69,7 +73,9 @@ class configuracion_nomina extends fs_controller{
         $this->estadosciviles = new estadocivil();
         $this->formacion = new formacion();
         $this->generaciones = new generaciones();
+        $this->motivocese = new motivocese();
         $this->tipoausencias = new tipoausencias();
+        $this->tipocese = new tipocese();
         $this->tipoempleado = new tipoempleado();
         $this->tipodependientes = new tipodependientes();
         $this->tipomovimiento = new tipomovimiento();
@@ -159,6 +165,18 @@ class configuracion_nomina extends fs_controller{
                     $this->template = 'configuracion/nomina_pagos';
                     if(isset($_POST['codpago'])){
                         $this->tratar_pagos();
+                    }
+                    break;
+                case "motivocese":
+                    $this->template = 'configuracion/nomina_motivocese';
+                    if(isset($_POST['codmotivocese'])){
+                        $this->tratar_motivocese();
+                    }
+                    break;
+                case "tipocese":
+                    $this->template = 'configuracion/nomina_tipocese';
+                    if(isset($_POST['codtipocese'])){
+                        $this->tratar_motivocese();
                     }
                     break;
                 default:
@@ -281,6 +299,33 @@ class configuracion_nomina extends fs_controller{
             $this->new_message("Datos guardados correctamente.");
         }else{
             $this->new_error_msg("La información con el Id ".$estciv0->codestadocivil." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+        }
+    }
+    
+    public function tratar_motivocese(){
+        $ing0 = new motivocese();
+        $ing0->codmotivocese = filter_input(INPUT_POST, 'codmotivocese');
+        $ing0->codtipocese = filter_input(INPUT_POST, 'codtipocese');
+        $ing0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
+        $ing0->estado = filter_input(INPUT_POST, 'estado');
+        $estado = $ing0->save();
+        if($estado){
+            $this->new_message("Datos guardados correctamente.");
+        }else{
+            $this->new_error_msg("La información con el Id ".$ing0->codmotivocese." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+        }
+    }
+    
+    public function tratar_tipocese(){
+        $ing0 = new tipocese();
+        $ing0->codtipocese = filter_input(INPUT_POST, 'codtipocese');
+        $ing0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
+        $ing0->estado = filter_input(INPUT_POST, 'estado');
+        $estado = $ing0->save();
+        if($estado){
+            $this->new_message("Datos guardados correctamente.");
+        }else{
+            $this->new_error_msg("La información con el Id ".$ing0->codtipocese." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
         }
     }
     
@@ -690,6 +735,22 @@ class configuracion_nomina extends fs_controller{
                 'params' => '&type=pagos'
             ),            
             array(
+                'name' => 'config_nomina_motivocese',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'tab',
+                'text' => '<span class="fa fa-gear" aria-hidden="true"></span> &nbsp; Motivos de Cese',
+                'params' => '&type=motivocese'
+            ),            
+            array(
+                'name' => 'config_nomina_tipocese',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'tab',
+                'text' => '<span class="fa fa-gear" aria-hidden="true"></span> &nbsp; Tipo de Ceses',
+                'params' => '&type=tipocese'
+            ),            
+            array(
                 'name' => 'configurar_nomina_js',
                 'page_from' => __CLASS__,
                 'page_to' => __CLASS__,
@@ -719,6 +780,14 @@ class configuracion_nomina extends fs_controller{
                 'page_to' => __CLASS__,
                 'type' => 'head',
                 'text' => '<link rel="stylesheet" type="text/css" media="screen" href="plugins/nomina/view/css/bootstrap-treeview.min.css"/>',
+                'params' => ''
+            ),
+            array(
+                'name' => 'pace_loader_nomina_js',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<script src="plugins/nomina/view/js/pace.min.js" type="text/javascript"></script>',
                 'params' => ''
             ),
         );

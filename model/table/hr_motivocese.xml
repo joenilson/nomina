@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Document   : hr_motivocese.xml
+    Description:
+        Estructura de la tabla hr_motivocese.
+-->
+<tabla>
+    <columna>
+        <nombre>codmotivocese</nombre>
+        <tipo>character varying(6)</tipo>
+        <nulo>NO</nulo>
+    </columna>
+    <columna>
+        <nombre>codtipocese</nombre>
+        <tipo>character varying(6)</tipo>
+        <nulo>NO</nulo>
+    </columna>
+    <columna>
+        <nombre>descripcion</nombre>
+        <tipo>character varying(60)</tipo>
+        <nulo>NO</nulo>
+    </columna>
+    <columna>
+        <nombre>estado</nombre>
+        <tipo>boolean</tipo>
+        <nulo>NO</nulo>
+        <defecto>true</defecto>
+    </columna>
+    <restriccion>
+        <nombre>hr_motivocese_pkey</nombre>
+        <consulta>PRIMARY KEY (codmotivocese)</consulta>
+    </restriccion>
+</tabla>
