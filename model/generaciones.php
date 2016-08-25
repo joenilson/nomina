@@ -76,7 +76,7 @@ class generaciones extends fs_model{
 
     protected function install() {
         return "INSERT INTO ".$this->table_name.
-                " (codgeneracion, descripcion, estado) VALUES".
+                " (codgeneracion, descripcion, inicio_generacion, fin_generacion, estado) VALUES".
                 " ('1','Baby Boomers',1943,1960, true),".
                 " ('2','X',1961,1981,true),".
                 " ('3','Y',1982,2000,true),".
