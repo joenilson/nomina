@@ -20,6 +20,7 @@ require_model('agente.php');
 require_model('almacen.php');
 require_model('cargos.php');
 require_model('bancos.php');
+require_model('estadocivil.php');
 require_model('seguridadsocial.php');
 require_model('tipoempleado.php');
 require_model('categoriaempleado.php');
@@ -40,6 +41,7 @@ class importar_agentes extends fs_controller
    public $cargos;
    public $almacen;
    public $bancos;
+   public $estadocivil;
    public $formacion;
    public $tipoempleado;
    public $categoriaempleado;
@@ -67,6 +69,7 @@ class importar_agentes extends fs_controller
         $this->almacen = new almacen();
         $this->bancos = new bancos();
         $this->cargos = new cargos();
+        $this->estadocivil = new estadocivil();
         $this->formacion = new formacion();
         $this->tipoempleado = new tipoempleado();
         $this->categoriaempleado = new categoriaempleado();
@@ -120,54 +123,73 @@ class importar_agentes extends fs_controller
         $assoc_header['SUELDO BRUTO']='pago_total';
         $assoc_header['SUELDO NETO']='pago_neto';
         $assoc_header['EMAIL']='email';
+
+        //Listado de Almacenes por descripcion
+        $sedesArray = array();
+        foreach($this->almacen->all() as $vals){
+            $sedesArray[$vals->nombre]=$vals->codalmacen;
+        }
         
-        //foreach ($objPHPExcel->getWorksheetIterator() as $worksheet) {
-            $worksheet = $objPHPExcel->getSheet(0);
-            $worksheetTitle     = $worksheet->getTitle();
-            $highestRow         = $worksheet->getHighestRow(); // e.g. 10
-            $highestColumn      = $worksheet->getHighestColumn(); // e.g 'F'
-            $highestColumnIndex = PHPExcel_Cell::columnIndexFromString($highestColumn);
-            $nrColumns = ord($highestColumn) - 64;
-            $cabeceraRecibida = array();
-            for ($col = 0; $col < count($this->arrayCabeceras); $col++) {
-                $cell = $worksheet->getCellByColumnAndRow($col, 1);
-                $contenido = strtoupper($cell->getValue());
-                if(!empty($assoc_header[$contenido])){
-                    $cabeceraRecibida[$col] = $assoc_header[$contenido];
-                }
+        $worksheet = $objPHPExcel->getSheet(0);
+        $worksheetTitle     = $worksheet->getTitle();
+        $highestRow         = $worksheet->getHighestRow(); // e.g. 10
+        $highestColumn      = $worksheet->getHighestColumn(); // e.g 'F'
+        $highestColumnIndex = PHPExcel_Cell::columnIndexFromString($highestColumn);
+        $nrColumns = ord($highestColumn) - 64;
+        $cabeceraRecibida = array();
+        for ($col = 0; $col < count($this->arrayCabeceras); $col++) {
+            $cell = $worksheet->getCellByColumnAndRow($col, 1);
+            $contenido = strtoupper($cell->getValue());
+            if(!empty($assoc_header[$contenido])){
+                $cabeceraRecibida[$col] = $assoc_header[$contenido];
+            }else{
+                $cabeceraRecibida[$col] = "UNSELECTED";
             }
-            
-            for ($row = 1; $row <= $highestRow; ++$row){
-                if($row!=1){
-                    for ($col = 0; $col < count($cabeceraRecibida); ++$col) {
-                        $cell = $worksheet->getCellByColumnAndRow($col, $row);
-                        $contenido = strtoupper($cell->getValue());
-                        $val = trim($cell->getValue());
-                        //Verificamos si tiene dnicif
-                        if($cabeceraRecibida[$col]=='dnicif' AND (!empty($val) AND $val != null)){
-                            //echo $assoc_header[$contenido];
-                            $val = ($agentes->get_by_dnicif($val))?null:$val;
-                            $linea['estado']=($val)?'Nuevo':'Ya existe';
-                        }
-                        //Verificamos si tiene f_nacimiento
-                        if($cabeceraRecibida[$col]=='f_nacimiento' AND (empty($val) OR $val == null)){
+        }
+
+        for ($row = 1; $row <= $highestRow; ++$row){
+            if($row!=1){
+                for ($col = 0; $col < count($cabeceraRecibida); ++$col) {
+                    $cell = $worksheet->getCellByColumnAndRow($col, $row);
+                    $contenido = strtoupper($cell->getValue());
+                    $val = trim($cell->getValue());
+                    //Verificamos si tiene dnicif
+                    if($cabeceraRecibida[$col]=='dnicif' AND (!empty($val) AND $val != null)){
+                        //echo $assoc_header[$contenido];
+                        $val = ($agentes->get_by_dnicif($val))?null:$val;
+                        $linea['estado']=($val)?'Nuevo':'Ya existe';
+                    }
+                    
+                    //Verificamos si tiene f_nacimiento
+                    if($cabeceraRecibida[$col]=='f_nacimiento' AND (empty($val) OR $val == null)){
+                        $linea['estado']='Incompleto';
+                    }
+                    //Verificamos si tiene f_alta
+                    if($cabeceraRecibida[$col]=='f_alta' AND (empty($val) OR $val == null)){
+                        $linea['estado']='Incompleto';
+                    }
+                    //le hacemos una revision del correo para que esté en minusculas
+                    if($cabeceraRecibida[$col]=='email' AND (!empty($val) OR $val !== null)){
+                        $val = strtolower($val);
+                    }
+                    if(PHPExcel_Shared_Date::isDateTime($cell)) {
+                        $val = (is_null($val))?'':date('d-m-Y', PHPExcel_Shared_Date::ExcelToPHP($val));
+                    }
+                    //Verificamos si la sede existe
+                    if($cabeceraRecibida[$col]=='sede' AND (!empty($val) OR $val !== null)){
+                        $val = strtoupper($val);
+                        if(!isset($sedesArray[$val])){
+                            $val = "Crear: ".$val;
                             $linea['estado']='Incompleto';
                         }
-                        //le hacemos una revision del correo para que esté en minusculas
-                        if($cabeceraRecibida[$col]=='email' AND (!empty($val) OR $val !== null)){
-                            $val = strtolower($val);
-                        }
-                        if(PHPExcel_Shared_Date::isDateTime($cell)) {
-                            $val = (is_null($val))?'':date('d-m-Y', PHPExcel_Shared_Date::ExcelToPHP($val));
-                        }
-                        $linea[$cabeceraRecibida[$col]]=$val;
                     }
-                    $linea['rid']=$l;
-                    $this->resultado[]=$linea;
+                    $linea[$cabeceraRecibida[$col]]=$val;
                 }
-                $l++;
+                $linea['rid']=$l;
+                $this->resultado[]=$linea;
             }
-        //}
+            $l++;
+        }
         $this->template = false;
         header('Content-Type: application/json');
         echo json_encode($this->resultado);
@@ -213,13 +235,14 @@ class importar_agentes extends fs_controller
             if($this->cargos->get_by_descripcion($_POST['cargo'])){
                 $cargo = $this->cargos->get_by_descripcion(strtoupper($_POST['cargo']));
             }else{
+                $cargo = new stdClass();
                 $cargo->codcargo = NULL;
                 $cargo->descripcion = NULL;
             }
         }
 
         if($_POST['estado_civil'] != ''){
-            foreach($this->agente->estado_civil_agente() as $key=>$val){
+            foreach($this->estadocivil->all() as $key=>$val){
                 if(strtoupper($val) == strtoupper($_POST['estado_civil'])){
                     $estado_civil = $key;
                 }
