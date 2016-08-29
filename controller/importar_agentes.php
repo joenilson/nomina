@@ -90,6 +90,37 @@ class importar_agentes extends fs_controller
         $agentes = new agente();
         $objPHPExcel = PHPExcel_IOFactory::load($this->archivo['tmp_name']);
         $l = 0;
+        
+        $assoc_header['SEDE']='sede';
+        $assoc_header['EMPRESA']='empresa';
+        $assoc_header['DNI']='dnicif';
+        $assoc_header['APELLIDOS Y NOMBRES']='nombreap';
+        $assoc_header['A.PATERNO']='apellidos';
+        $assoc_header['A.MATERNO']='segundo_apellido';
+        $assoc_header['NOMBRES']='nombre';
+        $assoc_header['SEXO']='sexo';
+        $assoc_header['ESTADO CIVIL']='estado_civil';
+        $assoc_header['FECHA DE NACIMIENTO']='f_nacimiento';
+        $assoc_header['DIRECCION']='direccion';
+        $assoc_header['TELEFONO']='telefono';
+        $assoc_header['FECHA INGRESO']='f_alta';
+        $assoc_header['FECHA DE CESE']='f_baja';
+        $assoc_header['GERENCIA']='gerencia';
+        $assoc_header['AREA']='area';
+        $assoc_header['DEPARTAMENTO']='departamento';
+        $assoc_header['CARGO']='cargo';
+        $assoc_header['AFP']='codseguridadsocial';
+        $assoc_header['CUSSP']='seg_social';
+        $assoc_header['NUMERO DE HIJOS']='dependientes';
+        $assoc_header['NIVEL DE FORMACIÓN']='codformacion';
+        $assoc_header['CARRERA']='carrera';
+        $assoc_header['UNIVERSIDAD']='centroestudios';
+        $assoc_header['SINDICATO']='idsindicato';
+        $assoc_header['TIPO DE CONTRATO']='codtipo';
+        $assoc_header['SUELDO BRUTO']='pago_total';
+        $assoc_header['SUELDO NETO']='pago_neto';
+        $assoc_header['EMAIL']='email';
+        
         //foreach ($objPHPExcel->getWorksheetIterator() as $worksheet) {
             $worksheet = $objPHPExcel->getSheet(0);
             $worksheetTitle     = $worksheet->getTitle();
@@ -97,26 +128,39 @@ class importar_agentes extends fs_controller
             $highestColumn      = $worksheet->getHighestColumn(); // e.g 'F'
             $highestColumnIndex = PHPExcel_Cell::columnIndexFromString($highestColumn);
             $nrColumns = ord($highestColumn) - 64;
-
-            for ($row = 1; $row <= $highestRow; ++$row) {
+            $cabeceraRecibida = array();
+            for ($col = 0; $col < count($this->arrayCabeceras); $col++) {
+                $cell = $worksheet->getCellByColumnAndRow($col, 1);
+                $contenido = strtoupper($cell->getValue());
+                if(!empty($assoc_header[$contenido])){
+                    $cabeceraRecibida[$col] = $assoc_header[$contenido];
+                }
+            }
+            
+            for ($row = 1; $row <= $highestRow; ++$row){
                 if($row!=1){
-                    for ($col = 0; $col < count($this->arrayCabeceras); ++$col) {
+                    for ($col = 0; $col < count($cabeceraRecibida); ++$col) {
                         $cell = $worksheet->getCellByColumnAndRow($col, $row);
-                        $val = $cell->getValue();
+                        $contenido = strtoupper($cell->getValue());
+                        $val = trim($cell->getValue());
                         //Verificamos si tiene dnicif
-                        if($col==2 AND (!empty($val) AND $val != null)){
+                        if($cabeceraRecibida[$col]=='dnicif' AND (!empty($val) AND $val != null)){
+                            //echo $assoc_header[$contenido];
                             $val = ($agentes->get_by_dnicif($val))?null:$val;
                             $linea['estado']=($val)?'Nuevo':'Ya existe';
                         }
                         //Verificamos si tiene f_nacimiento
-                        if($col==9 AND (empty($val) OR $val == null)){
+                        if($cabeceraRecibida[$col]=='f_nacimiento' AND (empty($val) OR $val == null)){
                             $linea['estado']='Incompleto';
+                        }
+                        //le hacemos una revision del correo para que esté en minusculas
+                        if($cabeceraRecibida[$col]=='email' AND (!empty($val) OR $val !== null)){
+                            $val = strtolower($val);
                         }
                         if(PHPExcel_Shared_Date::isDateTime($cell)) {
                             $val = (is_null($val))?'':date('d-m-Y', PHPExcel_Shared_Date::ExcelToPHP($val));
                         }
-                        $linea[$this->arrayCabeceras[$col]]=$val;
-
+                        $linea[$cabeceraRecibida[$col]]=$val;
                     }
                     $linea['rid']=$l;
                     $this->resultado[]=$linea;
