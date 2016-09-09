@@ -400,11 +400,11 @@ class agente extends fs_model
    }
 
    public function info_adicional($res){
-       $res->gerencia = $this->organizacion->get($res->codgerencia)->descripcion;
-       $res->area = $this->organizacion->get($res->codarea)->descripcion;
+       $res->gerencia = (!empty($res->codgerencia))?$this->organizacion->get($res->codgerencia)->descripcion:"";
+       $res->area = (!empty($res->codarea))?$this->organizacion->get($res->codarea)->descripcion:"";
        $res->departamento = ($res->coddepartamento != '')?$this->organizacion->get($res->coddepartamento)->descripcion:'';
        $res->almacen_nombre = $this->almacen->get($res->codalmacen)->nombre;
-       $res->tipo = $this->tipoempleado->get($res->codtipo)->descripcion;
+       $res->tipo = (!empty($res->codtipo))?$this->tipoempleado->get($res->codtipo)->descripcion:"";
        $res->codcategoria = '';
        $res->categoria = '';
        if($res->codcargo){

@@ -390,11 +390,11 @@ class configuracion_nomina extends fs_controller{
         $ss0->nombre_corto = $this->mayusculas(filter_input(INPUT_POST, 'nombre_corto'));
         $ss0->tipo = $this->mayusculas(filter_input(INPUT_POST, 'tipo'));
         $ss0->estado = filter_input(INPUT_POST, 'estado');
-        $estado = $dep0->save();
+        $estado = $ss0->save();
         if($estado){
             $this->new_message("Datos guardados correctamente.");
         }else{
-            $this->new_error_msg("La información con el Id ".$dep0->codseguridadsocial." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+            $this->new_error_msg("La información con el Id ".$ss0->codseguridadsocial." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
         }
     }
     

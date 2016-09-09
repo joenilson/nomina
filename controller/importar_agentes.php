@@ -243,14 +243,15 @@ class importar_agentes extends fs_controller
 
         if($_POST['estado_civil'] != ''){
             foreach($this->estadocivil->all() as $key=>$val){
-                if(strtoupper($val) == strtoupper($_POST['estado_civil'])){
+                if(strtoupper($val->descripcion) == strtoupper($_POST['estado_civil'])){
                     $estado_civil = $key;
                 }
             }
         }else{
             $estado_civil = NULL;
         }
-
+        
+        $codseguridadsocial = NULL;
         if($_POST['codseguridadsocial'] != ''){
             $codseguridadsocial = (strlen($_POST['codseguridadsocial'])<=4)?$this->seguridadsocial->get_by_nombre_corto($_POST['codseguridadsocial'])->codseguridadsocial:$this->seguridadsocial->get_by_nombre(strtoupper($_POST['codseguridadsocial']))->codseguridadsocial;
         }
@@ -269,7 +270,8 @@ class importar_agentes extends fs_controller
         }else{
             $codformacion = NULL;
         }
-
+        
+        $codtipo = NULL;
         if($_POST['codtipo'] != ''){
             if($this->tipoempleado->get_by_descripcion($this->mayusculas($_POST['codtipo']))){
                 $codtipo = $this->tipoempleado->get_by_descripcion($this->mayusculas($_POST['codtipo']))->codtipo;
@@ -278,6 +280,7 @@ class importar_agentes extends fs_controller
             }
         }
 
+        $codgerencia = NULL;
         if($_POST['gerencia'] != ''){
             if($this->organizacion->get_by_descripcion_tipo($this->mayusculas($_POST['gerencia']),'GERENCIA')){
                 $codgerencia = $this->organizacion->get_by_descripcion_tipo($this->mayusculas($_POST['gerencia']),'GERENCIA')->codorganizacion;
@@ -286,6 +289,7 @@ class importar_agentes extends fs_controller
             }
         }
 
+        $codarea = NULL;
         if($_POST['area'] != ''){
             if($this->organizacion->get_by_descripcion_tipo($this->mayusculas($_POST['area']),'AREA')){
                 $codarea = $this->organizacion->get_by_descripcion_tipo($this->mayusculas($_POST['area']),'AREA')->codorganizacion;
@@ -294,6 +298,7 @@ class importar_agentes extends fs_controller
             }
         }
 
+        $coddepartamento = NULL;
         if($_POST['departamento'] != ''){
             if($this->organizacion->get_by_descripcion_tipo($this->mayusculas($_POST['departamento']),'DEPARTAMENTO')){
                 $coddepartamento = $this->organizacion->get_by_descripcion_tipo($this->mayusculas($_POST['departamento']),'DEPARTAMENTO')->codorganizacion;
