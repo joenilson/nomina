@@ -131,8 +131,7 @@ class organizacion extends fs_model{
 
     public function save() {
         if($this->exists()){
-            $this->update();
-            return true;
+            return $this->update();
         }else{
             //INSERT DATA
             $sql = "INSERT INTO ".$this->table_name." (codorganizacion, descripcion, padre, tipo, estado) VALUES (".
@@ -152,7 +151,7 @@ class organizacion extends fs_model{
             ", descripcion = ".$this->var2str($this->descripcion).
             ", tipo = ".$this->var2str($this->tipo).
             " WHERE codorganizacion = ".$this->var2str($this->codorganizacion).";";
-        $this->db->exec($sql);
+        return $this->db->exec($sql);
     }
 
     public function get($codorganizacion){

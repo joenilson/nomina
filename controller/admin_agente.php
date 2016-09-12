@@ -63,7 +63,7 @@ class admin_agente extends fs_controller
       $this->dir_empleados = "tmp/".FS_TMP_NAME."/nomina/empleados/";
       /// ¿El usuario tiene permiso para eliminar en esta página?
       $this->allow_delete = $this->user->allow_delete_on(__CLASS__);
-
+      $this->share_extensions();
       $this->almacen = new almacen();
       $this->bancos = new bancos();
       $this->cargos = new cargos();
@@ -257,5 +257,26 @@ class admin_agente extends fs_controller
       }
       else
          return $this->page->url();
+   }
+   
+   public function share_extensions(){
+        $extensiones = array(
+            array(
+                'name' => 'pace_loader_admin_agente_js',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<script src="plugins/nomina/view/js/pace.min.js" type="text/javascript"></script>',
+                'params' => ''
+            )
+        );
+        
+        foreach ($extensiones as $ext) {
+            $fsext0 = new fs_extension($ext);
+            if (!$fsext0->save()) {
+                $this->new_error_msg('Imposible guardar los datos de la extensión ' . $ext['name'] . '.');
+            }
+        }
+       
    }
 }

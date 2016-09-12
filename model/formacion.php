@@ -93,8 +93,7 @@ class formacion extends fs_model{
 
     public function save() {
         if($this->exists()){
-            $this->update();
-            return true;
+            return $this->update();
         }else{
             //INSERT DATA
             $sql = "INSERT INTO ".$this->table_name." (codformacion, nombre, estado) VALUES (".
@@ -110,7 +109,7 @@ class formacion extends fs_model{
             " estado = ".$this->var2str($this->estado).
             ", nombre = ".$this->var2str($this->nombre).
             " WHERE codformacion = ".$this->var2str($this->codformacion).";";
-        $this->db->exec($sql);
+        return $this->db->exec($sql);
     }
 
     public function get($codformacion){

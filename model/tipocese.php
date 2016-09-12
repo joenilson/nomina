@@ -91,8 +91,7 @@ class tipocese extends fs_model{
 
     public function save() {
         if($this->exists()){
-            $this->update();
-            return true;
+            return $this->update();
         }else{
             //INSERT DATA
             $sql = "INSERT INTO ".$this->table_name." (codtipocese, descripcion, estado) VALUES (".
@@ -108,7 +107,7 @@ class tipocese extends fs_model{
             " estado = ".$this->var2str($this->estado).
             ", descripcion = ".$this->var2str($this->descripcion).
             " WHERE codtipocese = ".$this->var2str($this->codtipocese).";";
-        $this->db->exec($sql);
+        return $this->db->exec($sql);
     }
 
     public function get($codtipocese){

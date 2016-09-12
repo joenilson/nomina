@@ -107,8 +107,7 @@ class seguridadsocial extends fs_model{
 
     public function save() {
         if($this->exists()){
-            $this->update();
-            return true;
+            return $this->update();
         }else{
             //INSERT DATA
             $sql = "INSERT INTO ".$this->table_name." (codseguridadsocial, nombre, nombre_corto, tipo, estado) VALUES (".
@@ -128,7 +127,7 @@ class seguridadsocial extends fs_model{
             ", nombre = ".$this->var2str($this->nombre).
             ", nombre_corto = ".$this->var2str($this->nombre_corto).
             " WHERE codseguridadsocial = ".$this->var2str($this->codseguridadsocial).";";
-        $this->db->exec($sql);
+        return $this->db->exec($sql);
     }
 
     public function get($codseguridadsocial){

@@ -100,8 +100,7 @@ class tipoausencias extends fs_model{
 
     public function save() {
         if($this->exists()){
-            $this->update();
-            return true;
+            return $this->update();
         }else{
             //INSERT DATA
             $sql = "INSERT INTO ".$this->table_name." (codausencia, descripcion, aplicar_descuento, estado) VALUES (".
@@ -119,7 +118,7 @@ class tipoausencias extends fs_model{
             ", aplicar_descuento = ".$this->var2str($this->aplicar_descuento).
             ", descripcion = ".$this->var2str($this->descripcion).
             " WHERE codausencia = ".$this->var2str($this->codausencia).";";
-        $this->db->exec($sql);
+        return $this->db->exec($sql);
     }
 
     public function get($codausencia){

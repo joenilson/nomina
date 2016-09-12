@@ -84,6 +84,7 @@ class configuracion_nomina extends fs_controller{
         $this->seguridadsocial = new seguridadsocial();
         $this->organizacion = new organizacion();
         $this->tipopago = new tipopago();
+        
         if(isset($_GET['type'])){
             switch($_GET['type']){
                 case "cargos":

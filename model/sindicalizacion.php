@@ -89,8 +89,7 @@ class sindicalizacion extends fs_model{
 
     public function save() {
         if($this->exists()){
-            $this->update();
-            return true;
+            return $this->update();
         }else{
             //INSERT DATA
             $sql = "INSERT INTO ".$this->table_name." (idsindicato, descripcion, estado) VALUES (".
@@ -106,7 +105,7 @@ class sindicalizacion extends fs_model{
             " estado = ".$this->var2str($this->estado).
             ", descripcion = ".$this->var2str($this->descripcion).
             " WHERE idsindicato = ".$this->var2str($this->idsindicato).";";
-        $this->db->exec($sql);
+        return $this->db->exec($sql);
     }
 
     public function get($idsindicato){

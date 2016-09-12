@@ -101,7 +101,7 @@ class bancos extends fs_model{
 
     public function save() {
         if($this->exists()){
-            $this->update();
+            return $this->update();
         }else{
             //INSERT DATA
             $sql = "INSERT INTO ".$this->table_name." (codbanco, nombre, tipo, estado) VALUES (".

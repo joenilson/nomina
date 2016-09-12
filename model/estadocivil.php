@@ -85,8 +85,7 @@ class estadocivil extends fs_model{
 
     public function save() {
         if($this->exists()){
-            $this->update();
-            return true;
+            return $this->update();
         }else{
             //INSERT DATA
             $sql = "INSERT INTO ".$this->table_name." (codestadocivil, descripcion) VALUES (".
@@ -100,7 +99,7 @@ class estadocivil extends fs_model{
         $sql = "UPDATE ".$this->table_name." SET ".
             " descripcion = ".$this->var2str($this->descripcion).
             " WHERE codestadocivil = ".$this->var2str($this->codestadocivil).";";
-        $this->db->exec($sql);
+        return $this->db->exec($sql);
     }
 
     public function get($codestadocivil){

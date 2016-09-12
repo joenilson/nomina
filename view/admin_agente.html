@@ -37,11 +37,6 @@
             <a class="btn btn-sm btn-success" href="{$fsc->url()}&type=nuevo" title="Nuevo empleado">
                 <span class="glyphicon glyphicon-plus"></span>
             </a>
-            <!--
-            <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#nuevoEmpleadoModal" title="Nuevo empleado">
-               <span class="glyphicon glyphicon-plus"></span>
-            </button>
-            !-->
             {if="$fsc->allow_delete"}
             <a href="#" id="b_delete_agente" class="btn btn-sm btn-danger">
                 <span class="glyphicon glyphicon-trash"></span>
@@ -317,7 +312,7 @@
                                                     <label class="label label-sm label-default" for="coddepartamento">
                                                         <a href="{$fsc->organizacion->url()}">Departamento:</a>
                                                     </label>
-                                                    <select name="coddepartamento" id="coddepartamento" required class="form-control input-sm">
+                                                    <select name="coddepartamento" id="coddepartamento" class="form-control input-sm">
                                                         <option value="">--------</option>
                                                         {loop="$fsc->organizacion->all_tipo('DEPARTAMENTO')"}
                                                         <option value="{$value->codorganizacion}" {if="$fsc->agente->coddepartamento==$value->codorganizacion"}selected{/if}>{$value->descripcion}</option>
@@ -378,7 +373,7 @@
                                                     <label class="label label-sm label-default" for="codformacion">
                                                         <a href="{$fsc->formacion->url()}">Formación:</a>
                                                     </label>
-                                                    <select name="codformacion" required class="form-control input-sm">
+                                                    <select name="codformacion" class="form-control input-sm">
                                                         <option value="">--------</option>
                                                         {loop="$fsc->formacion->all()"}
                                                         <option value="{$value->codformacion}" {if="$fsc->agente->codformacion==$value->codformacion"}selected{/if}>{$value->nombre}</option>

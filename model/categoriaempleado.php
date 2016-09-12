@@ -104,8 +104,7 @@ class categoriaempleado extends fs_model{
 
     public function save() {
         if($this->exists()){
-            $this->update();
-            return true;
+            return $this->update();
         }else{
             //INSERT DATA
             $sql = "INSERT INTO ".$this->table_name." (codcategoria, descripcion, orden, estado) VALUES (".
@@ -123,7 +122,7 @@ class categoriaempleado extends fs_model{
             ", orden = ".$this->intval($this->orden).
             ", descripcion = ".$this->var2str($this->descripcion).
             " WHERE codcategoria = ".$this->var2str($this->codcategoria).";";
-        $this->db->exec($sql);
+        return $this->db->exec($sql);
     }
 
     public function get($codcategoria){

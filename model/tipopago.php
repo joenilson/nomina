@@ -104,8 +104,7 @@ class tipopago extends fs_model{
 
     public function save() {
         if($this->exists()){
-            $this->update();
-            return true;
+            return $this->update();
         }else{
             //INSERT DATA
             $sql = "INSERT INTO ".$this->table_name." (codpago, descripcion, es_basico, estado) VALUES (".
@@ -123,7 +122,7 @@ class tipopago extends fs_model{
             ", es_basico = ".$this->var2str($this->es_basico).
             ", descripcion = ".$this->var2str($this->descripcion).
             " WHERE codpago = ".$this->var2str($this->codpago).";";
-        $this->db->exec($sql);
+        return $this->db->exec($sql);
     }
 
     public function get($codpago){

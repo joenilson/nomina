@@ -112,8 +112,7 @@ class generaciones extends fs_model{
 
     public function save() {
         if($this->exists()){
-            $this->update();
-            return true;
+            return $this->update();
         }else{
             //INSERT DATA
             $sql = "INSERT INTO ".$this->table_name." (codgeneracion, descripcion, inicio_generacion, fin_generacion, estado) VALUES (".
@@ -133,7 +132,7 @@ class generaciones extends fs_model{
             ", fin_generacion = ".$this->intval($this->fin_generacion).
             ", descripcion = ".$this->var2str($this->descripcion).
             " WHERE codgeneracion = ".$this->var2str($this->codgeneracion).";";
-        $this->db->exec($sql);
+        return $this->db->exec($sql);
     }
 
     public function get($codgeneracion){

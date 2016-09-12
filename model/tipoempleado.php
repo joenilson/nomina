@@ -97,8 +97,7 @@ class tipoempleado extends fs_model{
 
     public function save() {
         if($this->exists()){
-            $this->update();
-            return true;
+            return $this->update();
         }else{
             //INSERT DATA
             $sql = "INSERT INTO ".$this->table_name." (codtipo, descripcion, estado) VALUES (".
@@ -114,7 +113,7 @@ class tipoempleado extends fs_model{
             " estado = ".$this->var2str($this->estado).
             ", descripcion = ".$this->var2str($this->descripcion).
             " WHERE codtipo = ".$this->var2str($this->codtipo).";";
-        $this->db->exec($sql);
+        return $this->db->exec($sql);
     }
 
     public function get($codtipo){

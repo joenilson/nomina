@@ -108,8 +108,7 @@ class cargos extends fs_model{
 
     public function save() {
         if($this->exists()){
-            $this->update();
-            return true;
+            return $this->update();
         }else{
             //INSERT DATA
             $sql = "INSERT INTO ".$this->table_name." (codcargo, descripcion, padre, codcategoria, estado) VALUES (".
@@ -129,7 +128,7 @@ class cargos extends fs_model{
             ", estado = ".$this->var2str($this->estado).
             ", descripcion = ".$this->var2str($this->descripcion).
             " WHERE codcargo = ".$this->var2str($this->codcargo).";";
-        $this->db->exec($sql);
+        return $this->db->exec($sql);
     }
 
     public function get($codcargo){
