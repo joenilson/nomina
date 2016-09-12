@@ -371,14 +371,16 @@ class importar_agentes extends fs_controller
    }
 
     private function share_extensions(){
-       $fext = new fs_extension(array(
-            'name' => 'nomina_jgrid_css',
-            'page_from' => __CLASS__,
-            'page_to' => 'importar_agentes',
-            'type' => 'head',
-            'text' => '<link rel="stylesheet" type="text/css" media="screen" href="plugins/nomina/view/css/ui.jqgrid-bootstrap.css"/>',
-            'params' => ''
-         ));
+       $fext = new fs_extension(
+            array(
+                'name' => 'nomina_jgrid_css',
+                'page_from' => __CLASS__,
+                'page_to' => 'importar_agentes',
+                'type' => 'head',
+                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="plugins/nomina/view/css/ui.jqgrid-bootstrap.css"/>',
+                'params' => ''
+            )
+        );
        $fext->save();
    }
 }

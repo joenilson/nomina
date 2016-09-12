@@ -491,7 +491,7 @@ class configuracion_nomina extends fs_controller{
                 $c0 = new cargos();
                 $c0->descripcion = strtoupper(trim($cargo));
                 $c0->padre = NULL;
-                $c0->codcategoria = NULL;
+                $c0->codcategoria = '7';
                 $c0->estado = TRUE;
                 $c0->corregir();
             }
@@ -517,14 +517,7 @@ class configuracion_nomina extends fs_controller{
         ));
         $fsext1->delete();
         $extensiones = array(
-            array(
-                'name' => 'cargar_empleados_button',
-                'page_from' => 'importar_agentes',
-                'page_to' => 'admin_agentes',
-                'type' => 'button',
-                'text' => '<span class="fa fa-upload" aria-hidden="true"></span> &nbsp; Cargar Empleados',
-                'params' => ''
-            ),
+
             array(
                 'name' => 'nuevo_agente_js',
                 'page_from' => __CLASS__,
