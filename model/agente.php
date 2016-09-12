@@ -417,14 +417,14 @@ class agente extends fs_model
        $res->permanencia = $this->permanencia($res->f_alta, $res->f_baja);
        return $res;
    }
-   
+
    public function edad($f_nac){
         $from = new DateTime($f_nac);
         $to   = new DateTime('today');
         $edad = $from->diff($to)->y;
         return $edad;
    }
-   
+
    public function permanencia($f_alta,$f_baja){
         $f_fin = (!empty($f_baja))?$f_baja:'today';
         $from = new DateTime($f_alta);
@@ -438,17 +438,17 @@ class agente extends fs_model
             $string = ($years>1)?" años ":" año ";
             $permanencia .= $years.$string;
         }
-        
+
         if($months != 0 ){
             $string = ($months>1)?" meses ":" mes ";
             $permanencia .= $months.$string;
         }
-        
+
         if($days != 0 ){
             $string = ($days>1)?" dias ":" dia ";
             $permanencia .= $days.$string;
         }
-        
+
         return $permanencia;
    }
 
@@ -485,7 +485,7 @@ class agente extends fs_model
       else
          return 1;
    }
-   
+
    public function url()
    {
       if( is_null($this->codagente) )
