@@ -476,6 +476,7 @@ class configuracion_nomina extends fs_controller{
         $agentes = $this->agente->all();
         $this->cargos = array();
         foreach($agentes as $agente){
+            $agente->cargo = (empty($agente->cargo))?'EMPLEADO':$agente->cargo;
             $this->cargos[$agente->cargo] = $agente->cargo;
             if(empty($agente->cuenta_banco)){
                 $agente->codalmacen = 'ALG';

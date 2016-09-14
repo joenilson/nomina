@@ -224,7 +224,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                             <label class="label label-sm label-default" for="coddepartamento">
                                                 <a href="{$fsc->organizacion->url()}">Departamento:</a>
                                             </label>
-                                            <select name="coddepartamento" id="ncoddepartamento" required class="form-control input-sm">
+                                            <select name="coddepartamento" id="ncoddepartamento" class="form-control input-sm">
                                                 <option value="">--------</option>
                                                 {loop="$fsc->organizacion->all_tipo('DEPARTAMENTO')"}
                                                 <option value="{$value->codorganizacion}">{$value->descripcion}</option>
