@@ -112,6 +112,7 @@ class admin_agentes extends fs_controller {
             $age0->codgerencia = $_POST['codgerencia'];
             $age0->codcargo = $_POST['codcargo'];
             $age0->cargo = $cargo->descripcion;
+            $age0->codarea = $_POST['codarea'];
             $age0->coddepartamento = $_POST['coddepartamento'];
             $age0->codformacion = $_POST['codformacion'];
             $age0->carrera = $this->mayusculas($_POST['carrera']);
