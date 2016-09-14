@@ -183,8 +183,8 @@
                                                     <label class="label label-sm label-default" for="estado_civil">Estado Civil:</label>
                                                     <select name="estado_civil" required class="form-control input-sm">
                                                         <option value="">--------</option>
-                                                        {loop="$fsc->agente->estado_civil_agente()"}
-                                                        <option value="{$key}" {if="$fsc->agente->estado_civil==$key"}selected{/if}>{$value}</option>
+                                                        {loop="$fsc->estadocivil->all()"}
+                                                        <option value="{$value->codestadocivil}" {if="$fsc->agente->estado_civil==$value->codestadocivil"}selected{/if}>{$value->descripcion}</option>
                                                         {/loop}
                                                     </select>
                                                 </div>

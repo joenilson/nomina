@@ -21,6 +21,7 @@ require_model('agente.php');
 require_model('almacen.php');
 require_model('cargos.php');
 require_model('bancos.php');
+require_model('estadocivil.php');
 require_model('seguridadsocial.php');
 require_model('tipoempleado.php');
 require_model('categoriaempleado.php');
@@ -36,6 +37,7 @@ class admin_agente extends fs_controller
    public $cargos;
    public $almacen;
    public $bancos;
+   public $estadocivil;
    public $formacion;
    public $tipoempleado;
    public $categoriaempleado;
@@ -73,6 +75,7 @@ class admin_agente extends fs_controller
       $this->sindicalizacion = new sindicalizacion();
       $this->organizacion = new organizacion();
       $this->seguridadsocial = new seguridadsocial();
+      $this->estadocivil = new estadocivil();
 
       $this->agente = FALSE;
       if( isset($_GET['cod']) )

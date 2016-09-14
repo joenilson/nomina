@@ -109,8 +109,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <label class="label label-sm label-default" for="estado_civil">Estado Civil:</label>
                                     <select name="estado_civil" required class="form-control input-sm">
                                         <option value="">--------</option>
-                                        {loop="$fsc->agente->estado_civil_agente()"}
-                                        <option value="{$key}">{$value}</option>
+                                        {loop="$fsc->estadocivil->all()"}
+                                        <option value="{$value->codestadocivil}">{$value->descripcion}</option>
                                         {/loop}
                                     </select>
                                 </div>

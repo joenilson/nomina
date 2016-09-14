@@ -403,7 +403,7 @@ class agente extends fs_model
        $res->gerencia = (!empty($res->codgerencia))?$this->organizacion->get($res->codgerencia)->descripcion:"";
        $res->area = (!empty($res->codarea))?$this->organizacion->get($res->codarea)->descripcion:"";
        $res->departamento = ($res->coddepartamento != '')?$this->organizacion->get($res->coddepartamento)->descripcion:'';
-       $res->almacen_nombre = $this->almacen->get($res->codalmacen)->nombre;
+       $res->almacen_nombre = (!empty($res->codalmacen))?$this->almacen->get($res->codalmacen)->nombre:"";
        $res->tipo = (!empty($res->codtipo))?$this->tipoempleado->get($res->codtipo)->descripcion:"";
        $res->codcategoria = '';
        $res->categoria = '';
