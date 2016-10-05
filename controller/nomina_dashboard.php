@@ -63,7 +63,7 @@ class nomina_dashboard extends fs_controller{
         $this->organizacion = new organizacion();
         $this->generaciones = new generaciones();
         
-        $this->logo_empresa = "tmp".DIRECTORY_SEPARATOR.FS_TMP_NAME.DIRECTORY_SEPARATOR."logo.png";
+        $this->logo_empresa = FS_MYDOCS."images/logo.png";
     }
     
     //Empleados por Año
