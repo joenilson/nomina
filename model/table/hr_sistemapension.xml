@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Document   : hr_sistemapension.xml
+    Description:
+        Estructura de la tabla hr_sistemapension.
+-->
+<tabla>
+    <columna>
+        <nombre>codsistemapension</nombre>
+        <tipo>character varying(6)</tipo>
+        <nulo>NO</nulo>
+    </columna>
+    <columna>
+        <nombre>estado</nombre>
+        <tipo>boolean</tipo>
+        <nulo>YES</nulo>
+    </columna>
+    <columna>
+        <nombre>nombre</nombre>
+        <tipo>character varying(60)</tipo>
+        <nulo>NO</nulo>
+    </columna>
+    <columna>
+        <nombre>nombre_corto</nombre>
+        <tipo>character varying(6)</tipo>
+        <nulo>NO</nulo>
+        <defecto>'0'::character varying</defecto>
+    </columna>
+    <columna>
+        <nombre>tipo</nombre>
+        <tipo>character varying(16)</tipo>
+        <nulo>NO</nulo>
+    </columna>
+    <restriccion>
+        <nombre>hr_sistemapension_pkey</nombre>
+        <consulta>PRIMARY KEY (codsistemapension)</consulta>
+    </restriccion>
+</tabla>

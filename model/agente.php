@@ -63,6 +63,13 @@ class agente extends fs_model
     * @var type $seg_social
     */
    public $seg_social;
+
+   /**
+    * Se coloca el número o código de fondo de pensiones del empleado
+    * @var type $codigo_pension
+    */
+   public $codigo_pension;
+   
    /**
     * @deprecated since 10/05/2016 FS 2016.004
     */
@@ -153,6 +160,12 @@ class agente extends fs_model
     * @var type $codseguridadsocial Seguridadsocial
     */
    public $codseguridadsocial;
+   
+   /**
+    * Se elige la compañia que maneja el fondo de pensiones o el estado o gobierno
+    * @var type $codsistemapension SistemaPension
+    */
+   public $codsistemapension;
 
    /**
     * Se coloca la cantidad de dependientes para analisis posterior de carga familiar
@@ -280,6 +293,7 @@ class agente extends fs_model
          $this->pago_neto = floatval($a['pago_neto']);
          $this->irpf = floatval($a['irpf']);
          $this->seg_social = $a['seg_social'];
+         $this->codigo_pension = $a['codigo_pension'];
          $this->banco = $a['banco'];
          $this->cargo =$a['cargo'];
          $this->codtipo = $a['codtipo'];
@@ -288,6 +302,7 @@ class agente extends fs_model
          $this->codcargo = $a['codcargo'];
          $this->codsupervisor = $a['codsupervisor'];
          $this->codseguridadsocial = $a['codseguridadsocial'];
+         $this->codsistemapension = $a['codsistemapension'];
          $this->idsindicato = $a['idsindicato'];
          $this->dependientes = $a['dependientes'];
          $this->codformacion = $a['codformacion'];
@@ -358,6 +373,7 @@ class agente extends fs_model
          $this->pago_neto = 0;
          $this->irpf = 0;
          $this->seg_social = NULL;
+         $this->codigo_pension = NULL;
          $this->banco = NULL;
          $this->cargo = NULL;
          $this->f_alta = Date('d-m-Y');
@@ -370,6 +386,7 @@ class agente extends fs_model
          $this->codcargo = NULL;
          $this->codsupervisor = NULL;
          $this->codseguridadsocial = NULL;
+         $this->codsistemapension = NULL;
          $this->idsindicato = NULL;
          $this->dependientes = 0;
          $this->codformacion = NULL;
@@ -591,7 +608,9 @@ class agente extends fs_model
                     ", sexo = ".$this->var2str($this->sexo).
                     ", idsindicato = ".$this->var2str($this->idsindicato).
                     ", codseguridadsocial = ".$this->var2str($this->codseguridadsocial).
+                    ", codsistemapension = ".$this->var2str($this->codsistemapension).
                     ", seg_social = ".$this->var2str($this->seg_social).
+                    ", codigo_pension = ".$this->var2str($this->codigo_pension).
                     ", cuenta_banco = ".$this->var2str($this->cuenta_banco).
                     ", codbanco = ".$this->var2str($this->codbanco).
                     ", codformacion = ".$this->var2str($this->codformacion).
@@ -612,7 +631,7 @@ class agente extends fs_model
          {
             $sql = "INSERT INTO ".$this->table_name." (codalmacen,idempresa,codagente,nombre,apellidos,segundo_apellido,nombreap,dnicif,telefono,
                email,codcargo,cargo,codsupervisor,codgerencia,codtipo,codarea,coddepartamento,provincia,ciudad,direccion,f_nacimiento,
-               f_alta,f_baja,sexo,idsindicato,codseguridadsocial,seg_social,cuenta_banco,codbanco,codformacion,carrera,centroestudios,dependientes,estado,estado_civil,banco,
+               f_alta,f_baja,sexo,idsindicato,codseguridadsocial,seg_social,codsistemapension,codigo_pension,cuenta_banco,codbanco,codformacion,carrera,centroestudios,dependientes,estado,estado_civil,banco,
                porcomision,pago_total,pago_neto,fecha_creacion,usuario_creacion)
                VALUES (".$this->var2str($this->codalmacen).
                     ",".$this->intval($this->idempresa).
@@ -641,6 +660,8 @@ class agente extends fs_model
                     ",".$this->var2str($this->idsindicato).
                     ",".$this->var2str($this->codseguridadsocial).
                     ",".$this->var2str($this->seg_social).
+                    ",".$this->var2str($this->codsistemapension).
+                    ",".$this->var2str($this->codigo_pension).
                     ",".$this->var2str($this->cuenta_banco).
                     ",".$this->var2str($this->codbanco).
                     ",".$this->var2str($this->codformacion).

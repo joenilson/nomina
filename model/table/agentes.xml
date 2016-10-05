@@ -91,6 +91,11 @@
         <nulo>YES</nulo>
     </columna>
     <columna>
+        <nombre>codsistemapension</nombre>
+        <tipo>character varying(6)</tipo>
+        <nulo>YES</nulo>
+    </columna>
+    <columna>
         <nombre>codsupervisor</nombre>
         <tipo>character varying(10)</tipo>
         <nulo>YES</nulo>
@@ -229,6 +234,11 @@
     </columna>
     <columna>
         <nombre>seg_social</nombre>
+        <tipo>character varying(100)</tipo>
+        <nulo>YES</nulo>
+    </columna>
+    <columna>
+        <nombre>codigo_pension</nombre>
         <tipo>character varying(100)</tipo>
         <nulo>YES</nulo>
     </columna>

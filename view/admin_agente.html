@@ -421,6 +421,27 @@
                                             <div class="col-sm-3">
                                                 <div class="form-group">
                                                     <label class="label label-sm label-default">
+                                                        <a href="{$fsc->sistemapension->url()}">Sistema de Pensión:</a>
+                                                    </label>
+                                                    <select name="codsistemapension" required class="form-control input-sm">
+                                                        <option value="">--------</option>
+                                                        {loop="$fsc->sistemapension->all()"}
+                                                        <option value="{$value->codsistemapension}" {if="$fsc->agente->codsistemapension==$value->codsistemapension"}selected{/if}>{$value->nombre}</option>
+                                                        {/loop}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <div class="form-group">
+                                                    <label class="label label-sm label-default">
+                                                        Código de Sistema de Pensión:
+                                                    </label>
+                                                    <input class="form-control input-sm" type="text" name="codigo_pension" value="{$fsc->agente->codigo_pension}" autocomplete="off"/>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <div class="form-group">
+                                                    <label class="label label-sm label-default">
                                                         <a href="{$fsc->bancos->url()}">Banco:</a>
                                                     </label>
                                                     <select name="codbanco" required class="form-control input-sm">
@@ -495,7 +516,6 @@
         </div>
     </div>
 </div>
-{include="contenido/nuevo_empleado"}
 {else}
 <div class="thumbnail">
     <img src="{#FS_PATH#}view/img/fuuu_face.png" alt="fuuuuu"/>

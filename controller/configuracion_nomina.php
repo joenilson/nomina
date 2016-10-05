@@ -25,6 +25,7 @@ require_model('generaciones.php');
 require_model('motivocese.php');
 require_model('organizacion.php');
 require_model('seguridadsocial.php');
+require_model('sistemapension.php');
 require_model('sindicalizacion.php');
 require_model('tipoausencias.php');
 require_model('tipocese.php');
@@ -58,6 +59,7 @@ class configuracion_nomina extends fs_controller{
     public $organizacion_actual;
     public $formacion;
     public $seguridadsocial;
+    public $sistemapension;
     public $existe;
     public $dir;
     public $creada;
@@ -82,6 +84,7 @@ class configuracion_nomina extends fs_controller{
         $this->categoriaempleado = new categoriaempleado();
         $this->sindicalizacion = new sindicalizacion();
         $this->seguridadsocial = new seguridadsocial();
+        $this->sistemapension = new sistemapension();
         $this->organizacion = new organizacion();
         $this->tipopago = new tipopago();
         
@@ -124,6 +127,12 @@ class configuracion_nomina extends fs_controller{
                     $this->template = 'configuracion/nomina_seguridadsocial';
                     if(isset($_POST['codseguridadsocial'])){
                         $this->tratar_seguridadsocial();
+                    }
+                    break;
+                case "sistemapension":
+                    $this->template = 'configuracion/nomina_sistemapension';
+                    if(isset($_POST['codsistemapension'])){
+                        $this->tratar_sistemapension();
                     }
                     break;
                 case "sindicalizacion":
@@ -396,6 +405,21 @@ class configuracion_nomina extends fs_controller{
             $this->new_message("Datos guardados correctamente.");
         }else{
             $this->new_error_msg("La información con el Id ".$ss0->codseguridadsocial." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+        }
+    }
+    
+    public function tratar_sistemapension(){
+        $ss0 = new sistemapension();
+        $ss0->codsistemapension = filter_input(INPUT_POST, 'codsistemapension');
+        $ss0->nombre = $this->mayusculas(filter_input(INPUT_POST, 'nombre'));
+        $ss0->nombre_corto = $this->mayusculas(filter_input(INPUT_POST, 'nombre_corto'));
+        $ss0->tipo = $this->mayusculas(filter_input(INPUT_POST, 'tipo'));
+        $ss0->estado = filter_input(INPUT_POST, 'estado');
+        $estado = $ss0->save();
+        if($estado){
+            $this->new_message("Datos guardados correctamente.");
+        }else{
+            $this->new_error_msg("La información con el Id ".$ss0->codsistemapension." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
         }
     }
     
@@ -672,6 +696,14 @@ class configuracion_nomina extends fs_controller{
                 'type' => 'tab',
                 'text' => '<span class="fa fa-gear" aria-hidden="true"></span> &nbsp; Seguridad Social',
                 'params' => '&type=seguridadsocial'
+            ),
+            array(
+                'name' => 'config_nomina_sistemapension',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'tab',
+                'text' => '<span class="fa fa-gear" aria-hidden="true"></span> &nbsp; Sistema de Pensión',
+                'params' => '&type=sistemapension'
             ),
             array(
                 'name' => 'config_nomina_sindicalizacion',

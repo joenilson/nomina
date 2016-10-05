@@ -26,6 +26,7 @@ require_model('seguridadsocial.php');
 require_model('tipoempleado.php');
 require_model('categoriaempleado.php');
 require_model('sindicalizacion.php');
+require_model('sistemapension.php');
 require_model('formacion.php');
 require_model('organizacion.php');
 require_once 'helper_nomina.php';
@@ -44,6 +45,7 @@ class admin_agente extends fs_controller
    public $sindicalizacion;
    public $organizacion;
    public $seguridadsocial;
+   public $sistemapension;
    public $allow_delete;
    public $foto_empleado;
    public $noimagen = "plugins/nomina/view/imagenes/no_foto.jpg";
@@ -75,6 +77,7 @@ class admin_agente extends fs_controller
       $this->sindicalizacion = new sindicalizacion();
       $this->organizacion = new organizacion();
       $this->seguridadsocial = new seguridadsocial();
+      $this->sistemapension = new sistemapension();
       $this->estadocivil = new estadocivil();
 
       $this->agente = FALSE;
@@ -174,7 +177,9 @@ class admin_agente extends fs_controller
                $this->agente->carrera = $this->mayusculas($_POST['carrera']);
                $this->agente->centroestudios = $this->mayusculas($_POST['centroestudios']);
                $this->agente->codseguridadsocial = $_POST['codseguridadsocial'];
+               $this->agente->codsistemapension = $_POST['codsistemapension'];
                $this->agente->seg_social = $_POST['seg_social'];
+               $this->agente->codigo_pension = $_POST['codigo_pension'];
                $this->agente->codbanco = $_POST['codbanco'];
                $this->agente->cuenta_banco = $_POST['cuenta_banco'];
                $this->agente->porcomision = floatval($_POST['porcomision']);
