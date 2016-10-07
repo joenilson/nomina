@@ -15,6 +15,17 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
+<style>
+#f_rango { 
+    position: relative;
+    padding: 6px;
+    width: 100%;
+    border-radius: 4px;
+}
+.rango span { 
+    position: absolute; bottom: 10px; right: 24px; top: auto; cursor: pointer; 
+}
+</style>
 <div class="panel panel-primary">
     <div class="panel-heading">
         <h3 class="panel-title">
@@ -27,11 +38,42 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <div class="panel-body">
         <div class="row">
             <div class="col-sm-12">
-                <div class="col-sm-4">
+                <div class="col-sm-2">
                     <button class="btn btn-sm btn-primary" type="button" name="accion" value="agregar" data-toggle="modal" data-target="#agregarDocumento">
                         <span class="fa fa-plus"></span>&nbsp;Agregar Documento
                     </button>
                 </div>
+                <form class="form" method="POST" action="{$fsc->url()}&type=hoja_vida">
+                    <div class="col-sm-10 pull-right">
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-3">
+                            <select name="tipo_documento" id="tipo_documento" class="form-control input-sm">
+                                <option value="">Elige un Documento</option>
+                                <option value="curriculum">Curriculum</option>
+                                <option value="certificado">Certificado</option>
+                                <option value="capacitacion">Capacitación</option>
+                                <option value="amonestacion">Amonestación</option>
+                                <option value="renuncia">Renuncia</option>
+                                <option value="despido">Despido</option>
+                                <option value="contrato">Contrato</option>
+                                <option value="certificado_medico">Certificado Médico</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3 rango">
+                            <input type="text" id="f_rango" class="form-control input-sm">
+                            <input type="hidden" name="f_desde" id="f_desde" value="{$fsc->desde}">
+                            <input type="hidden" name="f_hasta" id="f_hasta" value="{$fsc->hasta}">
+                            <input type="hidden" name="mostrar" value="buscar">
+                            <span class="fa fa-calendar"></span>
+                        </div>
+                        <div class="col-sm-1">
+                            <button class="btn btn-sm btn-info">
+                                <span class="fa fa-search"></span>
+                            </button>    
+                        </div>                        
+                    </div>
+                </form>
             </div>
         </div>
         <div class="table-responsive">
@@ -46,7 +88,37 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </tr>
                 </thead>
                 <tbody>
-                    
+                    {if="$fsc->agente->hoja_vida"}
+                    <tr>
+                        <td colspan="5"><span class="help-block">{$fsc->total_resultados} Documentos encontrados</span></td>
+                    </tr>
+                    {loop="$fsc->agente->hoja_vida"}
+                    <form class="form form-horizontal" role="form" action="{$fsc->url()}&type=hoja_vida" method="POST">
+                        <tr>
+                            <td>
+                                <button class="btn btn-sm btn-default" type="button" onclick="visualizarDocumento('{$fsc->dir_documentos_empleados}/{$value->documento}');">
+                                    <span class="fa fa-file-pdf-o"></span>&nbsp;Ver Documento
+                                </button>
+                                <input type="hidden" name="id" value="{$value->id}">
+                            </td>
+                            <td>{$value->tipo_documento}</td>
+                            <td>{$value->fecha_documento}</td>
+                            <td>{$value->autor_documento}</td>
+                            <td>
+                                {if="$fsc->allow_delete"}
+                                <button type="submit" class="btn btn-sm btn-danger" name="accion" value="eliminar" onclick="return confirm('Esta seguro que quiere eliminar este documento?');">
+                                    <span class="fa fa-trash"></span>
+                                </button>
+                                {/if}
+                            </td>
+                        </tr>
+                    </form>
+                    {/loop}
+                    {else}
+                    <tr>
+                        <td colspan="5">No se encontraron documentos</td>
+                    </tr>
+                    {/if}
                 </tbody>
             </table>
         </div>
@@ -59,8 +131,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title">Agregar Documento</h4>
             </div>
-            <div class="modal-body">
-                <form class="form form-horizontal" enctype="multipart/form-data" role="form" action="{$fsc->url()}" method="POST">
+            <form class="form form-horizontal" enctype="multipart/form-data" role="form" action="{$fsc->url()}&type=hoja_vida" method="POST">
+                <div class="modal-body">
                     <div class="form-group">
                         <label class="control-label col-sm-4" for="tipo_documento">Tipo de Documento</label>
                         <div class="col-sm-4">
@@ -90,7 +162,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <label class="control-label col-sm-4" for="documento">Documento</label>
                         <div class="col-sm-8">
                             <label class="btn btn-sm btn-default btn-file">
-                                <span>Elegir&hellip;</span> <input type="file" required accept="application/pdf" style="display: none;" name="documento" class="form-control input-sm" id="documento" onchange="$(this).prev('span').text($(this).val()!=''?$(this).val():'Elegir &hellip;')">
+                                <span id="span_file">Elegir&hellip;</span> <input type="file" required accept="application/pdf" style="display: none;" name="documento" class="form-control input-sm" id="documento" onchange="$(this).prev('span').text($(this).val()!=''?$(this).val():'Elegir &hellip;')">
                             </label>
                             <span class="help-block">Elija un documento en formato <b>PDF</b></span>
                         </div>
@@ -104,13 +176,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                         </div>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><span class="fa fa-remove"></span>&nbsp;Cerrar</button>
-                <button type="button" class="btn btn-sm btn-primary"><span class="fa fa-save"></span>&nbsp;Agregar</button>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal" onclick="this.form.reset();$('#span_file').html('Elegir&hellip;');"><span class="fa fa-remove"></span>&nbsp;Cerrar</button>
+                    <button type="submit" class="btn btn-sm btn-primary" name="accion" value="agregar"><span class="fa fa-save"></span>&nbsp;Agregar</button>
+                </div>
+            </form>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+{include="contenido/visualizador"}
+<script type="text/javascript">
+    var locale_user = 'es';
+    $(document).ready(function () {
+        $("#b_delete_documento").click(function (event) {
+            event.preventDefault();
+            if (confirm("¿Realmente desea eliminar el agente?"))
+            {
+                window.location.href = '{$fsc->ppage->url()}&delete={$fsc->agente->codagente}';
+            }
+        });
+    });
+</script>
 {include="footer"}

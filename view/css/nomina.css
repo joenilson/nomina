@@ -33,6 +33,16 @@ legend {
     font-weight: bold;
 }
 
+#f_rango { 
+    position: relative;
+    padding: 6px;
+    width: 100%;
+    border-radius: 4px;
+}
+.rango span { 
+    position: absolute; bottom: 10px; right: 24px; top: auto; cursor: pointer; 
+}
+
 /*
 CSS Para el loeader
 */

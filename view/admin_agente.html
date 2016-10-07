@@ -1,9 +1,9 @@
 {include="header"}
-
 {if="$fsc->agente"}
 <script type="text/javascript" src="{$fsc->get_js_location('provincias.js')}"></script>
 <script type="text/javascript">
-    url_organizacion = '{$fsc->url()}&type=organizacion';
+    var locale_user = 'fr';
+    var url_organizacion = '{$fsc->url()}&type=organizacion';
     $(document).ready(function () {
         $("#b_delete_agente").click(function (event) {
             event.preventDefault();

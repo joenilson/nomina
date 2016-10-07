@@ -201,13 +201,26 @@ class configuracion_nomina extends fs_controller{
         // imagenes de empleados
         $this->creada = false;
         $basepath = dirname(dirname(dirname(__DIR__)));
-        $this->dir_nomina = $basepath."/tmp/".FS_TMP_NAME."nomina";
-        $this->dir_empleados =$this->dir_nomina.DIRECTORY_SEPARATOR."empleados";
-        $this->dir_archivos =$this->dir_nomina.DIRECTORY_SEPARATOR."archivos";
-        //Validamos si existe el directorio raiz dentro de la carpeta tmp para la nomina
+        $this->dir_documentos = $basepath.FS_MYDOCS."/documentos";
+        $this->dir_nomina = $this->dir_documentos.DIRECTORY_SEPARATOR."nomina";
+        $this->dir_empleados = $this->dir_nomina.DIRECTORY_SEPARATOR.$this->empresa->id."/e/";
+        $this->dir_documentos_empleados = $this->dir_nomina.DIRECTORY_SEPARATOR.$this->empresa->id."/d/";
+        
+        //Existe el almacen de documentos?
+        if(!is_dir($this->dir_documentos)){
+            mkdir($this->dir_documentos);
+        }
+        
+        //Existe la carpeta de nomina?
         if(!is_dir($this->dir_nomina)){
             mkdir($this->dir_nomina);
         }
+        
+        //Existe la carpeta para los documentos de la empresa
+        if(!is_dir($this->dir_nomina.DIRECTORY_SEPARATOR.$this->empresa->id)){
+            mkdir($this->dir_nomina.DIRECTORY_SEPARATOR.$this->empresa->id);
+        }
+        
         //Validamos si existe el directorio para las imagenes de los empleados
         $this->creada = false;
         if(!is_dir($this->dir_empleados)){
@@ -222,9 +235,9 @@ class configuracion_nomina extends fs_controller{
         }
         // archivos generados
         // $this->creada = false;
-        if(!is_dir($this->dir_archivos)){
+        if(!is_dir($this->dir_documentos_empleados)){
             $this->existe = "NO";
-            if(mkdir($this->dir_archivos)){
+            if(mkdir($this->dir_documentos_empleados)){
                 $this->existe = "SI";
                 $this->creada = true;
             }
