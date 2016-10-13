@@ -22,6 +22,7 @@ require_model('cargos.php');
 require_model('bancos.php');
 require_model('estadocivil.php');
 require_model('seguridadsocial.php');
+require_model('sistemapension.php');
 require_model('tipoempleado.php');
 require_model('categoriaempleado.php');
 require_model('sindicalizacion.php');
@@ -48,6 +49,7 @@ class importar_agentes extends fs_controller
    public $sindicalizacion;
    public $organizacion;
    public $seguridadsocial;
+   public $sistemapension;
    public $allow_delete;
    public $foto_empleado;
    public $noimagen = "plugins/nomina/view/imagenes/no_foto.jpg";
@@ -57,6 +59,7 @@ class importar_agentes extends fs_controller
    public $arrayCabeceras = array('sede','empresa','dnicif','nombreap','apellidos',
             'segundo_apellido','nombre','sexo','estado_civil','f_nacimiento','direccion'
             ,'telefono','f_alta','f_baja','gerencia','area','departamento','cargo'
+            ,'codsistemapension','codigo_pension'
             ,'codseguridadsocial','seg_social','dependientes','codformacion','carrera'
             ,'centroestudios','idsindicato','codtipo','pago_total','pago_neto','email');
     public function __construct() {
@@ -76,6 +79,7 @@ class importar_agentes extends fs_controller
         $this->sindicalizacion = new sindicalizacion();
         $this->organizacion = new organizacion();
         $this->seguridadsocial = new seguridadsocial();
+        $this->sistemapension = new sistemapension();
 
         if( isset($_POST['importar']) )
         {
@@ -96,33 +100,42 @@ class importar_agentes extends fs_controller
         
         $assoc_header['SEDE']='sede';
         $assoc_header['EMPRESA']='empresa';
-        $assoc_header['DNI']='dnicif';
-        $assoc_header['APELLIDOS Y NOMBRES']='nombreap';
-        $assoc_header['A.PATERNO']='apellidos';
-        $assoc_header['A.MATERNO']='segundo_apellido';
-        $assoc_header['NOMBRES']='nombre';
+        $assoc_header['DOCUMENTO_IDENTIDAD']='dnicif';
+        $assoc_header['NOMBRE_COMPLETO']='nombreap';
+        $assoc_header['APELLIDO_PATERNO']='apellidos';
+        $assoc_header['APELLIDO_MATERNO']='apellido_materno';
+        $assoc_header['NOMBRE']='nombre';
         $assoc_header['SEXO']='sexo';
-        $assoc_header['ESTADO CIVIL']='estado_civil';
-        $assoc_header['FECHA DE NACIMIENTO']='f_nacimiento';
+        $assoc_header['ESTADO_CIVIL']='estado_civil';
+        $assoc_header['FECHA_NACIMIENTO']='f_nacimiento';
         $assoc_header['DIRECCION']='direccion';
         $assoc_header['TELEFONO']='telefono';
-        $assoc_header['FECHA INGRESO']='f_alta';
-        $assoc_header['FECHA DE CESE']='f_baja';
+        $assoc_header['FECHA_INGRESO']='f_alta';
+        $assoc_header['FECHA_CESE']='f_baja';
         $assoc_header['GERENCIA']='gerencia';
         $assoc_header['AREA']='area';
         $assoc_header['DEPARTAMENTO']='departamento';
         $assoc_header['CARGO']='cargo';
-        $assoc_header['AFP']='codseguridadsocial';
-        $assoc_header['CUSSP']='seg_social';
-        $assoc_header['NUMERO DE HIJOS']='dependientes';
-        $assoc_header['NIVEL DE FORMACIÓN']='codformacion';
+        $assoc_header['SISTEMA_PENSION']='sistemapension';
+        $assoc_header['CODIGO_SISTEMA_PENSION']='codsistemapension';
+        $assoc_header['SEGURIDAD_SOCIAL']='codseguridadsocial';
+        $assoc_header['NUMERO_SEGURIDAD_SOCIAL']='seg_social';
+        $assoc_header['NUMERO_HIJOS']='dependientes';
+        $assoc_header['NIVEL_FORMACION']='codformacion';
         $assoc_header['CARRERA']='carrera';
-        $assoc_header['UNIVERSIDAD']='centroestudios';
+        $assoc_header['CENTRO_ESTUDIOS']='centroestudios';
         $assoc_header['SINDICATO']='idsindicato';
-        $assoc_header['TIPO DE CONTRATO']='codtipo';
-        $assoc_header['SUELDO BRUTO']='pago_total';
-        $assoc_header['SUELDO NETO']='pago_neto';
+        $assoc_header['TIPO_CONTRATO']='codtipo';
         $assoc_header['EMAIL']='email';
+        $assoc_header['TALLA_POLO']='talla_polo';
+        $assoc_header['PAGO_ASIGNACION_FAMILIAR']='pago_asignacion_familiar';
+        $assoc_header['PAGO_BONO_CARGO']='pago_bono_cargo';
+        $assoc_header['PAGO_BONO_TIEMPO_SERVICIOS']='pago_bono_tiempo_servicios';
+        $assoc_header['PAGO_BONO_REEMPLAZO']='pago_bono_reemplazo';
+        $assoc_header['PAGO_MOVILIDAD']='pago_movilidad';
+        $assoc_header['PAGO_BONO_ALIMENTO']='pago_bono_alimento';
+        $assoc_header['PAGO_SUELDO_BRUTO']='pago_total';
+        $assoc_header['PAGO_SUELDO_NETO']='pago_neto';
 
         //Listado de Almacenes por descripcion
         $sedesArray = array();
@@ -153,20 +166,22 @@ class importar_agentes extends fs_controller
                     $cell = $worksheet->getCellByColumnAndRow($col, $row);
                     $contenido = strtoupper($cell->getValue());
                     $val = trim($cell->getValue());
+                    $linea['estado'] = 'Nuevo';
+                    $error = false;
                     //Verificamos si tiene dnicif
                     if($cabeceraRecibida[$col]=='dnicif' AND (!empty($val) AND $val != null)){
                         //echo $assoc_header[$contenido];
                         $val = ($agentes->get_by_dnicif($val))?null:$val;
-                        $linea['estado']=($val)?'Nuevo':'Ya existe';
+                        $linea['estado']=($val)?$linea['estado']:'Ya existe';
                     }
                     
                     //Verificamos si tiene f_nacimiento
                     if($cabeceraRecibida[$col]=='f_nacimiento' AND (empty($val) OR $val == null)){
-                        $linea['estado']='Incompleto';
+                        $error = true;
                     }
                     //Verificamos si tiene f_alta
                     if($cabeceraRecibida[$col]=='f_alta' AND (empty($val) OR $val == null)){
-                        $linea['estado']='Incompleto';
+                        $error = true;
                     }
                     //le hacemos una revision del correo para que esté en minusculas
                     if($cabeceraRecibida[$col]=='email' AND (!empty($val) OR $val !== null)){
@@ -180,8 +195,11 @@ class importar_agentes extends fs_controller
                         $val = strtoupper($val);
                         if(!isset($sedesArray[$val])){
                             $val = "Crear: ".$val;
-                            $linea['estado']='Incompleto';
+                            $error = true;
                         }
+                    }
+                    if($error){
+                        $linea['estado']='Incompleto';
                     }
                     $linea[$cabeceraRecibida[$col]]=$val;
                 }
@@ -222,7 +240,6 @@ class importar_agentes extends fs_controller
         if($_POST['sede'] != ''){
             $sede = false;
             foreach($this->almacen->all() as $cod=>$val){
-                //print_r(array('sede'=>$val->nombre));
                 if($val->nombre == $this->mayusculas($_POST['sede'])){
                     $sede = $val;
                 }
@@ -254,6 +271,11 @@ class importar_agentes extends fs_controller
         $codseguridadsocial = NULL;
         if($_POST['codseguridadsocial'] != ''){
             $codseguridadsocial = (strlen($_POST['codseguridadsocial'])<=4)?$this->seguridadsocial->get_by_nombre_corto($_POST['codseguridadsocial'])->codseguridadsocial:$this->seguridadsocial->get_by_nombre(strtoupper($_POST['codseguridadsocial']))->codseguridadsocial;
+        }
+        
+        $codsistemapension = NULL;
+        if($_POST['codsistemapension'] != ''){
+            $codsistemapension = (strlen($_POST['codsistemapension'])<=4)?$this->sistemapension->get_by_nombre_corto($_POST['codsistemapension'])->codsistemapension:$this->sistemapension->get_by_nombre(strtoupper($_POST['codsistemapension']))->codsistemapension;
         }
 
         if($_POST['codformacion'] != ''){
@@ -334,7 +356,6 @@ class importar_agentes extends fs_controller
         $age0->f_alta = (!empty($_POST['f_alta']))?$_POST['f_alta']:NULL;
         $age0->f_baja = (!empty($_POST['f_baja']))?$_POST['f_baja']:NULL;
         $age0->codtipo = $codtipo;
-        //$age0->codsupervisor = $_POST['codsupervisor'];
         $age0->codgerencia = $codgerencia;
         $age0->codarea = $codarea;
         $age0->coddepartamento = $coddepartamento;
@@ -345,9 +366,8 @@ class importar_agentes extends fs_controller
         $age0->centroestudios = $this->mayusculas($_POST['centroestudios']);
         $age0->codseguridadsocial = $codseguridadsocial;
         $age0->seg_social = trim($_POST['seg_social']);
-        //$age0->codbanco = $_POST['codbanco'];
-        //$age0->cuenta_banco = $_POST['cuenta_banco'];
-        //$age0->porcomision = floatval($_POST['porcomision']);
+        $age0->codsistemapension = $codsistemapension;
+        $age0->codigo_pension = trim($_POST['codigo_pension']);
         $age0->dependientes = ($_POST['dependientes']!='')?$_POST['dependientes']:0;
         $age0->idsindicato = $idsindicato;
         $age0->estado = 'A';

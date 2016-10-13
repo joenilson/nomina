@@ -139,7 +139,7 @@ class agente extends fs_model
 
    /**
     * Se reemplaza la variable cargo con esta nueva variable que enlaza a una tabla de Cargos
-    * @param type $codcargo Cargos
+    * @var type $codcargo Cargos
     */
    public $codcargo;
 
