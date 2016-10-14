@@ -172,7 +172,13 @@ class cargos extends fs_model{
     }
 
     public function delete(){
-        return false;
+        $sql = "DELETE FROM ".$this->table_name." WHERE codcargo = ".$this->var2str($this->codcargo).";";
+        $data = $this->db->exec($sql);
+        if($data){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     public function corregir(){
@@ -182,6 +188,16 @@ class cargos extends fs_model{
             $this->update();
         }else{
             $this->save();
+        }
+    }
+    
+    public function en_uso(){
+        $sql = "SELECT count(codagente) as cantidad from agentes where codcargo = ".$this->var2str($this->codcargo).";";
+        $data = $this->db->select($sql);
+        if($data){
+            return $data[0]['cantidad'];
+        }else{
+            return false;
         }
     }
 

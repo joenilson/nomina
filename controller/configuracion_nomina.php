@@ -63,6 +63,10 @@ class configuracion_nomina extends fs_controller{
     public $existe;
     public $dir;
     public $creada;
+    public $fix_cargos = '';
+    public $nomina_setup;
+    public $nomina_migracion_informacion;
+    public $fsvar;
     public function __construct() {
         parent::__construct(__CLASS__, 'Configuracion Nomina', 'nomina', TRUE, TRUE, FALSE);
     }
@@ -88,8 +92,21 @@ class configuracion_nomina extends fs_controller{
         $this->organizacion = new organizacion();
         $this->tipopago = new tipopago();
         
+        $this->fsvar = new fs_var();
+        //Aqui almacenamos las variables del plugin
+        $this->nomina_setup = $this->fsvar->array_get(
+            array(
+            'nomina_migracion_informacion' => 'FALSE',
+            ), FALSE
+        );
+        
+        $this->nomina_migracion_informacion = $this->nomina_setup['nomina_migracion_informacion'];
+        
         if(isset($_GET['type'])){
             switch($_GET['type']){
+                case "importar_cargos":
+                        $this->importar_cargos();
+                    break;
                 case "cargos":
                     $this->template = 'configuracion/nomina_cargos';
                     if(isset($_POST['codcargo'])){
@@ -188,15 +205,12 @@ class configuracion_nomina extends fs_controller{
                     if(isset($_POST['codtipocese'])){
                         $this->tratar_motivocese();
                     }
-                    break;
                 default:
                     break;
             }
         }
-        //Cargamos los datos por primera vez
-        $this->fix_info();
-        //Movemos Cargo a la tabla de cargos y banco al campo cuenta_banco
-        $this->trasladar_datos();
+        
+        
         //Validamos si existen las carpetas de almacenamiento de datos
         // imagenes de empleados
         $this->creada = false;
@@ -250,6 +264,25 @@ class configuracion_nomina extends fs_controller{
 
     }
     
+    public function importar_cargos(){
+        //Cargamos los datos por primera vez
+        $this->fix_info();
+        //Movemos Cargo a la tabla de cargos y banco al campo cuenta_banco
+        $this->trasladar_datos();
+        $nomina_setup = array(
+               'nomina_migracion_informacion' => 'TRUE'
+            );
+        $this->fsvar->array_save($nomina_setup);
+        
+        //Aqui almacenamos las variables del plugin
+        $this->nomina_setup = $this->fsvar->array_get(
+            array(
+            'nomina_migracion_informacion' => 'FALSE',
+            ), FALSE
+        );
+        $this->nomina_migracion_informacion = $this->nomina_setup['nomina_migracion_informacion'];
+    }
+    
     public function tratar_ausencias(){
         $au0 = new tipoausencias();
         $au0->codausencia = filter_input(INPUT_POST, 'codausencia');
@@ -265,17 +298,28 @@ class configuracion_nomina extends fs_controller{
     }
 
     public function tratar_cargos(){
+        $accion = \filter_input(INPUT_POST, 'accion');
         $c0 = new cargos();
-        $c0->codcargo = filter_input(INPUT_POST, 'codcargo');
-        $c0->codcategoria = filter_input(INPUT_POST, 'codcategoria');
-        $c0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
-        $c0->padre = filter_input(INPUT_POST, 'padre');
-        $c0->estado = filter_input(INPUT_POST, 'estado');
-        $estado = $c0->save();
+        if($accion == 'agregar'){
+            $c0->codcargo = \filter_input(INPUT_POST, 'codcargo');
+            $c0->codcategoria = \filter_input(INPUT_POST, 'codcategoria');
+            $c0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
+            $c0->padre = \filter_input(INPUT_POST, 'padre');
+            $c0->estado = \filter_input(INPUT_POST, 'estado');
+            $estado = $c0->save();
+        }elseif($accion=='eliminar'){
+            $cargo = $c0->get(\filter_input(INPUT_POST, 'codcargo'));
+            if($cargo){
+                $estado = $cargo->delete();
+            }else{
+                $this->new_error_msg('');
+            }
+        }
+        
         if($estado){
-            $this->new_message("Datos guardados correctamente.");
+            $this->new_message("Datos procesados para $accion correctamente.");
         }else{
-            $this->new_error_msg("El cargo con el Id ".$c0->codcargo." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+            $this->new_error_msg("El cargo con el Id ".$c0->codcargo." No pudo ser tratado, revise los datos e intente nuevamente. Error: ".$estado);
         }
     }
 

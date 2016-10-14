@@ -33,38 +33,38 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 </thead>
                 <tbody>
                     <form class="form" role="form" action="{$fsc->url()}&type=categorias" method="POST">
-                    <tr class="info">
-                        <td>
-                            <input type="hidden" name="codcategoria" value="">
-                        </td>
-                        <td>
-                            <input type="text" name="descripcion" value="" autocomplete="off" class="form-control input-sm">
-                        </td>
-                        <td>
-                            <input type="hidden" name="orden" value="0">
-                        </td>
-                        <td>
-                            <input type="hidden" name="estado" value="true">
-                        </td>
-                        <td>
-                            <button type="submit" class="btn btn-sm btn-primary">
-                                <span class="fa fa-save"></span> Nuevo
-                            </button>
-                        </td>
-                    </tr>
-                </form>
+                        <tr class="info">
+                            <td>
+                                <input type="hidden" name="codcategoria" value="">
+                            </td>
+                            <td>
+                                <input type="text" name="descripcion" value="" autocomplete="off" class="form-control input-sm">
+                            </td>
+                            <td>
+                                <input type="hidden" name="orden" value="0">
+                            </td>
+                            <td>
+                                <input type="hidden" name="estado" value="true">
+                            </td>
+                            <td>
+                                <button type="submit" class="btn btn-sm btn-primary" name='accion' value='agregar'>
+                                    <span class="fa fa-save"></span> Nuevo
+                                </button>
+                            </td>
+                        </tr>
+                    </form>
                 {$registros=(count($fsc->categoriaempleado->all()))}
                 {$registro=1}
                 {loop="$fsc->categoriaempleado->all()"}
                 <form class="form" role="form" action="{$fsc->url()}&type=categorias" method="POST">
                 <tr>
-                    <td>
-                        <input type="text" name="codcategoria" value="{$value->codcategoria}" readonly="true">
+                    <td class='col-sm-1'>
+                        <input type="text" name="codcategoria" value="{$value->codcategoria}" readonly="true" class="form-control input-sm">
                     </td>
-                    <td>
+                    <td class='col-sm-5'>
                         <input type="text" name="descripcion" value="{$value->descripcion}" autocomplete="off" class="form-control input-sm">
                     </td>
-                    <td>
+                    <td class='col-sm-2'>
                         <div class="input-group">
                             <input type="hidden" name="orden" value="{$value->orden}" autocomplete="off" class="form-control input-sm">
                             <div class="input-group-btn">
@@ -87,17 +87,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                         </div>
                         {$registro=$registro+1}
-                    </td>
+                    </td class='col-sm-2'>
                     <td class="text-center">
                         <input type="checkbox" onchange="this.value=(this.value==='true')?'false':'true';" name="estado" value="{if="$value->estado"}true{else}false{/if}" {if="$value->estado"}checked{/if} class="checkbox-control">
                     </td>
-                    <td class="text-right">
-                        {if="$fsc->allow_delete"}
-                        <button class="btn btn-sm btn-danger">
-                            <span class="fa fa-trash"></span>
+                    <td class="text-right col-sm-2">
+                        {if="$value->en_uso()"}
+                        <button type="button" class="btn btn-sm btn-warning" data-toggle="tooltip" data-placement="top" title="Hay {$value->en_uso()} cargos en esta categoria">
+                            <span class="fa fa-lock"></span>
                         </button>
+                        {else}
+                            {if="$fsc->allow_delete"}
+                            <button class="btn btn-sm btn-danger" type='submit' name='accion' value='eliminar' onclick="return confirm('Esta seguro que quiere eliminar la categoria: {$value->descripcion}?');">
+                                <span class="fa fa-trash"></span>
+                            </button>
+                            {/if}
                         {/if}
-                        <button class="btn btn-sm btn-primary">
+                        <button class="btn btn-sm btn-primary" type='submit' name='accion' value='agregar'>
                             <span class="fa fa-save"></span>
                         </button>
                     </td>

@@ -150,12 +150,8 @@ function visualizarDocumento(documento){
 }
 
 $(document).ready(function() {
-    if(locale_user !== undefined){
-        moment.locale(locale_user);
-    } else {
-        moment.locale('es');
-    }
-    moment.locale('es');
+    
+    $('[data-toggle="tooltip"]').tooltip();
     
     if($('#modal_nuevo_agente').length === 1){
         $('#modal_nuevo_agente').html('');
@@ -206,46 +202,50 @@ $(document).ready(function() {
         };
         reader.readAsDataURL(file);
     });
-    if($('#f_rango') !== undefined){
-        $('#f_rango').daterangepicker({
-            singleDatePicker: false,
-            showDropdowns: true,
-            ranges: {
-                'Hoy': [moment(), moment()],
-                'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                'Ultimos 7 Días': [moment().subtract(6, 'days'), moment()],
-                'Ultimos 30 días': [moment().subtract(29, 'days'), moment()],
-                'Este mes': [moment().startOf('month'), moment().endOf('month')],
-                'Anterior Mes': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-            },
-            locale: {
-                "format": "YYYY-MM-DD",
-                "separator": " - ",
-                "applyLabel": "Tomar",
-                "cancelLabel": "Cancelar",
-                "fromLabel": "Desde",
-                "toLabel": "Hasta",
-                "customRangeLabel": "Manual"
-            },
-            opens: "left",
-            startDate: moment().startOf('month'),
-            endDate: moment()
-        });
+    
+    if(typeof(locale_user) !== 'undefined'){
+        moment.locale(locale_user);
+        if($('#f_rango') !== undefined){
+            $('#f_rango').daterangepicker({
+                singleDatePicker: false,
+                showDropdowns: true,
+                ranges: {
+                    'Hoy': [moment(), moment()],
+                    'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Ultimos 7 Días': [moment().subtract(6, 'days'), moment()],
+                    'Ultimos 30 días': [moment().subtract(29, 'days'), moment()],
+                    'Este mes': [moment().startOf('month'), moment().endOf('month')],
+                    'Anterior Mes': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                locale: {
+                    "format": "YYYY-MM-DD",
+                    "separator": " - ",
+                    "applyLabel": "Tomar",
+                    "cancelLabel": "Cancelar",
+                    "fromLabel": "Desde",
+                    "toLabel": "Hasta",
+                    "customRangeLabel": "Manual"
+                },
+                opens: "left",
+                startDate: moment().startOf('month'),
+                endDate: moment()
+            });
 
-        $('#f_rango').on('apply.daterangepicker', function(ev, picker) {
-            $('#f_desde').val(picker.startDate.format('YYYY-MM-DD'));
-            $('#f_hasta').val(picker.endDate.format('YYYY-MM-DD'));
-        });
-        if($('#f_desde').val()){
-            $('#f_rango').data('daterangepicker').setStartDate($('#f_desde').val());
-        }else{
-            $('#f_desde').val($('#f_rango').data('daterangepicker').startDate.format('YYYY-MM-DD'));
-        }
+            $('#f_rango').on('apply.daterangepicker', function(ev, picker) {
+                $('#f_desde').val(picker.startDate.format('YYYY-MM-DD'));
+                $('#f_hasta').val(picker.endDate.format('YYYY-MM-DD'));
+            });
+            if($('#f_desde').val()){
+                $('#f_rango').data('daterangepicker').setStartDate($('#f_desde').val());
+            }else{
+                $('#f_desde').val($('#f_rango').data('daterangepicker').startDate.format('YYYY-MM-DD'));
+            }
 
-        if($('#f_hasta').val()){
-            $('#f_rango').data('daterangepicker').setEndDate($('#f_hasta').val());
-        }else{
-            $('#f_hasta').val($('#f_rango').data('daterangepicker').endDate.format('YYYY-MM-DD'));
+            if($('#f_hasta').val()){
+                $('#f_rango').data('daterangepicker').setEndDate($('#f_hasta').val());
+            }else{
+                $('#f_hasta').val($('#f_rango').data('daterangepicker').endDate.format('YYYY-MM-DD'));
+            }
         }
     }
 });

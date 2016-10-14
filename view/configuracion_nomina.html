@@ -39,42 +39,54 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </a>
                 </li>
                 {loop="$fsc->extensions"}
-                {if="$value->type=='button'"}
-                <li>
-                    <a id="b_{$value->from}" href="index.php?page={$value->from}{$value->params}&codagente={$fsc->agente->codagente}">
-                        {$value->text}
-                    </a>
-                </li>
-                {elseif="$value->type=='tab'"}
-                <li role="presentation">
-                    <a href="#ext_{$key}" aria-controls="ext_{$key}" role="tab" data-toggle="tab">
-                        {$value->text}
-                    </a>
-                </li>
-                {/if}
+                    {if="$value->type=='button'"}
+                    <li>
+                        <a id="b_{$value->from}" href="index.php?page={$value->from}{$value->params}&codagente={$fsc->agente->codagente}">
+                            {$value->text}
+                        </a>
+                    </li>
+                    {elseif="$value->type=='tab'"}
+                    <li role="presentation">
+                        <a href="#ext_{$key}" aria-controls="ext_{$key}" role="tab" data-toggle="tab">
+                            {$value->text}
+                        </a>
+                    </li>
+                    {/if}
                 {/loop}
             </ul>
         </div>
         <div class="col-sm-9 col-lg-10">
             <div class="tab-content">
                 <div role="tabpanel" class="tab-pane active" id="general">
-                    <form class="form" role="form" action="{$fsc->url()}" method="post">
-                        <div class="panel panel-primary">
-                            <div class="panel-heading">
-                                <h3 class="panel-title">Configuraci&oacute;n B&aacute;sica</h3>
-                            </div>
-                            <div class="panel-body">
-                                En desarrollo.
-                            </div>
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Configuraci&oacute;n B&aacute;sica</h3>
                         </div>
-                    </form>
+                        <div class="panel-body">
+                            <span class='help-block'>
+                                Si acaba de instalar el plugin debe importar la información de Cargos que viene con FacturaScripts de forma estandar.<br />
+                                Hay campos sensibles que no se pueden borrar si tienen empleados asignados a estos, así que deberá desasignarlos antes de proceder a borrarlos.
+                            </span>
+                            <form class="form" role="form" action="{$fsc->url()}&type=importar_cargos" method="POST">
+                            {if="$fsc->nomina_migracion_informacion=='FALSE'"}
+                                <button class='btn btn-sm btn-default' type='submit' name='accion' value='importar'>
+                                    Importar Cargos
+                                </button>
+                            {else}
+                                <button class='btn btn-sm btn-success' type='submit' onclick="return confirm('Está seguro que quiere volver a importar los datos?');">
+                                    <span class='fa fa-check'></span>&nbsp;Cargos ya importados
+                                </button>
+                            {/if}
+                            </form>
+                        </div>
+                    </div>
                 </div>
                 {loop="$fsc->extensions"}
-                {if="$value->type=='tab'"}
-                <div role="tabpanel" class="tab-pane" id="ext_{$key}">
-                    <iframe src="index.php?page={$value->from}{$value->params}&cod={$fsc->agente->codagente}" width="100%" height="580" frameborder="0"></iframe>
-                </div>
-                {/if}
+                    {if="$value->type=='tab'"}
+                    <div role="tabpanel" class="tab-pane" id="ext_{$key}">
+                        <iframe src="index.php?page={$value->from}{$value->params}&cod={$fsc->agente->codagente}" width="100%" height="580" frameborder="0"></iframe>
+                    </div>
+                    {/if}
                 {/loop}
             </div>
         </div>

@@ -196,6 +196,16 @@ class categoriaempleado extends fs_model{
             }
         }
     }
+    
+    public function en_uso(){
+        $sql = "SELECT count(codcargo) as cantidad from hr_cargos where codcategoria = ".$this->var2str($this->codcategoria).";";
+        $data = $this->db->select($sql);
+        if($data){
+            return $data[0]['cantidad'];
+        }else{
+            return false;
+        }
+    }
 
     private function comparar($value, $posicion, $reorden){
         if($value->codcategoria == $this->codcategoria){
@@ -209,5 +219,4 @@ class categoriaempleado extends fs_model{
         }
         return $valor;
     }
-
 }
