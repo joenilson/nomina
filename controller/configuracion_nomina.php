@@ -18,6 +18,8 @@
  */
 require_model('agente.php');
 require_model('cargos.php');
+require_model('contratos.php');
+require_model('hoja_vida.php');
 require_model('categoriaempleado.php');
 require_model('estadocivil.php');
 require_model('formacion.php');
@@ -91,6 +93,10 @@ class configuracion_nomina extends fs_controller{
         $this->sistemapension = new sistemapension();
         $this->organizacion = new organizacion();
         $this->tipopago = new tipopago();
+        
+        //Tablas de datos para los empleados
+        new contratos();
+        new hoja_vida();
         
         $this->fsvar = new fs_var();
         //Aqui almacenamos las variables del plugin

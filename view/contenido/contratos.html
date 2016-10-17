@@ -38,15 +38,55 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <table class="table table-responsive">
                 <thead>
                     <tr>
-                        <th>Documento</th>
-                        <th>Tipo</th>
-                        <th>Fecha</th>
-                        <th>Autor</th>
-                        <th></th>
+                        <th class="col-sm-2">Contrato</th>
+                        <th class="col-sm-3">Tipo</th>
+                        <th class="col-sm-1">Fecha Inicio</th>
+                        <th class="col-sm-1">Fecha Fin</th>
+                        <th class="col-sm-2">Duracion</th>
+                        <th class="col-sm-1 text-center">Estado</th>
+                        <th class="col-sm-2"></th>
                     </tr>
                 </thead>
                 <tbody>
-                    
+                    {loop="$fsc->agente->contratos"}
+                <form action="{$fsc->url()}&type=contratos" method="POST" class="form" role="form">
+                        <tr>
+                            <td>
+                            <button class="btn btn-sm btn-default" type="button" onclick="visualizarDocumento('{$fsc->dir_documentos_empleados}/{$value->contrato}');">
+                                <span class="fa fa-file-pdf-o"></span>&nbsp;Ver Contrato
+                            </button>
+                            <input type="hidden" name="id" value="{$value->id}">
+                            <input type="hidden" name="codagente" value="{$value->codagente}">
+                            </td>
+                            <td>
+                            {$value->desc_tipocontrato}
+                            </td>
+                            <td>
+                            {$value->fecha_inicio}
+                            </td>
+                            <td>
+                            {$value->fecha_fin}
+                            </td>
+                            <td>
+                            {$value->duracion_contrato()}
+                            </td>
+                            <td class="text-center">
+                                {if="$value->estado"}
+                                <span class="label label-success">Activo</span>
+                                {else}
+                                <span class="label label-danger">No Activo</span>
+                                {/if}
+                            </td>
+                            <td>
+                            {if="$fsc->allow_delete"}
+                            <button type="submit" class="btn btn-sm btn-danger" name="accion" value="eliminar" onclick="return confirm('Esta seguro que quiere eliminar este documento?');">
+                                <span class="fa fa-trash"></span>
+                            </button>
+                            {/if}
+                            </td>
+                        </tr>
+                    </form>
+                    {/loop}
                 </tbody>
             </table>
         </div>
@@ -59,58 +99,57 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title">Agregar Contrato</h4>
             </div>
-            <div class="modal-body">
-                <form class="form form-horizontal" enctype="multipart/form-data" role="form" action="{$fsc->url()}&type=contratos" method="POST">
+            <form class="form form-horizontal" enctype="multipart/form-data" role="form" action="{$fsc->url()}&type=contratos" method="POST">
+                <div class="modal-body">
                     <div class="form-group">
                         <label class="control-label col-sm-4" for="tipo_contrato">Tipo de Contrato</label>
-                        <div class="col-sm-4">
+                        <div class="col-sm-6">
                         <select name="tipo_contrato" id="tipo_contrato" class="form-control input-sm" required>
                             <option value="">Elige un Tipo</option>
-                            <option value="curriculum">Curriculum</option>
-                            <option value="certificado">Certificado</option>
-                            <option value="capacitacion">Capacitación</option>
-                            <option value="amonestacion">Amonestación</option>
-                            <option value="renuncia">Renuncia</option>
-                            <option value="despido">Despido</option>
-                            <option value="contrato">Contrato</option>
-                            <option value="certificado_medico">Certificado Médico</option>
+                            {loop="$fsc->tipoempleado->all()"}
+                            <option value="{$value->codtipo}">{$value->descripcion}</option>
+                            {/loop}
                         </select>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-4" for="fecha_contrato">Fecha</label>
-                        <div class="col-sm-4">
-                            <div class="has-feedback">
-                                <input type="text" name="fecha_contrato" required data-date-format="yyyy-mm-dd" class="form-control datepicker input-sm" id="fecha_contrato">
-                                <span class="fa fa-calendar form-control-feedback"></span>                                
-                            </div>
+                        <label class="control-label col-sm-4" for="f_rango">Duracion Contrato</label>
+                        <div class="col-sm-6 rango">
+                            <input type="text" id="f_rango" class="form-control input-sm">
+                            <span class="fa fa-calendar"></span>
+                            <input type="hidden" name="f_desde" id="f_desde" value="">
+                            <input type="hidden" name="f_hasta" id="f_hasta" value="">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-4" for="documento">Documento</label>
+                        <label class="control-label col-sm-4" for="documento">Contrato</label>
                         <div class="col-sm-8">
                             <label class="btn btn-sm btn-default btn-file">
                                 <span>Elegir&hellip;</span> <input type="file" required accept="application/pdf" style="display: none;" name="documento" class="form-control input-sm" id="documento" onchange="$(this).prev('span').text($(this).val()!=''?$(this).val():'Elegir &hellip;')">
                             </label>
-                            <span class="help-block">Elija un documento en formato <b>PDF</b></span>
+                            <span class="help-block">Suba el documento en formato <b>PDF</b></span>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-4" for="autor_documento">Autor</label>
+                        <label class="control-label col-sm-4" for="estado_contrato">Estado</label>
                         <div class="col-sm-6">
-                            <div class="has-feedback">
-                                <input type="text" name="autor_documento" required class="form-control input-sm" id="autor_documento">
-                                <span class="fa fa-user form-control-feedback"></span>
-                            </div>
+                            <input id="estado_contrato" type="checkbox" name="estado" data-label-text="Activo" data-off-text="No" checked data-on-text="Si">
                         </div>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><span class="fa fa-remove"></span>&nbsp;Cerrar</button>
-                <button type="button" class="btn btn-sm btn-primary"><span class="fa fa-save"></span>&nbsp;Agregar</button>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><span class="fa fa-remove"></span>&nbsp;Cerrar</button>
+                    <button type="submit" class="btn btn-sm btn-primary" name="accion" value="agregar" onclick="return confirm('Esta seguro que todos los datos están correctos?');"><span class="fa fa-save"></span>&nbsp;Agregar</button>
+                </div>
+            </form>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+{include="contenido/visualizador"}
+<script type="text/javascript">
+    var locale_user = 'es';
+    $(document).ready(function () {
+        $('#estado_contrato').bootstrapSwitch();
+    });
+</script>
 {include="footer"}

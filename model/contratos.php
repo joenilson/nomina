@@ -16,13 +16,13 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+require_model('tipoempleado.php');
 /**
- * Description of hoja_vida
+ * Description of contratos
  *
  * @author Joe Nilson <joenilson at gmail.com>
  */
-class hoja_vida extends fs_model{
+class contratos extends fs_model{
     /*
      * @type integer Id
      */
@@ -34,19 +34,19 @@ class hoja_vida extends fs_model{
     /*
      * @type varchar(120)
      */
-    public $documento;
+    public $contrato;
     /*
-     * @type varchar(32)
+     * @type varchar(6)
      */
-    public $tipo_documento;
-    /*
-     * @type varchar(120)
-     */
-    public $autor_documento;
+    public $tipo_contrato;
     /*
      * @type date YYYY-MM-DD
      */
-    public $fecha_documento;
+    public $fecha_inicio;
+    /*
+     * @type date YYYY-MM-DD
+     */
+    public $fecha_fin;
     /*
      * @type boolean
      */
@@ -68,15 +68,17 @@ class hoja_vida extends fs_model{
      */
     public $fecha_modificacion;
 
+    public $tipoempleado;
+    
     public function __construct($t = FALSE) {
-        parent::__construct('hr_hoja_vida');
+        parent::__construct('hr_contratos');
         if($t){
             $this->id = $t['id'];
             $this->codagente = $t['codagente'];
-            $this->documento = $t['documento'];
-            $this->tipo_documento = $t['tipo_documento'];
-            $this->autor_documento = $t['autor_documento'];
-            $this->fecha_documento = $t['fecha_documento'];
+            $this->contrato = $t['contrato'];
+            $this->tipo_contrato = $t['tipo_contrato'];
+            $this->fecha_inicio = $t['fecha_inicio'];
+            $this->fecha_fin = $t['fecha_fin'];
             $this->estado = $this->str2bool($t['estado']);
             $this->usuario_creacion = $t['usuario_creacion'];
             $this->usuario_modificacion = $t['usuario_modificacion'];
@@ -85,10 +87,10 @@ class hoja_vida extends fs_model{
         }else{
             $this->id = NULL;
             $this->codagente = NULL;
-            $this->documento = NULL;
-            $this->tipo_documento = NULL;
-            $this->autor_documento = NULL;
-            $this->fecha_documento = NULL;
+            $this->contrato = NULL;
+            $this->tipo_contrato = NULL;
+            $this->fecha_inicio = NULL;
+            $this->fecha_fin = NULL;
             $this->estado = FALSE;
             $this->usuario_creacion = NULL;
             $this->usuario_modificacion = NULL;
@@ -96,11 +98,16 @@ class hoja_vida extends fs_model{
             $this->fecha_modificacion = NULL;
         }
         
-        $this->agentes = new agente();
+        $this->tipoempleado = new tipoempleado();
     }
     
     protected function install() {
         return '';
+    }
+    
+    protected function info_adicional($val){
+        $val->desc_tipocontrato = $this->tipoempleado->get($val->tipo_contrato)->descripcion;
+        return $val;
     }
     
     public function exists() {
@@ -115,12 +122,12 @@ class hoja_vida extends fs_model{
         if($this->exists()){
             return $this->update();
         }else{
-            $sql = "INSERT INTO ".$this->table_name." (codagente, documento, tipo_documento, autor_documento, fecha_documento, estado, usuario_creacion, fecha_creacion ) VALUES (".
+            $sql = "INSERT INTO ".$this->table_name." (codagente, contrato, tipo_contrato, fecha_inicio, fecha_fin, estado, usuario_creacion, fecha_creacion ) VALUES (".
                 $this->var2str($this->codagente).", ".
-                $this->var2str($this->documento).", ".
-                $this->var2str($this->tipo_documento).", ".
-                $this->var2str($this->autor_documento).", ".
-                $this->var2str($this->fecha_documento).", ".
+                $this->var2str($this->contrato).", ".
+                $this->var2str($this->tipo_contrato).", ".
+                $this->var2str($this->fecha_inicio).", ".
+                $this->var2str($this->fecha_fin).", ".
                 $this->var2str($this->estado).", ".
                 $this->var2str($this->usuario_creacion).", ".
                 $this->var2str($this->fecha_creacion).");";
@@ -131,10 +138,10 @@ class hoja_vida extends fs_model{
     public function update() {
         $sql = "UPDATE ".$this->table_name." SET ".
             " estado = ".$this->var2str($this->estado).
-            ", tipo_documento = ".$this->var2str($this->tipo_documento).
-            ", fecha_documento = ".$this->var2str($this->fecha_documento).
-            ", autor_documento = ".$this->var2str($this->autor_documento).
-            ", documento = ".$this->var2str($this->documento).
+            ", tipo_contrato = ".$this->var2str($this->tipo_contrato).
+            ", fecha_inicio = ".$this->var2str($this->fecha_inicio).
+            ", fecha_fin = ".$this->var2str($this->fecha_fin).
+            ", contrato = ".$this->var2str($this->contrato).
             ", usuario_modificacion = ".$this->var2str($this->usuario_modificacion).
             ", fecha_modificacion = ".$this->var2str($this->fecha_modificacion).
             " WHERE id = ".$this->intval($this->id)." AND codagente = ".$this->var2str($this->codagente).";";
@@ -152,7 +159,8 @@ class hoja_vida extends fs_model{
             " id = ".$this->intval($id).";";
         $data = $this->db->select($sql);
         if($data){
-            $d = new hoja_vida($data[0]);
+            $linea = new contratos($data[0]);
+            $d = $this->info_adicional($linea);
             return $d;
         }else{
             return false;
@@ -160,12 +168,13 @@ class hoja_vida extends fs_model{
     }
     
     public function all(){
-        $sql = "SELECT * FROM ".$this->table_name." ORDER BY codagente,fecha_documento,tipo_documento;";
+        $sql = "SELECT * FROM ".$this->table_name." ORDER BY codagente,fecha_inicio,tipo_contrato;";
         $data = $this->db->select($sql);
         if($data){
             $lista = array();
             foreach($data as $d){
-                $lista[] = new hoja_vida($d);
+                $linea = new contratos($d);
+                $lista[] = $this->info_adicional($linea);
             }
             return $lista;
         }else{
@@ -174,12 +183,13 @@ class hoja_vida extends fs_model{
     }
     
     public function activos(){
-        $sql = "SELECT * FROM ".$this->table_name." WHERE estado = TRUE ORDER BY codagente,fecha_documento,tipo_documento;";
+        $sql = "SELECT * FROM ".$this->table_name." WHERE estado = TRUE ORDER BY codagente,fecha_inicio,tipo_contrato;";
         $data = $this->db->select($sql);
         if($data){
             $lista = array();
             foreach($data as $d){
-                $lista[] = new hoja_vida($d);
+                $linea = new contratos($d);
+                $lista[] = $this->info_adicional($linea);
             }
             return $lista;
         }else{
@@ -187,13 +197,14 @@ class hoja_vida extends fs_model{
         }
     }
     
-    public function tipo_documento($tipo_documento){
-        $sql = "SELECT * FROM ".$this->table_name." WHERE tipo_documento = ".$this->var2str($tipo_documento)." AND estado = TRUE ORDER BY codagente,fecha_documento,tipo_documento;";
+    public function tipo_contrato($tipo_contrato){
+        $sql = "SELECT * FROM ".$this->table_name." WHERE tipo_contrato = ".$this->var2str($tipo_contrato)." AND estado = TRUE ORDER BY codagente,fecha_inicio,tipo_contrato;";
         $data = $this->db->select($sql);
         if($data){
             $lista = array();
             foreach($data as $d){
-                $lista[] = new hoja_vida($d);
+                $linea = new contratos($d);
+                $lista[] = $this->info_adicional($linea);
             }
             return $lista;
         }else{
@@ -202,12 +213,13 @@ class hoja_vida extends fs_model{
     }
     
     public function all_agente($codagente){
-        $sql = "SELECT * FROM ".$this->table_name." WHERE codagente = ".$this->var2str($codagente)." ORDER BY codagente,fecha_documento,tipo_documento;";
+        $sql = "SELECT * FROM ".$this->table_name." WHERE codagente = ".$this->var2str($codagente)." ORDER BY codagente,fecha_inicio,tipo_contrato;";
         $data = $this->db->select($sql);
         if($data){
             $lista = array();
             foreach($data as $d){
-                $lista[] = new hoja_vida($d);
+                $linea = new contratos($d);
+                $lista[] = $this->info_adicional($linea);
             }
             return $lista;
         }else{
@@ -216,12 +228,13 @@ class hoja_vida extends fs_model{
     }
     
     public function activos_agente($codagente){
-        $sql = "SELECT * FROM ".$this->table_name." WHERE codagente = ".$this->var2str($codagente)." AND estado = TRUE ORDER BY codagente,fecha_documento,tipo_documento;";
+        $sql = "SELECT * FROM ".$this->table_name." WHERE codagente = ".$this->var2str($codagente)." AND estado = TRUE ORDER BY codagente,fecha_inicio,tipo_contrato;";
         $data = $this->db->select($sql);
         if($data){
             $lista = array();
             foreach($data as $d){
-                $lista[] = new hoja_vida($d);
+                $linea = new contratos($d);
+                $lista[] = $this->info_adicional($linea);
             }
             return $lista;
         }else{
@@ -229,13 +242,14 @@ class hoja_vida extends fs_model{
         }
     }
     
-    public function tipo_documento_agente($tipo_documento,$codagente){
-        $sql = "SELECT * FROM ".$this->table_name." WHERE tipo_documento = ".$this->var2str($tipo_documento)." AND codagente = ".$this->var2str($codagente)." AND estado = TRUE ORDER BY codagente,fecha_documento,tipo_documento;";
+    public function tipo_contrato_agente($tipo_contrato,$codagente){
+        $sql = "SELECT * FROM ".$this->table_name." WHERE tipo_contrato = ".$this->var2str($tipo_contrato)." AND codagente = ".$this->var2str($codagente)." AND estado = TRUE ORDER BY codagente,fecha_inicio,tipo_contrato;";
         $data = $this->db->select($sql);
         if($data){
             $lista = array();
             foreach($data as $d){
-                $lista[] = new hoja_vida($d);
+                $linea = new contratos($d);
+                $lista[] = $this->info_adicional($linea);
             }
             return $lista;
         }else{
@@ -243,5 +257,45 @@ class hoja_vida extends fs_model{
         }
     }
     
+    public function duracion_contrato(){
+        if(!is_null($this->fecha_fin)){
+            $from = new DateTime($this->fecha_inicio);
+            $to   = new DateTime($this->fecha_fin);
+            $duracion = $this->duracion($from->diff($to));
+        }else{
+            $duracion = "Indefinido";
+        }
+        return $duracion;
+    }
     
+    public function tiempo_restante(){
+        if(!is_null($this->fecha_fin)){
+            $from = new DateTime($this->fecha_inicio);
+            $to   = new DateTime('today');
+            $duracion = $this->duracion($from->diff($to));
+        }else{
+            $duracion = "Indefinido";
+        }
+        return $duracion;
+    }
+    
+    public function duracion($fecha_diff){
+        $years = $fecha_diff->y;
+        $months = $fecha_diff->m;
+        $days = $fecha_diff->d;
+        $fecha = "";
+        if(!empty($years)){
+            $fecha.="$years ";
+            $fecha.=($years>1)?"años ":"año ";
+        }
+        if(!empty($months)){
+            $fecha.="$months ";
+            $fecha.=($months>1)?"meses ":"mes ";
+        }
+        if(!empty($days)){
+            $fecha.="$days ";
+            $fecha.=($days>1)?"días ":"día ";
+        }
+        return $fecha;
+    }
 }

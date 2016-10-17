@@ -21,6 +21,7 @@
 require_model('agente.php');
 require_model('almacen.php');
 require_model('cargos.php');
+require_model('contratos.php');
 require_model('bancos.php');
 require_model('estadocivil.php');
 require_model('seguridadsocial.php');
@@ -38,6 +39,8 @@ class admin_agente extends fs_controller {
 
     public $agente;
     public $cargos;
+    public $contratos;
+    public $contratos_empleado;
     public $almacen;
     public $bancos;
     public $estadocivil;
@@ -118,6 +121,14 @@ class admin_agente extends fs_controller {
                     $this->template = 'contenido/movimientos';
                     break;
                 case "contratos":
+                    $this->contratos = new contratos();
+                    if (isset($_REQUEST['mostrar'])) {
+                        $this->mostrar_informacion($_REQUEST['mostrar']);
+                    } elseif (isset($_REQUEST['accion'])) {
+                        $this->tratar_contratos();
+                    }
+                    $this->agente->contratos = $this->contratos->all_agente($this->agente->codagente);
+                    $this->total_resultados = count($this->agente->contratos);
                     $this->template = 'contenido/contratos';
                     break;
                 case "control_horas":
@@ -225,6 +236,45 @@ class admin_agente extends fs_controller {
             $this->desde = \filter_input(INPUT_POST, 'f_desde');
             $this->hasta = \filter_input(INPUT_POST, 'f_hasta');
             $this->resultados = 0;
+        }
+    }
+    
+    public function tratar_contratos(){
+        $accion = \filter_input(INPUT_POST, 'accion');
+        $id = \filter_input(INPUT_POST, 'id');
+        $tipo_contrato = \filter_input(INPUT_POST, 'tipo_contrato');
+        $fecha_inicio = \filter_input(INPUT_POST, 'f_desde');
+        $fecha_fin = \filter_input(INPUT_POST, 'f_hasta');
+        $estado = \filter_input(INPUT_POST, 'estado');
+        $this->upload_documento = (isset($_FILES['documento']))?new Upload($_FILES['documento']):false;
+        if ($accion == 'agregar' AND $this->upload_documento->uploaded) {
+            $hv0 = new contratos();
+            $hv0->contrato = $this->guardar_documento('contrato');
+            $hv0->tipo_contrato = $tipo_contrato;
+            $hv0->fecha_inicio = $fecha_inicio;
+            $hv0->fecha_fin = $fecha_fin;
+            $hv0->codagente = $this->agente->codagente;
+            $hv0->estado = ($estado)?'TRUE':'FALSE';
+            $hv0->usuario_creacion = $this->user->nick;
+            $hv0->fecha_creacion = \Date('Y-m-d H:i:s');
+            if ($hv0->save()) {
+                $this->new_message('Documento agregado a los contratos del empleado correctamente!');
+            } else {
+                $this->new_error_msg('Ocurrió un error con la información suministrada, por favor confirmar revisar los datos e intente de nuevo.');
+            }
+        } elseif ($accion == 'eliminar' and ( $this->allow_delete)) {
+            $contrato = $this->contratos->get($id);
+            $doc = $contrato->contrato;
+            if ($contrato->delete()) {
+                unlink($this->dir_documentos_empleados.$doc);
+                $this->new_message('Documento eliminado de los contratos del empleado correctamente!');
+            } else {
+                $this->new_error_msg('Ocurrió un error intentando eliminar la informacion, por favor confirmar revisar los datos e intente de nuevo.');
+            }
+        }elseif($accion == 'agregar' AND !$this->upload_documento->uploaded){
+            $this->new_error_msg('No se agregó un documento valido para agregar, por favor intentelo nuevamente.');
+        }elseif($accion == 'eliminar' and !$this->allow_delete){
+            $this->new_error_msg('No tiene permisos para eliminar documentos!.');
         }
     }
 
@@ -343,11 +393,27 @@ class admin_agente extends fs_controller {
                 'params' => ''
             ),
             array(
+                'name' => 'bootstrap_switch_admin_agente_css',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<link href="plugins/nomina/view/css/bootstrap-switch.min.css" rel="stylesheet" type="text/css"/>',
+                'params' => ''
+            ),
+            array(
                 'name' => 'daterangepicker_admin_agente_css',
                 'page_from' => __CLASS__,
                 'page_to' => __CLASS__,
                 'type' => 'head',
                 'text' => '<link href="plugins/nomina/view/css/daterangepicker.css" rel="stylesheet" type="text/css"/>',
+                'params' => ''
+            ),
+            array(
+                'name' => 'bootstrap_switch_admin_agente_js',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<script src="plugins/nomina/view/js/3/bootstrap-switch.min.js" type="text/javascript"></script>',
                 'params' => ''
             ),
             array(

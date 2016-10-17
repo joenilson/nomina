@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Document   : hr_contratos.xml
+    Description:
+        Estructura de la tabla hr_contratos.
+-->
+<tabla>
+    <columna>
+        <nombre>codagente</nombre>
+        <tipo>character varying(10)</tipo>
+        <nulo>NO</nulo>
+    </columna>
+    <columna>
+        <nombre>contrato</nombre>
+        <tipo>character varying(120)</tipo>
+        <nulo>NO</nulo>
+    </columna>
+    <columna>
+        <nombre>estado</nombre>
+        <tipo>boolean</tipo>
+        <nulo>YES</nulo>
+    </columna>
+    <columna>
+        <nombre>fecha_creacion</nombre>
+        <tipo>timestamp without time zone</tipo>
+        <nulo>NO</nulo>
+    </columna>
+    <columna>
+        <nombre>fecha_fin</nombre>
+        <tipo>date</tipo>
+        <nulo>YES</nulo>
+    </columna>
+    <columna>
+        <nombre>fecha_inicio</nombre>
+        <tipo>date</tipo>
+        <nulo>NO</nulo>
+    </columna>
+    <columna>
+        <nombre>fecha_modificacion</nombre>
+        <tipo>timestamp without time zone</tipo>
+        <nulo>YES</nulo>
+    </columna>
+    <columna>
+        <nombre>id</nombre>
+        <tipo>serial</tipo>
+        <nulo>NO</nulo>
+        <defecto>nextval('hr_contratos_id_seq'::regclass)</defecto>
+    </columna>
+    <columna>
+        <nombre>tipo_contrato</nombre>
+        <tipo>character varying(6)</tipo>
+        <nulo>NO</nulo>
+    </columna>
+    <columna>
+        <nombre>usuario_creacion</nombre>
+        <tipo>character varying(12)</tipo>
+        <nulo>NO</nulo>
+    </columna>
+    <columna>
+        <nombre>usuario_modificacion</nombre>
+        <tipo>character varying(12)</tipo>
+        <nulo>YES</nulo>
+    </columna>
+    <restriccion>
+        <nombre>hr_contratos_pkey</nombre>
+        <consulta>PRIMARY KEY (id, codagente)</consulta>
+    </restriccion>
+</tabla>

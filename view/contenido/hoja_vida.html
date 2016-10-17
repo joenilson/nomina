@@ -189,13 +189,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <script type="text/javascript">
     var locale_user = 'es';
     $(document).ready(function () {
-        $("#b_delete_documento").click(function (event) {
-            event.preventDefault();
-            if (confirm("¿Realmente desea eliminar el agente?"))
-            {
-                window.location.href = '{$fsc->ppage->url()}&delete={$fsc->agente->codagente}';
-            }
-        });
+
     });
 </script>
 {include="footer"}
