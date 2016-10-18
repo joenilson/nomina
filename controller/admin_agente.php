@@ -20,12 +20,15 @@
 
 require_model('agente.php');
 require_model('almacen.php');
+require_model('ausencias.php');
 require_model('cargos.php');
 require_model('contratos.php');
+require_model('dependientes.php');
 require_model('bancos.php');
 require_model('estadocivil.php');
 require_model('seguridadsocial.php');
 require_model('tipoempleado.php');
+require_model('tipoausencias.php');
 require_model('categoriaempleado.php');
 require_model('sindicalizacion.php');
 require_model('sistemapension.php');
@@ -39,13 +42,15 @@ class admin_agente extends fs_controller {
 
     public $agente;
     public $cargos;
+    public $ausencias;
     public $contratos;
-    public $contratos_empleado;
+    public $dependientes;
     public $almacen;
     public $bancos;
     public $estadocivil;
     public $formacion;
     public $tipoempleado;
+    public $tipoausencias;
     public $categoriaempleado;
     public $sindicalizacion;
     public $organizacion;
@@ -98,7 +103,7 @@ class admin_agente extends fs_controller {
         $this->seguridadsocial = new seguridadsocial();
         $this->sistemapension = new sistemapension();
         $this->estadocivil = new estadocivil();
-
+        $this->tipoausencias = new tipoausencias();
         $this->agente = FALSE;
         if (isset($_GET['cod'])) {
             $agente = new agente();
@@ -120,6 +125,15 @@ class admin_agente extends fs_controller {
                 case "movimientos":
                     $this->template = 'contenido/movimientos';
                     break;
+                case "ausencias":
+                    $this->ausencias = new ausencias();
+                    if (isset($_REQUEST['accion'])) {
+                        $this->tratar_ausencias();
+                    }
+                    $this->agente->ausencias = $this->ausencias->all_agente($this->agente->codagente);
+                    $this->total_resultados = count($this->agente->ausencias);
+                    $this->template = 'contenido/ausencias';
+                    break;                
                 case "contratos":
                     $this->contratos = new contratos();
                     if (isset($_REQUEST['mostrar'])) {
@@ -134,10 +148,13 @@ class admin_agente extends fs_controller {
                 case "control_horas":
                     $this->template = 'contenido/control_horas';
                     break;
-                case "ausencias":
-                    $this->template = 'contenido/ausencias';
-                    break;
                 case "carga_familiar":
+                    $this->dependientes = new dependientes();
+                    if (isset($_REQUEST['accion'])) {
+                        $this->tratar_dependientes();
+                    }
+                    $this->agente->dependientes = $this->dependientes->all_agente($this->agente->codagente);
+                    $this->total_resultados = count($this->agente->dependientes);
                     $this->template = 'contenido/carga_familiar';
                     break;
                 case "pagos_incentivos":
@@ -239,6 +256,47 @@ class admin_agente extends fs_controller {
         }
     }
     
+    public function tratar_ausencias(){
+        $accion = \filter_input(INPUT_POST, 'accion');
+        $id = \filter_input(INPUT_POST, 'id');
+        $tipo_ausencia = \filter_input(INPUT_POST, 'tipo_ausencia');
+        $fecha_desde = \filter_input(INPUT_POST, 'f_desde');
+        $fecha_hasta = \filter_input(INPUT_POST, 'f_hasta');
+        $justificada = \filter_input(INPUT_POST, 'justificada');
+        $estado = \filter_input(INPUT_POST, 'estado');
+        $this->upload_documento = (isset($_FILES['documento']))?new Upload($_FILES['documento']):false;
+        if ($accion == 'agregar') {
+            $hv0 = new ausencias();
+            $hv0->documento = ($this->upload_documento->uploaded)?$this->guardar_documento('ausencia'):NULL;
+            $hv0->tipo_ausencia = $tipo_ausencia;
+            $hv0->f_desde = $fecha_desde;
+            $hv0->f_hasta = $fecha_hasta;
+            $hv0->codagente = $this->agente->codagente;
+            $hv0->justificada = ($justificada)?'TRUE':'FALSE';
+            $hv0->estado = ($estado)?'TRUE':'FALSE';
+            $hv0->usuario_creacion = $this->user->nick;
+            $hv0->fecha_creacion = \Date('Y-m-d H:i:s');
+            if ($hv0->save()) {
+                $this->new_message('Ausencia agregada al empleado correctamente!');
+            } else {
+                $this->new_error_msg('Ocurrió un error con la información suministrada, por favor confirmar revisar los datos e intente de nuevo.');
+            }
+        } elseif ($accion == 'eliminar' and ($this->allow_delete)) {
+            $ausencia = $this->ausencias->get($id);
+            $doc = $ausencia->documento;
+            if ($ausencia->delete()) {
+                if(file_exists($doc)){
+                    unlink($this->dir_documentos_empleados.$doc);
+                }
+                $this->new_message('Ausencia eliminada de las ausencias del empleado correctamente!');
+            } else {
+                $this->new_error_msg('Ocurrió un error intentando eliminar la informacion, por favor confirmar revisar los datos e intente de nuevo.');
+            }
+        }elseif($accion == 'eliminar' and !$this->allow_delete){
+            $this->new_error_msg('No tiene permisos para eliminar ausencias!.');
+        }
+    }
+    
     public function tratar_contratos(){
         $accion = \filter_input(INPUT_POST, 'accion');
         $id = \filter_input(INPUT_POST, 'id');
@@ -275,6 +333,50 @@ class admin_agente extends fs_controller {
             $this->new_error_msg('No se agregó un documento valido para agregar, por favor intentelo nuevamente.');
         }elseif($accion == 'eliminar' and !$this->allow_delete){
             $this->new_error_msg('No tiene permisos para eliminar documentos!.');
+        }
+    }
+    
+    public function tratar_dependientes(){
+        $accion = \filter_input(INPUT_POST, 'accion');
+        $id = \filter_input(INPUT_POST, 'id');
+        $tipo_dependiente = \filter_input(INPUT_POST, 'tipo_dependiente');
+        $docidentidad = \trim(\filter_input(INPUT_POST, 'docidentidad'));
+        $f_nacimiento = \filter_input(INPUT_POST, 'f_nacimiento');
+        $nombres = $this->mayusculas(\filter_input(INPUT_POST, 'nombres'));
+        $apellido_paterno = $this->mayusculas(\filter_input(INPUT_POST, 'apellido_paterno'));
+        $apellido_materno = $this->mayusculas(\filter_input(INPUT_POST, 'apellido_materno'));
+        $genero = $this->mayusculas(\filter_input(INPUT_POST, 'genero'));
+        $grado_academico = \filter_input(INPUT_POST, 'grado_academico');
+        $estado = \filter_input(INPUT_POST, 'estado');
+        if ($accion == 'agregar') {
+            $hv0 = new dependientes();
+            $hv0->id = $id;
+            $hv0->codagente = $this->agente->codagente;
+            $hv0->coddependiente = $tipo_dependiente;
+            $hv0->nombres = $nombres;
+            $hv0->apellido_paterno = $apellido_paterno;
+            $hv0->apellido_materno = $apellido_materno;
+            $hv0->docidentidad = $docidentidad;            
+            $hv0->f_nacimiento = $f_nacimiento;            
+            $hv0->genero = $genero;
+            $hv0->grado_academico = $grado_academico;
+            $hv0->estado = ($estado)?'TRUE':'FALSE';
+            $hv0->usuario_creacion = $this->user->nick;
+            $hv0->fecha_creacion = \Date('Y-m-d H:i:s');
+            if ($hv0->save()) {
+                $this->new_message('Dependiente agregado al empleado correctamente!');
+            } else {
+                $this->new_error_msg('Ocurrió un error con la información suministrada, por favor confirmar revisar los datos e intente de nuevo.');
+            }
+        } elseif ($accion == 'eliminar' and ($this->allow_delete)) {
+            $dependiente = $this->dependientes->get($id);
+            if ($dependiente->delete()) {
+                $this->new_message('Dependiente eliminado del empleado correctamente!');
+            } else {
+                $this->new_error_msg('Ocurrió un error intentando eliminar la informacion, por favor confirmar revisar los datos e intente de nuevo.');
+            }
+        }elseif($accion == 'eliminar' and !$this->allow_delete){
+            $this->new_error_msg('No tiene permisos para eliminar dependientes!.');
         }
     }
 

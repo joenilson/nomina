@@ -17,8 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require_model('agente.php');
+require_model('ausencias.php');
 require_model('cargos.php');
 require_model('contratos.php');
+require_model('dependientes.php');
 require_model('hoja_vida.php');
 require_model('categoriaempleado.php');
 require_model('estadocivil.php');
@@ -95,7 +97,9 @@ class configuracion_nomina extends fs_controller{
         $this->tipopago = new tipopago();
         
         //Tablas de datos para los empleados
+        new ausencias();
         new contratos();
+        new dependientes();
         new hoja_vida();
         
         $this->fsvar = new fs_var();

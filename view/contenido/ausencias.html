@@ -15,5 +15,162 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-Ausencias del empleado {$fsc->agente->nombreap}
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            <a class="btn btn-sm btn-primary" href="{$fsc->url()}&type=ausencias" title="Recargar la página">
+                <span class="glyphicon glyphicon-refresh"></span>
+            </a>
+            Ausencias del empleado {$fsc->agente->nombreap}
+        </h3>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="col-sm-4">
+                    <button class="btn btn-sm btn-primary" type="button" name="accion" value="agregar" data-toggle="modal" data-target="#agregarAusencia">
+                        <span class="fa fa-plus"></span>&nbsp;Agregar Ausencia
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-responsive">
+                <thead>
+                    <tr>
+                        <th class="col-sm-2">Contrato</th>
+                        <th class="col-sm-3">Tipo</th>
+                        <th class="col-sm-1">Inicio</th>
+                        <th class="col-sm-1">Fin</th>
+                        <th class="col-sm-2">Duracion</th>
+                        <th class="col-sm-1 text-center">Justificada</th>
+                        <th class="col-sm-1 text-center">Estado</th>
+                        <th class="col-sm-2"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                {loop="$fsc->agente->ausencias"}
+                <form action="{$fsc->url()}&type=ausencias" method="POST" class="form" role="form">
+                        <tr>
+                            <td>
+                            {if="$value->documento"}
+                            <button class="btn btn-sm btn-default" type="button" onclick="visualizarDocumento('{$fsc->dir_documentos_empleados}/{$value->documento}');">
+                                <span class="fa fa-file-pdf-o"></span>&nbsp;Ver Justificacion
+                            </button>
+                            {else}
+                            No hay Justificación
+                            {/if}
+                            <input type="hidden" name="id" value="{$value->id}">
+                            <input type="hidden" name="codagente" value="{$value->codagente}">
+                            </td>
+                            <td>
+                            {$value->desc_tipoausencia}
+                            </td>
+                            <td>
+                            {$value->f_desde}
+                            </td>
+                            <td>
+                            {$value->f_hasta}
+                            </td>
+                            <td>
+                            {$value->duracion_ausencia()}
+                            </td>
+                            <td class="text-center">
+                                {if="$value->justificada"}
+                                <span class="btn btn-sm btn-primary">Si</span>
+                                {else}
+                                <span class="btn btn-sm btn-danger">No</span>
+                                {/if}
+                            </td>
+                            <td class="text-center">
+                                {if="$value->estado"}
+                                <span class="btn btn-sm btn-primary">Activo</span>
+                                {else}
+                                <span class="btn btn-sm btn-danger">No Activo</span>
+                                {/if}
+                            </td>
+                            <td>
+                            {if="$fsc->allow_delete"}
+                            <button type="submit" class="btn btn-sm btn-danger" name="accion" value="eliminar" onclick="return confirm('Esta seguro que quiere eliminar este documento?');">
+                                <span class="fa fa-trash"></span>
+                            </button>
+                            {/if}
+                            </td>
+                        </tr>
+                    </form>
+                    {/loop}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="agregarAusencia" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Agregar Ausencia</h4>
+            </div>
+            <form class="form form-horizontal" enctype="multipart/form-data" role="form" action="{$fsc->url()}&type=ausencias" method="POST">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="control-label col-sm-4" for="tipo_ausencia">Tipo de Ausencia</label>
+                        <div class="col-sm-6">
+                        <select name="tipo_ausencia" id="tipo_ausencia" class="form-control input-sm" required>
+                            <option value="">Elige un Tipo</option>
+                            {loop="$fsc->tipoausencias->all()"}
+                            <option value="{$value->codausencia}">{$value->descripcion}</option>
+                            {/loop}
+                        </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4" for="a_rango">Duracion Ausencia</label>
+                        <div class="col-sm-7 rango">
+                            <input type="text" id="a_rango" class="form-control input-sm">
+                            <span class="fa fa-calendar"></span>
+                            <input type="hidden" name="f_desde" id="a_desde" value="">
+                            <input type="hidden" name="f_hasta" id="a_hasta" value="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4" for="documento">Justificacion Ausencia</label>
+                        <div class="col-sm-8">
+                            <label class="btn btn-sm btn-default btn-file">
+                                <span>Elegir&hellip;</span> <input type="file" accept="application/pdf" style="display: none;" name="documento" class="form-control input-sm" id="documento" onchange="$(this).prev('span').text($(this).val()!=''?$(this).val():'Elegir &hellip;')">
+                            </label>
+                            <span class="help-block">Suba la justificacion en formato <b>PDF</b> <i>(opcional)</i></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4" for="estado_contrato">Justificada</label>
+                        <div class="col-sm-6">
+                            <input id="justificada_ausencia" type="checkbox" name="justificada" data-label-text="Justificada" data-off-text="No" checked data-on-text="Si">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4" for="estado_contrato">Estado</label>
+                        <div class="col-sm-6">
+                            <input id="estado_ausencia" type="checkbox" name="estado" data-label-text="Activo" data-off-text="No" checked data-on-text="Si">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><span class="fa fa-remove"></span>&nbsp;Cerrar</button>
+                    <button type="submit" class="btn btn-sm btn-primary" name="accion" value="agregar" onclick="return confirm('Esta seguro que todos los datos están correctos?');"><span class="fa fa-save"></span>&nbsp;Agregar</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+{include="contenido/visualizador"}
+<script type="text/javascript">
+    var locale_user = 'es';
+    
+    $(document).ready(function () {
+        $('#justificada_ausencia').bootstrapSwitch();
+        $('#estado_ausencia').bootstrapSwitch();
+        rango_fechas('a_rango', 'a_desde', 'a_hasta', 'YYYY-MM-DD hh:mm A', false, true);       
+    });
+</script>
 {include="footer"}
