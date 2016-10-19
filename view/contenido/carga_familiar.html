@@ -15,23 +15,6 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-{include="header2"}
-<!--
-Copyright (C) 2016 Joe Nilson <joenilson at gmail.com>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
--->
 <div class="panel panel-primary">
     <div class="panel-heading">
         <h3 class="panel-title">
@@ -55,42 +38,98 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <table class="table table-responsive">
                 <thead>
                     <tr>
-                        <th class="col-sm-2">Contrato</th>
-                        <th class="col-sm-3">Tipo</th>
-                        <th class="col-sm-1">Fecha Inicio</th>
-                        <th class="col-sm-1">Fecha Fin</th>
-                        <th class="col-sm-2">Duracion</th>
-                        <th class="col-sm-1 text-center">Estado</th>
-                        <th class="col-sm-2"></th>
+                        <th class="col-sm-3">Nombre </th>
+                        <th class="col-sm-2">Fec Nac</th>
+                        <th class="col-sm-1">Genero</th>
+                        <th class="col-sm-1">Doc Identidad</th>
+                        <th class="col-sm-2">Relación</th>
+                        <th class="col-sm-2">Grado Academ.</th>                        
+                        <th class="col-sm-1"></th>
                     </tr>
                 </thead>
                 <tbody>
+                    <form action="{$fsc->url()}&type=carga_familiar" method="POST" class="form" role="form">
+                        <tr>
+                            <td>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <input type="text" name="nombres" required class="form-control input-sm" placeholder="Nombres">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <input type="text" name="apellido_paterno" required class="form-control input-sm" placeholder="Apellido Paterno">
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <input type="text" name="apellido_materno" class="form-control input-sm" placeholder="Apellido Materno">
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="row"> 
+                                    <div class="col-sm-12 rango">
+                                        <input type="text" id="f_nacimiento" required name="f_nacimiento" class="form-control input-sm">
+                                        <span class="fa fa-calendar"></span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <label><input class="radio-inline radio-control" type="radio" name="genero" value="M"/> Masculino</label>
+                                <label><input class="radio-inline radio-control" type="radio" name="genero" value="F"/> Femenino</label>
+                            </td>
+                            <td><input type="text" name="doc_identidad" class="form-control input-sm"></td>                            
+                            <td>
+                                <select class="form-control input-sm" required name="tipo_dependiente">
+                                    <option value="">--------</option>
+                                    {loop="$fsc->tipodependientes->all()"}
+                                    <option value="{$value->coddependiente}">{$value->descripcion}</option>
+                                    {/loop}
+                                </select>
+                            </td>                            
+                            <td>
+                                <select class="form-control input-sm" name="grado_academico">
+                                    <option value="">--------</option>
+                                    {loop="$fsc->formacion->all()"}
+                                    <option value="{$value->codformacion}">{$value->nombre}</option>
+                                    {/loop}
+                                </select>
+                            </td>
+                            <td>
+                                <button type="submit" name="accion" value="agregar" class="btn btn-sm btn-primary"  data-toggle="tooltip" data-placement="top" title="Agregar Dependiente" onclick="return confirm('Estan los datos correctos?')">
+                                    <span class="fa fa-user-plus"></span>
+                                </button>
+                            </td>
+                        </tr>
+                    </form>
                     {loop="$fsc->agente->dependientes"}
-                <form action="{$fsc->url()}&type=contratos" method="POST" class="form" role="form">
+                    <form action="{$fsc->url()}&type=carga_familiar" method="POST" class="form" role="form">
                         <tr>
                             <td>
                             <input type="hidden" name="id" value="{$value->id}">
                             <input type="hidden" name="codagente" value="{$value->codagente}">
+                            {$value->nombreap()}
                             </td>
                             <td>
-                            {$value->desc_tipocontrato}
+                            {$value->f_nacimiento}
                             </td>
                             <td>
-                            {$value->fecha_inicio}
+                            {$value->genero}
                             </td>
                             <td>
-                            {$value->fecha_fin}
+                            {$value->docidentidad}
                             </td>
                             <td>
-                            {$value->duracion_contrato()}
+                            {$value->desc_tipodependiente}
                             </td>
-                            <td class="text-center">
-                                <span class="fa fa-2x {if="$value->estado"}fa-toggle-on{else}fa-toggle-off{/if}"></span>
+                            <td>
+                            {$value->desc_grado_academico}
                             </td>
                             <td>
                             {if="$fsc->allow_delete"}
-                            <button type="submit" class="btn btn-sm btn-danger" name="accion" value="eliminar" onclick="return confirm('Esta seguro que quiere eliminar este documento?');">
-                                <span class="fa fa-trash"></span>
+                            <button type="submit" class="btn btn-sm btn-danger" name="accion" value="eliminar" onclick="return confirm('Esta seguro que quiere eliminar este dependiente?');">
+                                <span class="fa fa-user-times"></span>
                             </button>
                             {/if}
                             </td>
@@ -102,66 +141,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </div>
     </div>
 </div>
-<div class="modal fade" id="agregarCargaFamiliar" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">Agregar Dependiente</h4>
-            </div>
-            <form class="form form-horizontal" enctype="multipart/form-data" role="form" action="{$fsc->url()}&type=carga_familiar" method="POST">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label class="control-label col-sm-4" for="tipo_contrato">Tipo de Contrato</label>
-                        <div class="col-sm-6">
-                        <select name="tipo_contrato" id="tipo_contrato" class="form-control input-sm" required>
-                            <option value="">Elige un Tipo</option>
-                            {loop="$fsc->tipoempleado->all()"}
-                            <option value="{$value->codtipo}">{$value->descripcion}</option>
-                            {/loop}
-                        </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-sm-4" for="c_rango">Duracion Contrato</label>
-                        <div class="col-sm-6 rango">
-                            <input type="text" id="c_rango" class="form-control input-sm">
-                            <span class="fa fa-calendar"></span>
-                            <input type="hidden" name="f_desde" id="c_desde" value="">
-                            <input type="hidden" name="f_hasta" id="c_hasta" value="">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-sm-4" for="documento">Contrato</label>
-                        <div class="col-sm-8">
-                            <label class="btn btn-sm btn-default btn-file">
-                                <span>Elegir&hellip;</span> <input type="file" required accept="application/pdf" style="display: none;" name="documento" class="form-control input-sm" id="documento" onchange="$(this).prev('span').text($(this).val()!=''?$(this).val():'Elegir &hellip;')">
-                            </label>
-                            <span class="help-block">Suba el documento en formato <b>PDF</b></span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-sm-4" for="estado_contrato">Estado</label>
-                        <div class="col-sm-6">
-                            <input id="estado_contrato" type="checkbox" name="estado" data-label-text="Activo" data-off-text="No" checked data-on-text="Si">
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><span class="fa fa-remove"></span>&nbsp;Cerrar</button>
-                    <button type="submit" class="btn btn-sm btn-primary" name="accion" value="agregar" onclick="return confirm('Esta seguro que todos los datos están correctos?');"><span class="fa fa-save"></span>&nbsp;Agregar</button>
-                </div>
-            </form>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-{include="contenido/visualizador"}
 <script type="text/javascript">
-    //var locale_user = 'es';
-    //rango_fechas('c_rango', 'c_desde', 'c_hasta', 'YYYY-MM-DD', false, false);
-    $(document).ready(function () {
-        $('#estado_contrato').bootstrapSwitch();
-        $('input[name=\"estado\"]').bootstrapSwitch();
+    var locale_user = 'es';
+    $(document).ready(function() {
+        /*
+         * Llamamos a la libreria daterangepicker para que nos genere el calendario y le indicamos que no cree el timer
+         */
+        fecha('f_nacimiento', 'YYYY-MM-DD', false);
     });
 </script>
 {include="footer"}

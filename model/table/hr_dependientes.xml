@@ -58,7 +58,7 @@
     </columna>
     <columna>
         <nombre>grado_academico</nombre>
-        <tipo>character varying(14)</tipo>
+        <tipo>character varying(6)</tipo>
         <nulo>YES</nulo>
     </columna>
     <columna>

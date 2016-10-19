@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require_model('tipodependientes.php');
+require_model('formacion.php');
 /**
  * Description of dependientes
  *
@@ -60,7 +61,7 @@ class dependientes extends fs_model{
      */
     public $genero;
     /*
-     * @type varchar(14)
+     * @type varchar(6)
      */
     public $grado_academico;
     /*
@@ -85,6 +86,7 @@ class dependientes extends fs_model{
     public $fecha_modificacion;
 
     public $tipodependientes;
+    public $formacion;
     
     public function __construct($t = FALSE) {
         parent::__construct('hr_dependientes');
@@ -98,7 +100,7 @@ class dependientes extends fs_model{
             $this->docidentidad = $t['docidentidad'];
             $this->f_nacimiento = $t['f_nacimiento'];
             $this->genero = $t['genero'];
-            $this->grado_academico = $this->str2bool($t['grado_academico']);
+            $this->grado_academico = $t['grado_academico'];
             $this->estado = $this->str2bool($t['estado']);
             $this->usuario_creacion = $t['usuario_creacion'];
             $this->usuario_modificacion = $t['usuario_modificacion'];
@@ -123,6 +125,7 @@ class dependientes extends fs_model{
         }
         
         $this->tipodependientes = new tipodependientes();
+        $this->formacion = new formacion();
     }
     
     protected function install() {
@@ -131,6 +134,7 @@ class dependientes extends fs_model{
     
     protected function info_adicional($val){
         $val->desc_tipodependiente = $this->tipodependientes->get($val->coddependiente)->descripcion;
+        $val->desc_grado_academico = $this->formacion->get($val->grado_academico)->nombre;
         return $val;
     }
     

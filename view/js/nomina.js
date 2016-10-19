@@ -149,6 +149,16 @@ function visualizarDocumento(documento){
           .appendTo('#modal_body_mostrar_documento');
 }
 
+/**
+ * Funcion para generar el daterangepicker en modo rango de fechas
+ * @param {string} f_rango es el componente donde se mostrará el calendario
+ * @param {string} f_desde es el id del input donde grabaremos la fecha de inicio
+ * @param {string} f_hasta es el id del input donde grabaremos la fecha de fin
+ * @param {string} formato es el formato en que guardaremos y mostraremos la fecha
+ * @param {boolean} rangos es un campo para saber si mostramos o no el selector de rangos predefinidos
+ * @param {boolean} tiempos es un campo booleano para saber si mostramos el selector de tiempo hora, minuto
+ * @returns {empty} devuelve el selector con el rango de fechas
+ */
 function rango_fechas(f_rango, f_desde, f_hasta, formato, rangos, tiempos){
     moment().format(formato);
     if(typeof($('#'+f_rango)) !== 'undefined'){
@@ -195,6 +205,35 @@ function rango_fechas(f_rango, f_desde, f_hasta, formato, rangos, tiempos){
         }else{
             $('#'+f_hasta).val($('#'+f_rango).data('daterangepicker').endDate.format(formato));
         }
+    }
+}
+
+/*
+ * Funcion para generar el daterangepicker en modo single
+ * @param id_field es el id donde llamaremos al calendario
+ * @param formato es el formato en que necesitamos la fecha
+ * @param tiempos es un cambo boolean si necesitamos o no la parte de tiempo hora, minuto
+ */
+function fecha(id_field, formato, tiempos){
+    moment().format(formato);
+    if(typeof($('#'+id_field)) !== 'undefined'){
+        $('#'+id_field).daterangepicker({
+            singleDatePicker: true,
+            showDropdowns: true,
+            timePicker: tiempos,
+            timePickerIncrement: (tiempos)?5:0,
+            locale: {
+                format: formato,
+                separator: " - ",
+                applyLabel: "Tomar",
+                cancelLabel: "Cancelar",
+                fromLabel: "Desde",
+                toLabel: "Hasta",
+                customRangeLabel: "Manual"
+            },
+            opens: "left",
+            startDate: moment()
+        });
     }
 }
 

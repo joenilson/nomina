@@ -27,6 +27,7 @@ require_model('dependientes.php');
 require_model('bancos.php');
 require_model('estadocivil.php');
 require_model('seguridadsocial.php');
+require_model('tipodependientes.php');
 require_model('tipoempleado.php');
 require_model('tipoausencias.php');
 require_model('categoriaempleado.php');
@@ -50,6 +51,7 @@ class admin_agente extends fs_controller {
     public $estadocivil;
     public $formacion;
     public $tipoempleado;
+    public $tipodependientes;
     public $tipoausencias;
     public $categoriaempleado;
     public $sindicalizacion;
@@ -104,6 +106,7 @@ class admin_agente extends fs_controller {
         $this->sistemapension = new sistemapension();
         $this->estadocivil = new estadocivil();
         $this->tipoausencias = new tipoausencias();
+        $this->tipodependientes = new tipodependientes();
         $this->agente = FALSE;
         if (isset($_GET['cod'])) {
             $agente = new agente();
@@ -133,7 +136,16 @@ class admin_agente extends fs_controller {
                     $this->agente->ausencias = $this->ausencias->all_agente($this->agente->codagente);
                     $this->total_resultados = count($this->agente->ausencias);
                     $this->template = 'contenido/ausencias';
-                    break;                
+                    break;
+                case "carga_familiar":
+                    $this->dependientes = new dependientes();
+                    if (isset($_REQUEST['accion'])) {
+                        $this->tratar_dependientes();
+                    }
+                    $this->agente->dependientes = $this->dependientes->all_agente($this->agente->codagente);
+                    $this->total_resultados = count($this->agente->dependientes);
+                    $this->template = 'contenido/carga_familiar';
+                    break;                    
                 case "contratos":
                     $this->contratos = new contratos();
                     if (isset($_REQUEST['mostrar'])) {
@@ -147,15 +159,6 @@ class admin_agente extends fs_controller {
                     break;
                 case "control_horas":
                     $this->template = 'contenido/control_horas';
-                    break;
-                case "carga_familiar":
-                    $this->dependientes = new dependientes();
-                    if (isset($_REQUEST['accion'])) {
-                        $this->tratar_dependientes();
-                    }
-                    $this->agente->dependientes = $this->dependientes->all_agente($this->agente->codagente);
-                    $this->total_resultados = count($this->agente->dependientes);
-                    $this->template = 'contenido/carga_familiar';
                     break;
                 case "pagos_incentivos":
                     $this->template = 'contenido/pagos_incentivos';
@@ -340,7 +343,7 @@ class admin_agente extends fs_controller {
         $accion = \filter_input(INPUT_POST, 'accion');
         $id = \filter_input(INPUT_POST, 'id');
         $tipo_dependiente = \filter_input(INPUT_POST, 'tipo_dependiente');
-        $docidentidad = \trim(\filter_input(INPUT_POST, 'docidentidad'));
+        $docidentidad = \trim(\filter_input(INPUT_POST, 'doc_identidad'));
         $f_nacimiento = \filter_input(INPUT_POST, 'f_nacimiento');
         $nombres = $this->mayusculas(\filter_input(INPUT_POST, 'nombres'));
         $apellido_paterno = $this->mayusculas(\filter_input(INPUT_POST, 'apellido_paterno'));
