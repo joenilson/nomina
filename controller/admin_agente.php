@@ -36,6 +36,7 @@ require_model('sistemapension.php');
 require_model('formacion.php');
 require_model('organizacion.php');
 require_model('hoja_vida.php');
+require_model('movimientos_empleados.php');
 require_once 'helper_nomina.php';
 require_once 'plugins/nomina/extras/verot/class.upload.php';
 
@@ -59,6 +60,7 @@ class admin_agente extends fs_controller {
     public $seguridadsocial;
     public $sistemapension;
     public $hoja_vida;
+    public $movimientos_empleados;
     public $allow_delete;
     public $foto_empleado;
     public $noimagen = "plugins/nomina/view/imagenes/no_foto.jpg";
@@ -125,9 +127,6 @@ class admin_agente extends fs_controller {
                     $this->agente = new agente();
                     $this->template = 'contenido/nuevo_agente';
                     break;
-                case "movimientos":
-                    $this->template = 'contenido/movimientos';
-                    break;
                 case "ausencias":
                     $this->ausencias = new ausencias();
                     if (isset($_REQUEST['accion'])) {
@@ -173,6 +172,15 @@ class admin_agente extends fs_controller {
                     $this->agente->hoja_vida = $this->hoja_vida->all_agente($this->agente->codagente);
                     $this->total_resultados = count($this->agente->hoja_vida);
                     $this->template = 'contenido/hoja_vida';
+                    break;
+                case "movimientos":
+                    $this->movimientos_empleados = new movimientos_empleados();
+                    if (isset($_REQUEST['accion'])) {
+                        $this->tratar_movimientos();
+                    }
+                    $this->agente->movimientos = $this->movimientos_empleados->all_agente($this->agente->codagente);
+                    $this->total_resultados = count($this->agente->movimientos);
+                    $this->template = 'contenido/movimientos';
                     break;
                 default:
                     break;
@@ -333,7 +341,7 @@ class admin_agente extends fs_controller {
                 $this->new_error_msg('Ocurrió un error intentando eliminar la informacion, por favor confirmar revisar los datos e intente de nuevo.');
             }
         }elseif($accion == 'agregar' AND !$this->upload_documento->uploaded){
-            $this->new_error_msg('No se agregó un documento valido para agregar, por favor intentelo nuevamente.');
+            $this->new_error_msg('No se adjuntó un documento valido para agregar, por favor intentelo nuevamente.');
         }elseif($accion == 'eliminar' and !$this->allow_delete){
             $this->new_error_msg('No tiene permisos para eliminar documentos!.');
         }
@@ -415,11 +423,55 @@ class admin_agente extends fs_controller {
                 $this->new_error_msg('Ocurrió un error intentando eliminar la informacion, por favor confirmar revisar los datos e intente de nuevo.');
             }
         }elseif($accion == 'agregar' AND !$this->upload_documento->uploaded){
-            $this->new_error_msg('No se agregó un documento valido para agregar, por favor intentelo nuevamente.');
+            $this->new_error_msg('No se adjuntó un documento valido para agregar, por favor intentelo nuevamente.');
         }elseif($accion == 'eliminar' and !$this->allow_delete){
             $this->new_error_msg('No tiene permisos para eliminar documentos!.');
         }
     }
+    
+    public function tratar_movimientos(){
+        $accion = \filter_input(INPUT_POST, 'accion');
+        $id = \filter_input(INPUT_POST, 'id');
+        $codmovimiento = \filter_input(INPUT_POST, 'codmovimiento');
+        $codautoriza = \filter_input(INPUT_POST, 'codautoriza');
+        $observaciones = trim(\filter_input(INPUT_POST, 'observaciones'));
+        $f_desde = \filter_input(INPUT_POST, 'f_desde');
+        $f_hasta = \filter_input(INPUT_POST, 'f_hasta');
+        $estado = \filter_input(INPUT_POST, 'estado');
+        $this->upload_documento = (isset($_FILES['documento']))?new Upload($_FILES['documento']):false;
+        if ($accion == 'agregar' AND $this->upload_documento->uploaded) {
+            $hv0 = new movimientos_empleados();
+            $hv0->id = $id;
+            $hv0->documento = $this->guardar_documento('movimiento_empleado');
+            $hv0->codmovimiento = $codmovimiento;
+            $hv0->codautoriza = $codautoriza;
+            $hv0->observaciones = $observaciones;
+            $hv0->f_desde = $f_desde;
+            $hv0->f_hasta = $f_hasta;
+            $hv0->codagente = $this->agente->codagente;
+            $hv0->estado = ($estado)?'TRUE':'FALSE';
+            $hv0->usuario_creacion = $this->user->nick;
+            $hv0->fecha_creacion = \Date('Y-m-d H:i:s');
+            if ($hv0->save()) {
+                $this->new_message('Movimiento agregado al empleado correctamente!');
+            } else {
+                $this->new_error_msg('Ocurrió un error con la información suministrada, por favor confirmar revisar los datos e intente de nuevo.');
+            }
+        } elseif ($accion == 'eliminar' and ( $this->allow_delete)) {
+            $movimiento = $this->movimientos_empleados->get($id);
+            $doc = $movimiento->documento;
+            if ($movimiento->delete()) {
+                unlink($this->dir_documentos_empleados.$doc);
+                $this->new_message('Movimiento eliminado del empleado correctamente!');
+            } else {
+                $this->new_error_msg('Ocurrió un error intentando eliminar la informacion, por favor confirmar revisar los datos e intente de nuevo.');
+            }
+        }elseif($accion == 'agregar' AND !$this->upload_documento->uploaded){
+            $this->new_error_msg('No se adjuntó un documento valido para agregar, por favor intentelo nuevamente.');
+        }elseif($accion == 'eliminar' and !$this->allow_delete){
+            $this->new_error_msg('No tiene permisos para eliminar documentos!.');
+        }
+    }    
 
     private function user_can_edit() {
         if (FS_DEMO) {
@@ -429,7 +481,7 @@ class admin_agente extends fs_controller {
         }
     }
 
-    //Con esta funcion guardamos los documentos dependiendo de donde vengan
+    //Con esta funcion guardamos los documentos dependiendo de donde vengan por cada modulo 
     public function guardar_documento($destino) {
         $nombre = \date('dmYhis').str_pad($this->agente->codagente, 6, 0, STR_PAD_LEFT) . "_" . $destino;
         // Grabar la imagen con un nuevo nombre y con un resize de 120px
@@ -494,7 +546,7 @@ class admin_agente extends fs_controller {
                 'page_from' => __CLASS__,
                 'page_to' => __CLASS__,
                 'type' => 'head',
-                'text' => '<script src="plugins/nomina/view/js/pace.min.js" type="text/javascript"></script>',
+                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/pace.min.js" type="text/javascript"></script>',
                 'params' => ''
             ),
             array(
@@ -502,7 +554,7 @@ class admin_agente extends fs_controller {
                 'page_from' => __CLASS__,
                 'page_to' => __CLASS__,
                 'type' => 'head',
-                'text' => '<link href="plugins/nomina/view/css/bootstrap-switch.min.css" rel="stylesheet" type="text/css"/>',
+                'text' => '<link href="'.FS_PATH.'plugins/nomina/view/css/bootstrap-switch.min.css" rel="stylesheet" type="text/css"/>',
                 'params' => ''
             ),
             array(
@@ -510,7 +562,7 @@ class admin_agente extends fs_controller {
                 'page_from' => __CLASS__,
                 'page_to' => __CLASS__,
                 'type' => 'head',
-                'text' => '<link href="plugins/nomina/view/css/daterangepicker.css" rel="stylesheet" type="text/css"/>',
+                'text' => '<link href="'.FS_PATH.'plugins/nomina/view/css/daterangepicker.css" rel="stylesheet" type="text/css"/>',
                 'params' => ''
             ),
             array(
@@ -518,7 +570,7 @@ class admin_agente extends fs_controller {
                 'page_from' => __CLASS__,
                 'page_to' => __CLASS__,
                 'type' => 'head',
-                'text' => '<script src="plugins/nomina/view/js/3/bootstrap-switch.min.js" type="text/javascript"></script>',
+                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/3/bootstrap-switch.min.js" type="text/javascript"></script>',
                 'params' => ''
             ),
             array(
@@ -526,7 +578,7 @@ class admin_agente extends fs_controller {
                 'page_from' => __CLASS__,
                 'page_to' => __CLASS__,
                 'type' => 'head',
-                'text' => '<script src="plugins/nomina/view/js/2/daterangepicker.js" type="text/javascript"></script>',
+                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/2/daterangepicker.js" type="text/javascript"></script>',
                 'params' => ''
             ),
             array(
@@ -534,7 +586,7 @@ class admin_agente extends fs_controller {
                 'page_from' => __CLASS__,
                 'page_to' => __CLASS__,
                 'type' => 'head',
-                'text' => '<script src="plugins/nomina/view/js/1/moment-with-locales.min.js" type="text/javascript"></script>',
+                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/1/moment-with-locales.min.js" type="text/javascript"></script>',
                 'params' => ''
             ),
             array(
@@ -542,7 +594,7 @@ class admin_agente extends fs_controller {
                 'page_from' => __CLASS__,
                 'page_to' => __CLASS__,
                 'type' => 'head',
-                'text' => '<script src="plugins/nomina/view/js/nomina.js?build=' . rand(1, 1000) . '" type="text/javascript"></script>',
+                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/nomina.js?build=' . rand(1, 1000) . '" type="text/javascript"></script>',
                 'params' => ''
             ),
             array(
@@ -550,7 +602,7 @@ class admin_agente extends fs_controller {
                 'page_from' => __CLASS__,
                 'page_to' => __CLASS__,
                 'type' => 'head',
-                'text' => '<link href="plugins/nomina/view/css/nomina.css?build=' . rand(1, 1000) . '" rel="stylesheet" type="text/css"/>',
+                'text' => '<link href="'.FS_PATH.'plugins/nomina/view/css/nomina.css?build=' . rand(1, 1000) . '" rel="stylesheet" type="text/css"/>',
                 'params' => ''
             )
         );

@@ -397,7 +397,7 @@ class importar_agentes extends fs_controller
                 'page_from' => __CLASS__,
                 'page_to' => 'importar_agentes',
                 'type' => 'head',
-                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="plugins/nomina/view/css/ui.jqgrid-bootstrap.css"/>',
+                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/ui.jqgrid-bootstrap.css"/>',
                 'params' => ''
             )
         );
