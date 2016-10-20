@@ -463,32 +463,52 @@ class configuracion_nomina extends fs_controller{
     }
     
     public function tratar_seguridadsocial(){
-        $ss0 = new seguridadsocial();
-        $ss0->codseguridadsocial = filter_input(INPUT_POST, 'codseguridadsocial');
-        $ss0->nombre = $this->mayusculas(filter_input(INPUT_POST, 'nombre'));
-        $ss0->nombre_corto = $this->mayusculas(filter_input(INPUT_POST, 'nombre_corto'));
-        $ss0->tipo = $this->mayusculas(filter_input(INPUT_POST, 'tipo'));
-        $ss0->estado = filter_input(INPUT_POST, 'estado');
-        $estado = $ss0->save();
-        if($estado){
-            $this->new_message("Datos guardados correctamente.");
-        }else{
-            $this->new_error_msg("La información con el Id ".$ss0->codseguridadsocial." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+        $accion = filter_input(INPUT_POST, 'accion');
+        if($accion == 'agregar'){
+            $ss0 = new seguridadsocial();
+            $ss0->codseguridadsocial = filter_input(INPUT_POST, 'codseguridadsocial');
+            $ss0->nombre = $this->mayusculas(filter_input(INPUT_POST, 'nombre'));
+            $ss0->nombre_corto = $this->mayusculas(filter_input(INPUT_POST, 'nombre_corto'));
+            $ss0->tipo = $this->mayusculas(filter_input(INPUT_POST, 'tipo'));
+            $ss0->estado = filter_input(INPUT_POST, 'estado');
+            $estado = $ss0->save();
+            if($estado){
+                $this->new_message("Datos guardados correctamente.");
+            }else{
+                $this->new_error_msg("La información con el Id ".$ss0->codseguridadsocial." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+            }
+        }elseif($accion=='eliminar'){
+            $segsoc = $this->seguridadsocial->get(\filter_input(INPUT_POST, 'codseguridadsocial'));
+            if($segsoc->delete()){
+                $this->new_message("Datos eliminados correctamente.");
+            }else{
+                $this->new_error_msg("La información no pudo ser eliminada, revise los datos e intente nuevamente");
+            }
         }
     }
     
     public function tratar_sistemapension(){
-        $ss0 = new sistemapension();
-        $ss0->codsistemapension = filter_input(INPUT_POST, 'codsistemapension');
-        $ss0->nombre = $this->mayusculas(filter_input(INPUT_POST, 'nombre'));
-        $ss0->nombre_corto = $this->mayusculas(filter_input(INPUT_POST, 'nombre_corto'));
-        $ss0->tipo = $this->mayusculas(filter_input(INPUT_POST, 'tipo'));
-        $ss0->estado = filter_input(INPUT_POST, 'estado');
-        $estado = $ss0->save();
-        if($estado){
-            $this->new_message("Datos guardados correctamente.");
-        }else{
-            $this->new_error_msg("La información con el Id ".$ss0->codsistemapension." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+        $accion = filter_input(INPUT_POST, 'accion');
+        if($accion == 'agregar'){
+            $ss0 = new sistemapension();
+            $ss0->codsistemapension = filter_input(INPUT_POST, 'codsistemapension');
+            $ss0->nombre = $this->mayusculas(filter_input(INPUT_POST, 'nombre'));
+            $ss0->nombre_corto = $this->mayusculas(filter_input(INPUT_POST, 'nombre_corto'));
+            $ss0->tipo = $this->mayusculas(filter_input(INPUT_POST, 'tipo'));
+            $ss0->estado = filter_input(INPUT_POST, 'estado');
+            $estado = $ss0->save();
+            if($estado){
+                $this->new_message("Datos guardados correctamente.");
+            }else{
+                $this->new_error_msg("La información con el Id ".$ss0->codsistemapension." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+            }
+        }elseif($accion=='eliminar'){
+            $sispen = $this->sistemapension->get(\filter_input(INPUT_POST, 'codsistemapension'));
+            if($sispen->delete()){
+                $this->new_message("Datos eliminados correctamente.");
+            }else{
+                $this->new_error_msg("La información no pudo ser eliminada, revise los datos e intente nuevamente");
+            }
         }
     }
     

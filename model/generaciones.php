@@ -127,7 +127,7 @@ class generaciones extends fs_model{
 
     public function update(){
         $sql = "UPDATE ".$this->table_name." SET ".
-            ", estado = ".$this->var2str($this->estado).
+            " estado = ".$this->var2str($this->estado).
             ", inicio_generacion = ".$this->intval($this->inicio_generacion).
             ", fin_generacion = ".$this->intval($this->fin_generacion).
             ", descripcion = ".$this->var2str($this->descripcion).
