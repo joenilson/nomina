@@ -157,7 +157,8 @@ class categoriaempleado extends fs_model{
     }
 
     public function delete(){
-        return false;
+        $sql = "DELETE FROM ".$this->table_name." WHERE codcategoria = ".$this->var2str($this->codcategoria).";";
+        return $this->db->exec($sql);
     }
 
     public function corregir(){

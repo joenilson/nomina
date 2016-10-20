@@ -166,7 +166,7 @@ class generaciones extends fs_model{
 
     public function all(){
         $lista = array();
-        $data = $this->db->select("SELECT * FROM ".$this->table_name.";");
+        $data = $this->db->select("SELECT * FROM ".$this->table_name." ORDER BY inicio_generacion;");
         if($data){
             foreach($data as $d){
                 $lista[] = new generaciones($d);
@@ -178,7 +178,8 @@ class generaciones extends fs_model{
     }
 
     public function delete(){
-        return false;
+        $sql = "DELETE FROM ".$this->table_name." WHERE codgeneracion = ".$this->var2str($this->codgeneracion).";";
+        return $this->db->exec($sql);
     }
     
     public function resumen_generaciones(){

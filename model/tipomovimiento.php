@@ -142,7 +142,7 @@ class tipomovimiento extends fs_model{
     }
 
     public function delete(){
-        $sql = "DELETE FROM ".$this->table_name." WHERE codmovimiento = ".$this->codmovimiento.";";
+        $sql = "DELETE FROM ".$this->table_name." WHERE codmovimiento = ".$this->var2str($this->codmovimiento).";";
         $data = $this->db->exec($sql);
         if($data){
             return true;

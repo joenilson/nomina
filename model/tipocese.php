@@ -142,7 +142,7 @@ class tipocese extends fs_model{
     }
 
     public function delete(){
-        $sql = "DELETE FROM ".$this->table_name." WHERE codtipocese = ".$this->codtipocese.";";
+        $sql = "DELETE FROM ".$this->table_name." WHERE codtipocese = ".$this->var2str($this->codtipocese).";";
         $data = $this->db->exec($sql);
         if($data){
             return true;

@@ -194,8 +194,21 @@ class organizacion extends fs_model{
         }
     }
     
+    public function en_uso(){
+        $where = ($this->tipo=='GERENCIA')?"codgerencia":"";
+        $where = ($this->tipo=='AREA')?"codarea":$where;
+        $where = ($this->tipo=='DEPARTAMENTO')?"coddepartamento":$where;
+        $sql = "SELECT count(*) as cantidad FROM agentes WHERE $where = ".$this->var2str($this->codorganizacion).";";
+        $data = $this->db->select($sql);
+        if($data){
+            return $data[0]['cantidad'];
+        }else{
+            return false;
+        }
+    }
+    
     public function get_estructura($padre){
-        $sql = "SELECT * FROM ".$this->table_name." WHERE estado = TRUE and padre = ".$this->var2str($padre)." ORDER BY descripcion";
+        $sql = "SELECT * FROM ".$this->table_name." WHERE padre = ".$this->var2str($padre)." ORDER BY descripcion";
         $data = $this->db->select($sql);
         $estructura = array();
         if($data){
@@ -207,7 +220,8 @@ class organizacion extends fs_model{
                 $valores->tipo = $linea->tipo;
                 $valores->estado = $linea->estado;
                 $valores->text = $linea->descripcion;
-                $valores->tags = array(ucfirst(strtolower($linea->tipo)));
+                $valores->en_uso = $linea->en_uso();
+                $valores->tags = array(ucfirst(strtolower($linea->tipo)),(!$linea->estado)?"Inactivo":"");
                 $estructura[] = $valores;
             }
             return $estructura;
@@ -294,7 +308,12 @@ class organizacion extends fs_model{
     }
 
     public function delete(){
-        return false;
+        $sql = "DELETE FROM ".$this->table_name." WHERE codorganizacion = ".$this->var2str($this->codorganizacion);
+        if($this->db->exec($sql)){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     public function corregir(){

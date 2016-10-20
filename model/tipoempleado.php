@@ -148,7 +148,7 @@ class tipoempleado extends fs_model{
     }
 
     public function delete(){
-        $sql = "DELETE FROM ".$this->table_name." WHERE codtipo = ".$this->codtipo.";";
+        $sql = "DELETE FROM ".$this->table_name." WHERE codtipo = ".$this->var2str($this->codtipo).";";
         $data = $this->db->exec($sql);
         if($data){
             return true;

@@ -157,7 +157,7 @@ class tipopago extends fs_model{
     }
 
     public function delete(){
-        $sql = "DELETE FROM ".$this->table_name." WHERE codpago = ".$this->codpago.";";
+        $sql = "DELETE FROM ".$this->table_name." WHERE codpago = ".$this->var2str($this->codpago).";";
         $data = $this->db->exec($sql);
         if($data){
             return true;

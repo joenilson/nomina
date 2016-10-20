@@ -178,8 +178,9 @@ class motivocese extends fs_model{
         }
     }
 
-    public function delete(){
-        return false;
+    public function delete() {
+        $sql = "DELETE FROM ".$this->table_name." WHERE codmotivocese = ".$this->var2str($this->codmotivocese).";";
+        return $this->db->exec($sql);
     }
 
     public function corregir(){
