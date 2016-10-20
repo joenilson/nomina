@@ -188,7 +188,7 @@ class importar_agentes extends fs_controller
                         $val = strtolower($val);
                     }
                     if(PHPExcel_Shared_Date::isDateTime($cell)) {
-                        $val = (is_null($val))?'':date('d-m-Y', PHPExcel_Shared_Date::ExcelToPHP($val));
+                        $val = (is_null($val) OR empty($val))?'':date('d-m-Y', PHPExcel_Shared_Date::ExcelToPHP($val));
                     }
                     //Verificamos si la sede existe
                     if($cabeceraRecibida[$col]=='sede' AND (!empty($val) OR $val !== null)){
