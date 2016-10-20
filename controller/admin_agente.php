@@ -63,7 +63,7 @@ class admin_agente extends fs_controller {
     public $movimientos_empleados;
     public $allow_delete;
     public $foto_empleado;
-    public $noimagen = "plugins/nomina/view/imagenes/no_foto.jpg";
+    public $noimagen;
     public $desde;
     public $hasta;
     public $rango;
@@ -85,14 +85,10 @@ class admin_agente extends fs_controller {
 
     protected function private_core() {
         $this->ppage = $this->page->get('admin_agentes');
-        $this->dir_empleados = FS_MYDOCS."documentos/nomina/".$this->empresa->id."/e/";
-        $this->dir_documentos_empleados = FS_MYDOCS."documentos/nomina/".$this->empresa->id."/d/";
-        
-        //$basepath = dirname(dirname(dirname(__DIR__)));
-        //$this->dir_nomina = FS_MYDOCS."documentos".DIRECTORY_SEPARATOR."nomina";
-        //$this->dir_empleados =$this->dir_nomina.DIRECTORY_SEPARATOR."empleados";
-        //$this->dir_documentos_empleados =$this->dir_nomina.DIRECTORY_SEPARATOR."documentos";
-        
+        $this->dir_empleados = FS_PATH.FS_MYDOCS."documentos/nomina/".$this->empresa->id."/e/";
+        $this->dir_documentos_empleados = FS_PATH.FS_MYDOCS."documentos/nomina/".$this->empresa->id."/d/";
+        $this->noimagen = FS_PATH."plugins/nomina/view/imagenes/no_foto.jpg";
+       
         /// ¿El usuario tiene permiso para eliminar en esta página?
         $this->allow_delete = $this->user->allow_delete_on(__CLASS__);
         $this->share_extensions();

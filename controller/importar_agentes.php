@@ -170,7 +170,6 @@ class importar_agentes extends fs_controller
                     $error = false;
                     //Verificamos si tiene dnicif
                     if($cabeceraRecibida[$col]=='dnicif' AND (!empty($val) AND $val != null)){
-                        //echo $assoc_header[$contenido];
                         $val = ($agentes->get_by_dnicif($val))?null:$val;
                         $linea['estado']=($val)?$linea['estado']:'Ya existe';
                     }
@@ -260,7 +259,7 @@ class importar_agentes extends fs_controller
 
         if($_POST['estado_civil'] != ''){
             foreach($this->estadocivil->all() as $key=>$val){
-                if(strtoupper($val->descripcion) == strtoupper($_POST['estado_civil'])){
+                if(strtoupper($val->descripcion) == strtoupper(trim($_POST['estado_civil']))){
                     $estado_civil = $key;
                 }
             }

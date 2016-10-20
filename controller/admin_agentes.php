@@ -49,7 +49,7 @@ class admin_agentes extends fs_controller {
     public $tipoempleado;
     public $categoriaempleado;
     public $foto_empleado;
-    public $noimagen = "plugins/nomina/view/imagenes/no_foto.jpg";
+    public $noimagen;
     private $upload_photo;
     private $dir_empleados;
 
@@ -59,7 +59,8 @@ class admin_agentes extends fs_controller {
 
     protected function private_core() {
         $this->allow_delete = $this->user->allow_delete_on(__CLASS__);
-        $this->dir_empleados = "tmp/" . FS_TMP_NAME . "/nomina/empleados/";
+        $this->dir_empleados = FS_PATH.FS_MYDOCS."documentos/nomina/".$this->empresa->id."/e/";
+        $this->noimagen = FS_PATH."plugins/nomina/view/imagenes/no_foto.jpg";
         $this->share_extensions();
         $this->agente = new agente();
         $this->almacen = new almacen();
