@@ -476,7 +476,7 @@ class agente extends fs_model
 
    public function get_foto(){
       if($this->foto){
-         return 'tmp/'.FS_TMP_NAME.'nomina/empleados/'.$this->foto;
+         return FS_PATH.FS_MYDOCS.'documentos/nomina/'.$this->idempresa.'/e/'.$this->foto;
       }else{
          return false;
       }

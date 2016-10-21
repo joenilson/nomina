@@ -15,5 +15,40 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-Mi Puesto
-{include="footer"}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3 col-md-2 pull-left">
+            <div class="info-card">
+                <img style="width: 100%;" src="{if="$fsc->agente->get_foto()"}{$fsc->agente->get_foto()}{else}{$fsc->noimagen}{/if}"/>
+                <div class="info-card-details animate">
+                    <div class="info-card-header">
+                        <h3>{$fsc->agente->nombreap}</h3>
+                        <h5>{$fsc->agente->cargo}</h5>
+                    </div>
+                    <div class="info-card-detail">
+                        <!-- Description -->
+                        <p>Información del empleado</p>
+                    </div>
+                </div>
+            </div>
+            <div class="list-group">
+                <div class="list-group-item active">
+                    <h5 class="list-group-item-heading">Solicitudes</h5>
+                    <p class="list-group-item-text">Vacaciones, Certificados, Ausencias</p>
+                </div>
+                <a href="#" class="list-group-item">
+                    <p class="list-group-item-text">Certificado de Trabajo</p>
+                </a>
+                <a href="#" class="list-group-item">
+                    <p class="list-group-item-text">Solicitud de Vacaciones</p>
+                </a>
+                <a href="#" class="list-group-item">
+                    <p class="list-group-item-text">Solicitud de Ausencia</p>
+                </a>
+            </div>
+        </div>
+        <div class="col-sm-9 col-md-10">
+
+        </div>
+    </div>
+    {include="footer"}

@@ -16,19 +16,27 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+require_model('agente.php');
+require_model('organizacion.php');
 /**
  * Description of nomina_empleado
  *
  * @author Joe Nilson <joenilson at gmail.com>
  */
 class nomina_empleado extends fs_controller{
-    
+    public $agente;
+    public $agentes;
+    public $organizacion;
+    public $resultados;
+    public $noimagen;
     public function __construct() {
         parent::__construct(__CLASS__, 'Mi Puesto', 'nomina', FALSE, FALSE, TRUE);
     }
     
     protected function private_core() {
+        $this->noimagen = FS_PATH."plugins/nomina/view/imagenes/no_foto.jpg";
+        $this->agentes = new agente();
+        $this->agente = $this->agentes->get($this->user->codagente);
         $this->share_extensions();
     }
     
