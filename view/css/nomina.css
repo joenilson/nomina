@@ -317,7 +317,7 @@ CSS Para el loeader
 .info-card .info-card-details .info-card-header h1,	
 .info-card .info-card-details .info-card-header h3 {
         color: rgb(62, 62, 62);
-        font-size: 22px;
+        font-size: 0.9em;
         font-weight: 900;
         text-transform: uppercase;
         margin: 0 !important;
@@ -325,7 +325,7 @@ CSS Para el loeader
 }
 .info-card .info-card-details .info-card-header h3 {
         color: rgb(142, 182, 52);
-        font-size: 15px;
+        font-size: 0.8em;
         font-weight: 400;
         margin-top: 5px;
 }
@@ -384,4 +384,34 @@ a.linkedin {
 }
 a.linkedin:hover {
         background-color: rgb(1, 116, 179) !important;
+}
+
+/*
+* Business Card Css
+* http://bootsnipp.com/snippets/P3zpb
+*/
+.business-card {
+  border: 1px solid #cccccc;
+  background: #f8f8f8;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+.profile-img {
+  height: 120px;
+  background: white;
+}
+.job {
+  color: #666666;
+  font-size: 17px;
+}
+.mail {
+  font-size: 16px;
+}
+
+/*
+* Chartist CSS para dashboard
+*/
+.ct-label {
+    color: #fff !important;
 }

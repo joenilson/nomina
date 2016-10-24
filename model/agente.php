@@ -778,4 +778,22 @@ class agente extends fs_model
             return $valor;
         }
     }
+    
+    public function estadistica_almacen(){
+        $sql = "select codalmacen, count(codagente) as total from ".$this->table_name." GROUP BY codalmacen;";
+        $data = $this->db->select($sql);
+        if($data){
+            $lista = array();
+            foreach($data as $d){
+                $valor = new stdClass();
+                $valor->codalmacen = $d['codalmacen'];
+                $valor->descripcion = $this->almacen->get($d['codalmacen'])->nombre;
+                $valor->total = $d['total'];
+                $lista[] = $valor;
+            }
+            return $lista;
+        } else{
+            return false;
+        }
+    }
 }

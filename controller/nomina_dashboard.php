@@ -62,8 +62,60 @@ class nomina_dashboard extends fs_controller{
         $this->sindicalizacion = new sindicalizacion();
         $this->organizacion = new organizacion();
         $this->generaciones = new generaciones();
-        
+        if(isset($_REQUEST['type'])){
+            $type_g = filter_input(INPUT_GET, 'type');
+            $type_p = filter_input(INPUT_POST, 'type');
+            $type = (!empty($type_g))?$type_g:$type_p;
+            switch ($type){
+                case 'grafico':
+                    $this->generar_grafico();
+                    break;
+                default:
+                    break;
+            }
+            
+        }
         $this->logo_empresa = FS_PATH.FS_MYDOCS."images/logo.png";
+    }
+    
+    public function generar_grafico(){
+        $backgroundColor = array(
+        'rgba(255, 99, 132, 0.2)',
+        'rgba(54, 162, 235, 0.2)',
+        'rgba(255, 206, 86, 0.2)',
+        'rgba(75, 192, 192, 0.2)',
+        'rgba(153, 102, 255, 0.2)',
+        'rgba(255, 159, 64, 0.2)');
+        $borderColor = array(
+        'rgba(255,99,132,1)',
+        'rgba(54, 162, 235, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)',
+        'rgba(153, 102, 255, 1)',
+        'rgba(255, 159, 64, 1)');
+        $subtype_g = filter_input(INPUT_GET, 'subtype');
+        $subtype_p = filter_input(INPUT_POST, 'subtype');
+        $subtype = (!empty($subtype_g))?$subtype_g:$subtype_p;
+        switch ($subtype){
+            case "resumen-empleados":
+                //@TO-DO
+                break;
+            case "resumen-generacion":
+                $res = $this->generaciones->resumen_generaciones();
+                $data = "";
+                $labels = "";
+                foreach($res as $values){
+                    $labels[] = $values->descripcion;
+                    $data[] = $values->cantidad;
+                }
+                $resultado =array('datasets'=>array('data'=>$data,'backgroundColor'=>array("#FF6384","#008CBA","#FF6384"),'hoverBackgroundColor'=>array("#FF6384",
+                            "#008CBA","#FF6384")),'labels'=>$labels,'backgroundColor'=>$backgroundColor,'borderColor'=>$borderColor);
+                break;
+        }
+        
+        $this->template = false;
+        header('Content-Type: application/json');
+        echo json_encode($resultado,JSON_NUMERIC_CHECK);
     }
     
     //Empleados por Año
@@ -117,6 +169,14 @@ class nomina_dashboard extends fs_controller{
                 'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/chartist.min.css"/>',
                 'params' => ''
             ),
+            array(
+                'name' => 'chartjs_css',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/4/Chart.min.js" type="text/javascript"></script>',
+                'params' => ''
+            )
         );
         
         foreach ($extensiones as $ext) {

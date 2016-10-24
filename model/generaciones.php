@@ -77,10 +77,10 @@ class generaciones extends fs_model{
     protected function install() {
         return "INSERT INTO ".$this->table_name.
                 " (codgeneracion, descripcion, inicio_generacion, fin_generacion, estado) VALUES".
-                " ('1','Baby Boomers',1943,1960, true),".
-                " ('2','X',1961,1981,true),".
-                " ('3','Y',1982,2000,true),".
-                " ('4','Z',2001,2016,true);";
+                " ('1','Generacion Baby Boomers',1943,1960, true),".
+                " ('2','Generacion X',1961,1981,true),".
+                " ('3','Generacion Y',1982,2000,true),".
+                " ('4','Generacion Z',2001,2016,true);";
     }
 
     public function url()
@@ -186,14 +186,23 @@ class generaciones extends fs_model{
         $agentes = $this->agentes->all();
         $lista = array();
         foreach($agentes as $a){
-            $dateEmpleado = new DateTime($a->f_nacimiento);
-            $datos = $this->get_by_year($dateEmpleado->format('Y'));
-            if(!isset($lista[$datos->codgeneracion])){
-                $lista[$datos->codgeneracion] = new stdClass();
-                $lista[$datos->codgeneracion]->cantidad = 0;
+            if(!empty($a->f_nacimiento)){
+                $dateEmpleado = new DateTime($a->f_nacimiento);
+                $datos = $this->get_by_year($dateEmpleado->format('Y'));
+                if(!isset($lista[$datos->codgeneracion])){
+                    $lista[$datos->codgeneracion] = new stdClass();
+                    $lista[$datos->codgeneracion]->cantidad = 0;
+                }
+                $lista[$datos->codgeneracion]->descripcion = $datos->descripcion;
+                $lista[$datos->codgeneracion]->cantidad += 1;
+            }else{
+                if(!isset($lista['ERROR'])){
+                    $lista['ERROR'] = new stdClass();
+                    $lista['ERROR']->cantidad = 0;
+                }
+                $lista['ERROR']->descripcion = "FEC NAC INCOMPLETA";
+                $lista['ERROR']->cantidad += 1;
             }
-            $lista[$datos->codgeneracion]->descripcion = $datos->descripcion;
-            $lista[$datos->codgeneracion]->cantidad += 1;
         }
         return $lista;
     }

@@ -34,87 +34,155 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             </div>
         </div>
         <div class="col-sm-6 col-xs-6 text-right">
-            <h2 style="margin-top: 0px;">
+            <h2>
                 <span class="fa fa-bar-chart"></span> Tablero de Control
             </h2>
-      </div>
+        </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-sm-4">
-        <div class="thumbnail">
-            <img src="{$fsc->logo_empresa}" alt="{$fsc->empresa->nombre}">    
-            <div class="caption">
-                <hr>
-                <div class="row">
-                    <div class="col-sm-5">
-                        <ul class="list-group">
-                            <li class="list-group-item active">
-                                <span class="badge">{$fsc->agentes->estadistica_sexo('F')->total}</span>
-                                <span class="fa fa-female fa-2x"></span> Mujeres
-                            </li>
-                            <li class="list-group-item">
-                                <span class="badge">{$fsc->agentes->estadistica_sexo('M')->total}</span>
-                                <span class="fa fa-male fa-2x"></span> Hombres
-                            </li>
-                        </ul>
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="thumbnail">
+                <img src="{$fsc->logo_empresa}" alt="{$fsc->empresa->nombre}">    
+                <div class="caption">
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <ul class="list-inline pull-left">
+                                <li class="list-group-item active">
+                                    <span class="badge">{$fsc->agentes->estadistica_sexo('F')->total}</span>
+                                    <span class="fa fa-female fa-2x"></span> Mujeres
+                                </li>
+                                <li class="list-group-item">
+                                    <span class="badge">{$fsc->agentes->estadistica_sexo('M')->total}</span>
+                                    <span class="fa fa-male fa-2x"></span> Hombres
+                                </li>
+                                <li class="list-group-item list-group-item-success">
+                                    <span class="badge">{function="count($fsc->agentes->all())"}</span>
+                                    <span class="fa fa-users fa-2x"></span> Total
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-9">
+                            <div>
+                                <canvas id="resumen_donut" height="240"></canvas>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="col-sm-3">
-        <ul class="list-group">
-            <li class="list-group-item active">
-                Estadistica por Gerencia
-            </li>
-            {loop="$fsc->organizacion->estadisticas_tipo('GERENCIA')"}
-            <li class="list-group-item">
-                <span class="badge">{$value->total}</span>
-                {$value->descripcion}
-            </li>
-            {/loop}
-        </ul>
-    </div>
-    <div class="col-sm-3">
-        <ul class="list-group">
-            <li class="list-group-item active">
-                Estadistica por Area
-            </li>
-            {loop="$fsc->organizacion->estadisticas_tipo('AREA')"}
-            <li class="list-group-item">
-                <span class="badge">{$value->total}</span>
-                {$value->descripcion}
-            </li>
-            {/loop}
-        </ul>
-    </div>
-    <div class="col-sm-3">
-        <ul class="list-group">
-            <li class="list-group-item active">
-                Estadistica por Departamento
-            </li>
-            {loop="$fsc->organizacion->estadisticas_tipo('DEPARTAMENTO')"}
-            <li class="list-group-item">
-                <span class="badge">{$value->total}</span>
-                {$value->descripcion}
-            </li>
-            {/loop}
-        </ul>
-    </div>
-    <div class="col-sm-3">
-        <ul class="list-group">
-            <li class="list-group-item active">
-                Estadistica por Generacion
-            </li>
-            {loop="$fsc->generaciones->resumen_generaciones()"}
-            <li class="list-group-item">
-                <span class="badge">{$value->cantidad}</span>
-                {$value->descripcion}
-            </li>
-            {/loop}
-        </ul>
+        <div class="col-sm-3">
+            <ul class="list-group">
+                <li class="list-group-item active">
+                    Estadistica por Generacion
+                </li>
+                <li class="list-group-item">
+                    <canvas id="resumen_generacion"></canvas>
+                </li>
+                {loop="$fsc->generaciones->resumen_generaciones()"}
+                <li class="list-group-item">
+                    <span class="badge">{$value->cantidad}</span>
+                    {$value->descripcion}
+                </li>
+                {/loop}
+            </ul>
+        </div>
+        <div class="col-sm-3">
+            {if="$fsc->organizacion->estadisticas_tipo('GERENCIA')"}
+            <ul class="list-group">
+                <li class="list-group-item active">
+                    Estadistica por Gerencia
+                </li>
+                {loop="$fsc->organizacion->estadisticas_tipo('GERENCIA')"}
+                <li class="list-group-item">
+                    <span class="badge">{$value->total}</span>
+                    {$value->descripcion}
+                </li>
+                {/loop}
+            </ul>
+            {/if}
+            {if="$fsc->organizacion->estadisticas_tipo('AREA')"}
+            <ul class="list-group">
+                <li class="list-group-item active">
+                    Estadistica por Area
+                </li>
+                {loop="$fsc->organizacion->estadisticas_tipo('AREA')"}
+                <li class="list-group-item">
+                    <span class="badge">{$value->total}</span>
+                    {$value->descripcion}
+                </li>
+                {/loop}
+            </ul>
+            {/if}
+            {if="$fsc->organizacion->estadisticas_tipo('DEPARTAMENTO')"}
+            <ul class="list-group">
+                <li class="list-group-item active">
+                    Estadistica por Departamento
+                </li>
+                {loop="$fsc->organizacion->estadisticas_tipo('DEPARTAMENTO')"}
+                <li class="list-group-item">
+                    <span class="badge">{$value->total}</span>
+                    {$value->descripcion}
+                </li>
+                {/loop}
+            </ul>
+            {/if}
+        </div>
+        <div class="col-sm-3">
+            <ul class="list-group">
+                <li class="list-group-item active">
+                    Estadistica por Almacén
+                </li>
+                {loop="$fsc->agentes->estadistica_almacen()"}
+                <li class="list-group-item">
+                    <span class="badge">{$value->total}</span>
+                    {$value->descripcion}
+                </li>
+                {/loop}
+            </ul>
+        </div>
     </div>
 </div>
-</div>
+<script>
+    var url_graficos = '{$fsc->url()}';
+    $(document).ready(function() {
+        new Chart($('#resumen_donut'), {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [{$fsc->agentes->estadistica_sexo('F')->total}, {$fsc->agentes->estadistica_sexo('M')->total}],
+                    backgroundColor: [
+                        "#FF6384",
+                        "#008CBA"
+                    ],
+                    hoverBackgroundColor: [
+                        "#FF6384",
+                        "#008CBA"
+                    ]
+                }],
+                labels: ['Mujeres', 'Hombres' ]
+            },
+            options: {
+            cutoutPercentage: 50,
+                animateRotate: true,
+                legend: {
+                    display: false
+                },
+                title: {
+                    display: true,
+                    text: 'Empleados'
+                }
+            }
+        });
+        var optionsResumenGeneracion = { legend: { display: false }, scales: {
+            xAxes: [{
+                display: false
+            }],
+            yAxes: [{
+                display: false
+            }]
+        } };
+        cargarGrafico('resumen-generacion','#resumen_generacion','bar',optionsResumenGeneracion);
+    });
+</script>
 {include="footer"}

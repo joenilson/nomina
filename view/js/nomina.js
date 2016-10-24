@@ -150,6 +150,48 @@ function visualizarDocumento(documento){
 }
 
 /**
+ * Funcion para traer los datos para los distintos gráficos
+ * @param {type} tipo
+ * @returns {response|String|Boolean}
+ */
+function cargarGrafico(tipo,componente,tipo_grafico,options){
+    /**
+     * Hacemos la llamada AJAX, en la página origen del grafico se debe colocar 
+     * el valor de la variable url_graficos
+     */
+    $.ajax({
+        type: 'GET',
+        url : url_graficos,
+        data : 'type=grafico&subtype='+tipo,
+        async: false,
+        success : function(response) {
+            if(response.length !== 0){
+                new Chart($(componente), {
+                    type: tipo_grafico,
+                    data: {
+                        datasets: [{
+                            data: response.datasets.data,
+                            backgroundColor: response.backgroundColor,
+                            borderColor: response.borderColor,
+                            borderWidth: 1
+                        }],
+                        labels: response.labels
+                    },
+                    options: options
+                    
+                });
+            }else{
+               return false;
+            }
+        },
+        error: function(response) {
+            alert(response);
+        }
+    });
+    //return listado;
+}
+
+/**
  * Funcion para generar el daterangepicker en modo rango de fechas
  * @param {string} f_rango es el componente donde se mostrará el calendario
  * @param {string} f_desde es el id del input donde grabaremos la fecha de inicio
@@ -236,6 +278,41 @@ function fecha(id_field, formato, tiempos){
         });
     }
 }
+
+Chart.pluginService.register({
+    beforeDraw: function(chart) {
+        var width = chart.chart.width,
+            height = chart.chart.height,
+            ctx = chart.chart.ctx,
+            type = chart.config.type;
+        ctx.restore();
+        var fontSize = (height / 114).toFixed(2);
+        ctx.font = fontSize + "em sans-serif";
+        ctx.textBaseline = "middle";
+        if (type == 'doughnut')
+        {
+            var total = 0;
+            $.each(chart.config.data.datasets[0].data, function(data){
+                total += parseInt(this, 10);
+            });
+
+            var oldFill = ctx.fillStyle;
+            var fontSize = ((height - chart.chartArea.top) / 100).toFixed(2);
+
+            ctx.restore();
+            ctx.font = fontSize + "em sans-serif";
+            ctx.textBaseline = "middle"
+
+            var text = total,
+                textX = Math.round((width - ctx.measureText(text).width) / 2),
+                textY = (height + chart.chartArea.top) / 2;
+
+            ctx.fillText(text, textX, textY);
+            ctx.fillStyle = oldFill;
+            ctx.save();
+        }
+    }
+});
 
 $(document).ready(function() {
     $('[data-toggle="tooltip"]').tooltip();

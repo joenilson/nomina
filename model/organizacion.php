@@ -344,6 +344,8 @@ class organizacion extends fs_model{
                 $lista[] = $valor;
             }
             return $lista;
+        }else{
+            return false;
         }
     }
 

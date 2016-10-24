@@ -22,8 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <img style="width: 100%;" src="{if="$fsc->agente->get_foto()"}{$fsc->agente->get_foto()}{else}{$fsc->noimagen}{/if}"/>
                 <div class="info-card-details animate">
                     <div class="info-card-header">
-                        <h3>{$fsc->agente->nombreap}</h3>
-                        <h5>{$fsc->agente->cargo}</h5>
+                        <h1>{$fsc->agente->nombreap}</h1>
+                        <h3>{$fsc->agente->cargo}</h3>
                     </div>
                     <div class="info-card-detail">
                         <!-- Description -->
@@ -48,7 +48,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             </div>
         </div>
         <div class="col-sm-9 col-md-10">
-
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation"><a href="#empresa" aria-controls="empresa" role="tab" data-toggle="tab"><span class="fa fa-building-o"></span>&nbsp;La Empresa</a></li>
+                <li role="presentation"><a href="#control_tiempo" aria-controls="control_tiempo" role="tab" data-toggle="tab"><span class="fa fa-clock-o"></span>&nbsp;Ingresos y Salidas</a></li>
+                <li role="presentation"><a href="#solicitudes" aria-controls="solicitudes" role="tab" data-toggle="tab"><span class="fa fa-file-text-o"></span>&nbsp;Mis Solicitudes</a></li>
+                <li role="presentation"><a href="#anuncios" aria-controls="anuncios" role="tab" data-toggle="tab"><span class="fa fa-bullhorn"></span>&nbsp;Anuncios</a></li>
+            </ul>
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane fade in active" id="empresa">...</div>
+                <div role="tabpanel" class="tab-pane fade" id="control_tiempo">...</div>
+                <div role="tabpanel" class="tab-pane fade" id="solicitudes">...</div>
+                <div role="tabpanel" class="tab-pane fade" id="anuncios">...</div>
+            </div>
         </div>
     </div>
     {include="footer"}
