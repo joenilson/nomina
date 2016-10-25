@@ -44,7 +44,7 @@ legend {
 }
 
 /*
-CSS Para el loeader
+CSS Para el loader
 */
 .pace {
   -webkit-pointer-events: none;
@@ -415,3 +415,132 @@ a.linkedin:hover {
 .ct-label {
     color: #fff !important;
 }
+
+/*
+* Para cambiar los colores del organigrama
+*/
+.orgchart {
+  background: #fff; 
+}
+
+.orgchart>.spinner {
+color: rgba(255, 255, 0, 0.75);
+}
+
+/* node styling */
+.orgchart .node {
+  width: 185px;
+}
+
+.orgchart .node .title {
+    background-color: #008CBA;
+    border-top-color: #333;
+    border-color: #000;
+    color: #fff;
+    font-size: 0.9em;
+    height: 30px;
+    white-space: normal;
+    line-height: normal;
+}
+
+.orgchart .node .content {
+    border-color: #008CBA;
+    border-top-color: #008CBA;
+    height: 100%;
+    font-size: 0.8em;
+}
+
+.orgchart .node>.spinner {
+color: rgba(184, 0, 54, 0.75);
+}
+
+.orgchart .node:hover {
+background-color: #999;
+}
+
+.orgchart .node.focused {
+background-color: #aaa;
+}
+
+.orgchart .node .edge {
+color: rgba(0, 0, 0, 0.6);
+}
+
+.orgchart .edge:hover {
+color: #000;
+}
+
+.orgchart tr.lines td.leftLine,
+.orgchart tr.lines td.topLine,
+.orgchart tr.lines td.rightLine {
+border-color: #cecece;
+border-radius: 0px;
+}
+
+.orgchart tr.lines .downLine {
+background-color: #cecece;
+}
+
+.orgchart .second-menu-icon {
+transition: opacity .5s;
+opacity: 0;
+right: -5px;
+top: -5px;
+z-index: 2;
+color: rgba(184, 0, 100, 0.8);
+font-size: 18px;
+position: absolute;
+}
+
+.orgchart .second-menu-icon:hover {
+color: #b80064;
+}
+
+.orgchart .node:hover .second-menu-icon {
+opacity: 1;
+}
+/*
+.orgchart .node .second-menu {
+display: none;
+position: absolute;
+top: 0;
+right: -70px;
+border-radius: 35px;
+box-shadow: 0 0 4px 1px #999;
+background-color: #fff;
+z-index: 1;
+}
+
+.orgchart .node .second-menu .avatar {
+width: 60px;
+height: 60px;
+border-radius: 30px;
+float: left;
+margin: 5px;
+}
+
+.orgchart~.mask .spinner {
+color: rgba(255, 255, 0, 0.75);
+}
+
+#integrate-map {
+position:absolute;
+left: 40px;
+width: calc(100% - 80px);
+z-index:100;
+}
+
+#integrate-map .orgchart {
+padding: 0px;
+min-height: 154px;
+
+}
+
+#integrate-map .orgchart>table:first-child {
+margin: 5px auto;
+}
+
+.orgchart.view-state .edge {
+display: none;
+}
+*/

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+require_model('categoriaempleado.php');
 /**
  * Description of cargos
  *
@@ -51,6 +51,8 @@ class cargos extends fs_model{
      * @var type $estado Boolean
      */
     public $estado;
+    
+    public $categoriaempleado;
     public function __construct($t = FALSE) {
         parent::__construct('hr_cargos');
         if($t){
@@ -66,6 +68,7 @@ class cargos extends fs_model{
             $this->codcategoria = NULL;
             $this->estado = FALSE;
         }
+        $this->categoriaempleado = new categoriaempleado();
     }
 
     protected function install() {
@@ -158,6 +161,27 @@ class cargos extends fs_model{
         }
     }
 
+    public function get_superiores(){
+        $cat = $this->categoriaempleado->get($this->codcategoria);
+        $categorias = $cat->superiores();
+        $arrayLista = array();
+        foreach($categorias as $c){
+            $arrayLista[]=$c->codcategoria;
+        }
+        $where = implode("','",$arrayLista);
+        $sql = "SELECT * FROM ".$this->table_name." WHERE codcategoria IN ('".$where."');";
+        $data = $this->db->select($sql);
+        if($data){
+            $lista = array();
+            foreach($data as $d){
+                $lista[] = new cargos($d);
+            }
+            return $lista;
+        }else{
+            return false;
+        }
+    }    
+    
     public function all(){
         $lista = array();
         $data = $this->db->select("SELECT * FROM ".$this->table_name." ORDER BY descripcion;");

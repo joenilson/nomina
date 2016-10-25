@@ -170,6 +170,19 @@ class categoriaempleado extends fs_model{
             $this->save();
         }
     }
+    
+    public function superiores(){
+        $sql = "SELECT * FROM ".$this->table_name." WHERE orden < ".$this->intval($this->orden).";";
+        $data = $this->db->select($sql);
+        if($data){
+            foreach($data as $d){
+                $lista[] = new categoriaempleado($d);
+            }
+            return $lista;
+        }else{
+            return false;
+        }
+    }
 
     public function get_maxorden(){
         $sql = "SELECT max(orden) as orden FROM ".$this->table_name.";";

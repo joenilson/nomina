@@ -87,7 +87,7 @@
                                 <div class="row">
                                     <div class="col-sm-2" align="center">
                                         <div class="form-group">
-                                            <img id="imagen-empleado" width="auto" height="120" src="{if="$fsc->agente->foto!=''"}{$fsc->agente->get_foto()}{else}{$fsc->noimagen}{/if}" alt="{$fsc->agente->nombreap}" class="img-circle">
+                                            <img id="imagen-empleado" width="auto" height="120" src="{$fsc->agente->get_foto()}" alt="{$fsc->agente->nombreap}" class="img-circle">
                                         </div>
                                         <br/>
                                         <div class="form-group" align="center">
@@ -262,7 +262,7 @@
                                                     </label>
                                                     <select name="codsupervisor" class="form-control input-sm">
                                                         <option value="">--------</option>
-                                                        {loop="$fsc->agente->all()"}
+                                                        {loop="$fsc->agente->get_supervisor()"}
                                                         <option value="{$value->codagente}" {if="$fsc->agente->codsupervisor==$value->codagente"}selected{/if}>{$value->nombreap}</option>
                                                         {/loop}
                                                     </select>

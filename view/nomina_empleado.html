@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <div class="row">
         <div class="col-sm-3 col-md-2 pull-left">
             <div class="info-card">
-                <img style="width: 100%;" src="{if="$fsc->agente->get_foto()"}{$fsc->agente->get_foto()}{else}{$fsc->noimagen}{/if}"/>
+                <img style="width: 100%;" src="{$fsc->agente->get_foto()}"/>
                 <div class="info-card-details animate">
                     <div class="info-card-header">
                         <h1>{$fsc->agente->nombreap}</h1>
@@ -62,4 +62,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             </div>
         </div>
     </div>
-    {include="footer"}
+</div>
+{include="footer"}

@@ -278,41 +278,42 @@ function fecha(id_field, formato, tiempos){
         });
     }
 }
-
-Chart.pluginService.register({
-    beforeDraw: function(chart) {
-        var width = chart.chart.width,
-            height = chart.chart.height,
-            ctx = chart.chart.ctx,
-            type = chart.config.type;
-        ctx.restore();
-        var fontSize = (height / 114).toFixed(2);
-        ctx.font = fontSize + "em sans-serif";
-        ctx.textBaseline = "middle";
-        if (type == 'doughnut')
-        {
-            var total = 0;
-            $.each(chart.config.data.datasets[0].data, function(data){
-                total += parseInt(this, 10);
-            });
-
-            var oldFill = ctx.fillStyle;
-            var fontSize = ((height - chart.chartArea.top) / 100).toFixed(2);
-
+if(typeof(Chart) !=='undefined'){
+    Chart.pluginService.register({
+        beforeDraw: function(chart) {
+            var width = chart.chart.width,
+                height = chart.chart.height,
+                ctx = chart.chart.ctx,
+                type = chart.config.type;
             ctx.restore();
+            var fontSize = (height / 114).toFixed(2);
             ctx.font = fontSize + "em sans-serif";
-            ctx.textBaseline = "middle"
+            ctx.textBaseline = "middle";
+            if (type == 'doughnut')
+            {
+                var total = 0;
+                $.each(chart.config.data.datasets[0].data, function(data){
+                    total += parseInt(this, 10);
+                });
 
-            var text = total,
-                textX = Math.round((width - ctx.measureText(text).width) / 2),
-                textY = (height + chart.chartArea.top) / 2;
+                var oldFill = ctx.fillStyle;
+                var fontSize = ((height - chart.chartArea.top) / 100).toFixed(2);
 
-            ctx.fillText(text, textX, textY);
-            ctx.fillStyle = oldFill;
-            ctx.save();
+                ctx.restore();
+                ctx.font = fontSize + "em sans-serif";
+                ctx.textBaseline = "middle"
+
+                var text = total,
+                    textX = Math.round((width - ctx.measureText(text).width) / 2),
+                    textY = (height + chart.chartArea.top) / 2;
+
+                ctx.fillText(text, textX, textY);
+                ctx.fillStyle = oldFill;
+                ctx.save();
+            }
         }
-    }
-});
+    });
+}
 
 $(document).ready(function() {
     $('[data-toggle="tooltip"]').tooltip();
