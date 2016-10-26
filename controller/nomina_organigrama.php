@@ -62,10 +62,10 @@ class nomina_organigrama extends fs_controller{
         $codgerencia = filter_input(INPUT_GET, 'gerencia');
         $codarea = filter_input(INPUT_GET, 'area');
         $opcion = array('almacen'=>$codalmacen,'gerencia'=>$codgerencia,'area'=>$codarea);
+        $orgChart = $this->agente->organigrama($opcion);
         $resultado = array();
-        $resultado['data'] = array('title'=>$this->empresa->nombrecorto,'name'=>'Empresa','children'=>$this->agente->organigrama($opcion));
-        $resultado['depth']=2;
-        $resultado['title']='Organigrama';
+        $resultado['data'] = array('title'=>$this->empresa->nombrecorto,'name'=>'Empresa','children'=>$orgChart);
+        $resultado['depth']=max(array_map('count', $orgChart))-1;
         $this->template = false;
         header('Content-Type: application/json');
         echo json_encode($resultado);

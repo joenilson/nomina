@@ -82,6 +82,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </div>
     </div>
     <div class="row">
+        <div class="col-sm-12">
+            <p class="help-block">
+                <span class="fa fa-circle-thin"></span>&nbsp;Puedes seleccionar un Almacén, Gerencia o Area para filtrar la información o dejar estos cambios en blanco.<br/>
+                <span class="fa fa-circle-thin"></span>&nbsp;Si el organigrama es muy grande, mueve la rueda del mouse para que se active el zoom.<br/>
+                <span class="fa fa-circle-thin"></span>&nbsp;Si el organigrama es muy grande, dale un click al organigrama y manten presionado para que te desplaces dentro del mismo.
+            </p>
+        </div>
+    </div>
+    <div class="row">
         <div class="col-sm-12" id="organigrama-completo"></div>
     </div>
 </div>
@@ -116,11 +125,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         var organigrama = cargar_organigrama();
         $('#organigrama-completo').orgchart({
             'data': organigrama.data,
-            'depth': 4,
+            'depth': organigrama.depth,
             'nodeContent': 'title',
             'exportButton': true,
             'exportButtonText': 'Exportar',
             'exportFilename': 'Organigrama',
+            'pan': true,
+            'zoom': true,
             'createNode': function($node, $data) {
                 if(typeof($data.foto) !== 'undefined'){
                     $('<image class="img-circle" width="auto" height="80" src="' + $data.foto + '" />')
@@ -138,6 +149,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 $('#selected-node').val('');
                 $('#btn-selected-node').hide();
             }
+        }).on('touchmove', function(event) {
+            event.preventDefault();
         });
     }
 

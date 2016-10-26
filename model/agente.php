@@ -633,7 +633,7 @@ class agente extends fs_model
           $arrayLista[] = $cargo->codcargo; 
       }
       $supervisor = ($this->codsupervisor)?" codsupervisor = ".$this->var2str($this->codsupervisor):" codcargo IN ('".implode("','",$arrayLista)."')";
-      $sql = "SELECT * FROM ".$this->table_name." WHERE codalmacen = ".$this->var2str($this->codalmacen)." AND ".$supervisor.";";
+      $sql = "SELECT * FROM ".$this->table_name." WHERE ".$supervisor.";";
       $a = $this->db->select($sql);
       if($a)
       {
