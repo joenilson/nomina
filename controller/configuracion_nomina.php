@@ -750,17 +750,7 @@ class configuracion_nomina extends fs_controller{
     }
 
     public function share_extensions(){
-        $fsext1 = new fs_extension(array(
-            'name' => 'cargar_empleados_button',
-            'page_from' => __CLASS__,
-            'page_to' => 'admin_agentes',
-            'type' => 'button',
-            'text' => '<span class="fa fa-upload" aria-hidden="true"></span> &nbsp; Cargar Empleados',
-            'params' => ''
-        ));
-        $fsext1->delete();
         $extensiones = array(
-
             array(
                 'name' => 'nuevo_agente_js',
                 'page_from' => __CLASS__,
@@ -773,22 +763,6 @@ class configuracion_nomina extends fs_controller{
                 'name' => 'nuevo_agente_css',
                 'page_from' => __CLASS__,
                 'page_to' => 'admin_agente',
-                'type' => 'head',
-                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/nomina.css"/>',
-                'params' => ''
-            ),
-            array(
-                'name' => 'nuevo_empleado_js',
-                'page_from' => __CLASS__,
-                'page_to' => 'admin_agentes',
-                'type' => 'head',
-                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/nomina.js" type="text/javascript"></script>',
-                'params' => ''
-            ),
-            array(
-                'name' => 'nuevo_empleado_css',
-                'page_from' => __CLASS__,
-                'page_to' => 'admin_agentes',
                 'type' => 'head',
                 'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/nomina.css"/>',
                 'params' => ''
@@ -848,22 +822,6 @@ class configuracion_nomina extends fs_controller{
                 'type' => 'tab',
                 'text' => '<span class="fa fa-clock-o" aria-hidden="true"></span> &nbsp; Control de Horas',
                 'params' => '&type=control_horas'
-            ),
-            array(
-                'name' => 'importar_agentes_js',
-                'page_from' => __CLASS__,
-                'page_to' => 'importar_agentes',
-                'type' => 'head',
-                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/nomina.js" type="text/javascript"></script>',
-                'params' => ''
-            ),
-            array(
-                'name' => 'importar_agentes_css',
-                'page_from' => __CLASS__,
-                'page_to' => 'importar_agentes',
-                'type' => 'head',
-                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/nomina.css"/>',
-                'params' => ''
             ),
             //Tabs de Configuracion
             array(

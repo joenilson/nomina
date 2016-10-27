@@ -399,19 +399,35 @@ class admin_agentes extends fs_controller {
             array(
                 'name' => 'nomina_jgrid_css',
                 'page_from' => __CLASS__,
-                'page_to' => 'admin_agentes',
+                'page_to' => __CLASS__,
                 'type' => 'head',
                 'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/ui.jqgrid-bootstrap.css"/>',
                 'params' => ''
             ),
             array(
                 'name' => 'cargar_empleados_button',
-                'page_from' => 'importar_agentes',
-                'page_to' => 'admin_agentes',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
                 'type' => 'button',
                 'text' => '<span class="fa fa-upload" aria-hidden="true"></span> &nbsp; Cargar Empleados',
                 'params' => ''
-            )
+            ),
+            array(
+                'name' => 'nuevo_empleado_js',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/nomina.js" type="text/javascript"></script>',
+                'params' => ''
+            ),
+            array(
+                'name' => 'nuevo_empleado_css',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/nomina.css"/>',
+                'params' => ''
+            ),
         );
         foreach($extensiones as $ext){
             $fsext0 = new fs_extension($ext);

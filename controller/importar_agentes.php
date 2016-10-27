@@ -390,7 +390,7 @@ class importar_agentes extends fs_controller
    }
 
     private function share_extensions(){
-       $fext = new fs_extension(
+        $extensiones = array(
             array(
                 'name' => 'nomina_jgrid_css',
                 'page_from' => __CLASS__,
@@ -398,8 +398,29 @@ class importar_agentes extends fs_controller
                 'type' => 'head',
                 'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/ui.jqgrid-bootstrap.css"/>',
                 'params' => ''
-            )
+            ),
+            array(
+                'name' => 'importar_agentes_js',
+                'page_from' => __CLASS__,
+                'page_to' => 'importar_agentes',
+                'type' => 'head',
+                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/nomina.js" type="text/javascript"></script>',
+                'params' => ''
+            ),
+            array(
+                'name' => 'importar_agentes_css',
+                'page_from' => __CLASS__,
+                'page_to' => 'importar_agentes',
+                'type' => 'head',
+                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/nomina.css"/>',
+                'params' => ''
+            ),
         );
-       $fext->save();
+        foreach($extensiones as $ext){
+            $fsext0 = new fs_extension($ext);
+            if (!$fsext0->save()) {
+                $this->new_error_msg('Imposible guardar los datos de la extensión ' . $ext['name'] . '.');
+            }
+        }
    }
 }

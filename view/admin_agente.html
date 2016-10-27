@@ -135,52 +135,51 @@
                                     <!-- Tab panes -->
                                     <div class="tab-content" style="margin-top: 10px;">
                                         <div role="tabpanel" class="tab-pane fade in active" id="tab-basicos">
-
                                             <div class="col-sm-2">
-                                                <div class="form-group">
-                                                    <label class="label label-default" for="nombre">Nombre:</label>
+                                                <div class="form-group required">
+                                                    <label class="control-label" for="nombre">Nombre:</label>
                                                     <input class="form-control input-sm" type="text" name="nombre" value="{$fsc->agente->nombre}" autocomplete="off"/>
                                                 </div>
                                             </div>
-                                            <div class="col-sm-3">
-                                                <div class="form-group">
-                                                    <label class="label label-sm label-default" for="apellidos">Primer Apellido:</label>
+                                            <div class="col-sm-2">
+                                                <div class="form-group required">
+                                                    <label class="control-label" for="apellidos">Primer Apellido:</label>
                                                     <input class="form-control input-sm" type="text" name="apellidos" value="{$fsc->agente->apellidos}" autocomplete="off"/>
                                                 </div>
                                             </div>
-                                            <div class="col-sm-3">
+                                            <div class="col-sm-2">
                                                 <div class="form-group">
-                                                    <label class="label label-sm label-default" for="segundo_apellido">Segundo Apellido:</label>
+                                                    <label class="control-label" for="segundo_apellido">Segundo Apellido:</label>
                                                     <input class="form-control input-sm" type="text" name="segundo_apellido" value="{$fsc->agente->segundo_apellido}" autocomplete="off"/>
                                                 </div>
                                             </div>
                                             <div class="col-sm-2">
-                                                <div class="form-group">
-                                                    <label class="label label-sm label-default" for="dnicif">{#FS_CIFNIF#}:</label>
-                                                    <input class="form-control input-sm" type="text" name="dnicif" value="{$fsc->agente->dnicif}" autocomplete="off"/>
+                                                <div class="form-group required">
+                                                    <label class="control-label" for="dnicif">{#FS_CIFNIF#}:</label>
+                                                    <input class="form-control input-sm" required type="text" name="dnicif" value="{$fsc->agente->dnicif}" autocomplete="off"/>
                                                 </div>
                                             </div>
                                             <div class="col-sm-2">
-                                                <div class="form-group">
-                                                    <label class="label label-sm label-default">Fecha Nacimiento:</label>
+                                                <div class="form-group required">
+                                                    <label class="control-label">Fecha Nacimiento:</label>
                                                     <div class="input-group">
                                                         <span class="input-group-addon">
                                                             <span class="glyphicon glyphicon-calendar"></span>
                                                         </span>
-                                                        <input class="form-control datepicker input-sm" type="text" name="f_nacimiento" value="{$fsc->agente->f_nacimiento}" autocomplete="off"/>
+                                                        <input class="form-control datepicker input-sm" required type="text" name="f_nacimiento" value="{$fsc->agente->f_nacimiento}" autocomplete="off"/>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-sm-2">
-                                                <div class="form-group">
-                                                    <span class="label label-sm label-default">Sexo:</span><br />
+                                            <div class="col-sm-1">
+                                                <div class="form-group required">
+                                                    <span class="control-label">Sexo:</span><br />
                                                     <label><input class="radio-inline radio-control" type="radio" name="sexo" value="M" {if="$fsc->agente->sexo=='M'"}checked{/if}/> Masculino</label>
                                                     <label><input class="radio-inline radio-control" type="radio" name="sexo" value="F" {if="$fsc->agente->sexo=='F'"}checked{/if}/> Femenino</label>
                                                 </div>
                                             </div>
                                             <div class="col-sm-2">
-                                                <div class="form-group">
-                                                    <label class="label label-sm label-default" for="estado_civil">Estado Civil:</label>
+                                                <div class="form-group required">
+                                                    <label class="control-label" for="estado_civil">Estado Civil:</label>
                                                     <select name="estado_civil" required class="form-control input-sm">
                                                         <option value="">--------</option>
                                                         {loop="$fsc->estadocivil->all()"}
@@ -191,39 +190,42 @@
                                             </div>
                                             <div class="col-sm-2">
                                                 <div class="form-group">
-                                                    <label class="label label-sm label-default" for="telefono">Teléfono:</label>
+                                                    <label class="control-label" for="telefono">Teléfono:</label>
                                                     <input class="form-control input-sm" type="text" name="telefono" value="{$fsc->agente->telefono}" autocomplete="off"/>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <div class="form-group">
+                                                    <label class="control-label" for="email">Email:</label>
+                                                    <input class="form-control input-sm" type="text" name="email" value="{$fsc->agente->email}" autocomplete="off"/>
                                                 </div>
                                             </div>
                                             <div class="col-sm-2">
                                                 <div class="form-group">
-                                                    <label class="label label-sm label-default" for="email">Email:</label>
-                                                    <input class="form-control input-sm" type="text" name="email" value="{$fsc->agente->email}" autocomplete="off"/>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-3">
-                                                <div class="form-group">
-                                                    <label class="label label-sm label-default" for="provincia">Provincia:</label>
+                                                    <label class="control-label" for="provincia">Provincia:</label>
                                                     <input id="ac_provincia" class="form-control input-sm" type="text" name="provincia" value="{$fsc->agente->provincia}" autocomplete="off"/>
                                                 </div>
                                             </div>
-                                            <div class="col-sm-3">
+                                            <div class="col-sm-2">
                                                 <div class="form-group">
-                                                    <label class="label label-sm label-default" for="ciudad">Ciudad:</label>
+                                                    <label class="control-label" for="ciudad">Ciudad:</label>
                                                     <input class="form-control input-sm" type="text" name="ciudad" value="{$fsc->agente->ciudad}"/>
                                                 </div>
                                             </div>
                                             <div class="col-sm-4">
                                                 <div class="form-group">
-                                                    <label class="label label-sm label-default" for="direccion">Dirección:</label>
+                                                    <label class="control-label" for="direccion">Dirección:</label>
                                                     <input class="form-control input-sm" type="text" name="direccion" value="{$fsc->agente->direccion}" autocomplete="off"/>
                                                 </div>
+                                            </div>
+                                            <div class="col-sm-5">
+                                                
                                             </div>
                                         </div>
                                         <div role="tabpanel" class="tab-pane fade" id="tab-organizacionales">
                                             <div class="col-sm-2">
-                                                <div class="form-group">
-                                                    <label class="label label-sm label-default" for="codalmacen">
+                                                <div class="form-group required">
+                                                    <label class="control-label" for="codalmacen">
                                                         <a href="{$fsc->almacen->url()}">Almacén:</a>
                                                     </label>
                                                     <select name="codalmacen" required class="form-control input-sm">
@@ -235,8 +237,8 @@
                                                 </div>
                                             </div>
                                             <div class="col-sm-2">
-                                                <div class="form-group">
-                                                    <label class="label label-sm label-default" for="codcargo">
+                                                <div class="form-group required">
+                                                    <label class="control-label" for="codcargo">
                                                         <a href="{$fsc->cargos->url()}">Cargo ocupado:</a>
                                                     </label>
                                                     <select name="codcargo" required class="form-control input-sm">
@@ -249,15 +251,15 @@
                                             </div>
                                             <div class="col-sm-2">
                                                 <div class="form-group">
-                                                    <label class="label label-sm label-default" for="codcategoria">
-                                                        <a href="{$fsc->categoriaempleado->url()}">Categoria de empleado:</a>
+                                                    <label class="control-label" for="codcategoria">
+                                                        Categoria de empleado:
                                                     </label>
                                                     <input type="text" class="form-control input-sm" readonly value="{$fsc->agente->categoria}">
                                                 </div>
                                             </div>
                                             <div class="col-sm-3">
                                                 <div class="form-group">
-                                                    <label class="label label-sm label-default" for="codsupervisor">
+                                                    <label class="control-label" for="codsupervisor">
                                                         Reporta a:
                                                     </label>
                                                     <select name="codsupervisor" class="form-control input-sm">
@@ -269,8 +271,8 @@
                                                 </div>
                                             </div>
                                             <div class="col-sm-3">
-                                                <div class="form-group">
-                                                    <label class="label label-sm label-default" for="codtipo">
+                                                <div class="form-group required">
+                                                    <label class="control-label" for="codtipo">
                                                         <a href="{$fsc->tipoempleado->url()}">Tipo de Contrato:</a>
                                                     </label>
                                                     <select name="codtipo" required class="form-control input-sm">
@@ -282,8 +284,8 @@
                                                 </div>
                                             </div>
                                             <div class="col-sm-4">
-                                                <div class="form-group">
-                                                    <label class="label label-sm label-default" for="codgerencia">
+                                                <div class="form-group required">
+                                                    <label class="control-label" for="codgerencia">
                                                         <a href="{$fsc->organizacion->url()}">Gerencia:</a>
                                                     </label>
                                                     <select name="codgerencia" id="codgerencia" onchange="llenar_organizacion(this, 'codgerencia', 'codarea')" required class="form-control input-sm">
@@ -295,8 +297,8 @@
                                                 </div>
                                             </div>
                                             <div class="col-sm-4">
-                                                <div class="form-group">
-                                                    <label class="label label-sm label-default" for="codarea">
+                                                <div class="form-group required">
+                                                    <label class="control-label" for="codarea">
                                                         <a href="{$fsc->organizacion->url()}">Area:</a>
                                                     </label>
                                                     <select name="codarea" id="codarea" onchange="llenar_organizacion(this, 'codarea', 'coddepartamento')" required class="form-control input-sm">
@@ -309,7 +311,7 @@
                                             </div>
                                             <div class="col-sm-4">
                                                 <div class="form-group">
-                                                    <label class="label label-sm label-default" for="coddepartamento">
+                                                    <label class="control-label" for="coddepartamento">
                                                         <a href="{$fsc->organizacion->url()}">Departamento:</a>
                                                     </label>
                                                     <select name="coddepartamento" id="coddepartamento" class="form-control input-sm">
@@ -321,19 +323,19 @@
                                                 </div>
                                             </div>
                                             <div class="col-sm-2">
-                                                <div class="form-group">
-                                                    <label class="label label-sm label-default">Fecha Alta:</label>
+                                                <div class="form-group required">
+                                                    <label class="control-label">Fecha Alta:</label>
                                                     <div class="input-group">
                                                         <span class="input-group-addon">
                                                             <span class="glyphicon glyphicon-calendar"></span>
                                                         </span>
-                                                        <input class="form-control datepicker input-sm" type="text" name="f_alta" value="{$fsc->agente->f_alta}" autocomplete="off"/>
+                                                        <input required class="form-control datepicker input-sm" type="text" name="f_alta" value="{$fsc->agente->f_alta}" autocomplete="off"/>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="col-sm-2">
                                                 <div class="form-group">
-                                                    <label class="label label-sm label-default">Fecha Baja:</label>
+                                                    <label class="control-label">Fecha Baja:</label>
                                                     <div class="input-group">
                                                         <span class="input-group-addon">
                                                             <span class="glyphicon glyphicon-calendar"></span>
@@ -343,8 +345,8 @@
                                                 </div>
                                             </div>
                                             <div class="col-sm-3">
-                                                <div class="form-group">
-                                                    <label class="label label-sm label-default">Estado:</label>
+                                                <div class="form-group required">
+                                                    <label class="control-label">Estado:</label>
                                                     <select name="estado" required class="form-control input-sm">
                                                         <option value="">--------</option>
                                                         {loop="$fsc->agente->estados_agente()"}
@@ -354,8 +356,8 @@
                                                 </div>
                                             </div>
                                             <div class="col-sm-3">
-                                                <div class="form-group">
-                                                    <label class="label label-sm label-default">
+                                                <div class="form-group required">
+                                                    <label class="control-label">
                                                         <a href="{$fsc->sindicalizacion->url()}">Sindicalizado:</a>
                                                     </label>
                                                     <select name="idsindicalizado" required class="form-control input-sm">
@@ -370,7 +372,7 @@
                                         <div role="tabpanel" class="tab-pane fade" id="tab-sociales">
                                             <div class="col-sm-3">
                                                 <div class="form-group">
-                                                    <label class="label label-sm label-default" for="codformacion">
+                                                    <label class="control-label" for="codformacion">
                                                         <a href="{$fsc->formacion->url()}">Formación:</a>
                                                     </label>
                                                     <select name="codformacion" class="form-control input-sm">
@@ -383,7 +385,7 @@
                                             </div>
                                             <div class="col-sm-4">
                                                 <div class="form-group">
-                                                    <label class="label label-sm label-default" for="carrera">
+                                                    <label class="control-label" for="carrera">
                                                         Carrera:
                                                     </label>
                                                     <input class="form-control input-sm" type="text" name="carrera" value="{$fsc->agente->carrera}" autocomplete="off"/>
@@ -391,15 +393,15 @@
                                             </div>
                                             <div class="col-sm-5">
                                                 <div class="form-group">
-                                                    <label class="label label-sm label-default" for="centroestudios">
+                                                    <label class="control-label" for="centroestudios">
                                                         Centro de estudios:
                                                     </label>
                                                     <input class="form-control input-sm" type="text" name="centroestudios" value="{$fsc->agente->centroestudios}" autocomplete="off"/>
                                                 </div>
                                             </div>
                                             <div class="col-sm-3">
-                                                <div class="form-group">
-                                                    <label class="label label-sm label-default">
+                                                <div class="form-group required">
+                                                    <label class="control-label">
                                                         <a href="{$fsc->seguridadsocial->url()}">Seguridad Social:</a>
                                                     </label>
                                                     <select name="codseguridadsocial" required class="form-control input-sm">
@@ -412,15 +414,15 @@
                                             </div>
                                             <div class="col-sm-3">
                                                 <div class="form-group">
-                                                    <label class="label label-sm label-default">
+                                                    <label class="control-label">
                                                         Nº Seguridad Social:
                                                     </label>
                                                     <input class="form-control input-sm" type="text" name="seg_social" value="{$fsc->agente->seg_social}" autocomplete="off"/>
                                                 </div>
                                             </div>
                                             <div class="col-sm-3">
-                                                <div class="form-group">
-                                                    <label class="label label-sm label-default">
+                                                <div class="form-group required">
+                                                    <label class="control-label">
                                                         <a href="{$fsc->sistemapension->url()}">Sistema de Pensión:</a>
                                                     </label>
                                                     <select name="codsistemapension" required class="form-control input-sm">
@@ -433,15 +435,15 @@
                                             </div>
                                             <div class="col-sm-3">
                                                 <div class="form-group">
-                                                    <label class="label label-sm label-default">
+                                                    <label class="control-label">
                                                         Código de Sistema de Pensión:
                                                     </label>
                                                     <input class="form-control input-sm" type="text" name="codigo_pension" value="{$fsc->agente->codigo_pension}" autocomplete="off"/>
                                                 </div>
                                             </div>
                                             <div class="col-sm-3">
-                                                <div class="form-group">
-                                                    <label class="label label-sm label-default">
+                                                <div class="form-group required">
+                                                    <label class="control-label">
                                                         <a href="{$fsc->bancos->url()}">Banco:</a>
                                                     </label>
                                                     <select name="codbanco" required class="form-control input-sm">
@@ -454,7 +456,7 @@
                                             </div>
                                             <div class="col-sm-3">
                                                 <div class="form-group">
-                                                    <label class="label label-sm label-default">
+                                                    <label class="control-label">
                                                         Cuenta Bancaria:
                                                     </label>
                                                     <input class="form-control input-sm" type="text" name="cuenta_banco" value="{$fsc->agente->cuenta_banco}" autocomplete="off"/>
@@ -462,7 +464,7 @@
                                             </div>
                                             <div class="col-sm-2">
                                                 <div class="form-group">
-                                                    <label class="label label-sm label-default">
+                                                    <label class="control-label">
                                                         Dependientes:
                                                     </label>
                                                     <div class="input-group">
@@ -475,7 +477,7 @@
                                         <div role="tabpanel" class="tab-pane fade" id="tab-adicionales">
                                             <div class="col-sm-2">
                                                 <div class="form-group">
-                                                    <label class="label label-sm label-default">
+                                                    <label class="control-label">
                                                         Comisión:
                                                     </label>
                                                     <div class="input-group">
@@ -486,7 +488,7 @@
                                             </div>
                                             <div class="col-sm-2">
                                                 <div class="form-group">
-                                                    <label class="label label-sm label-default">Tiempo de Contrato:</label>
+                                                    <label class="control-label">Tiempo de Contrato:</label>
                                                     <div class="input-group">
                                                         <span class="input-group-addon input-sm"><span class="fa fa-calendar"></span></span>
                                                         <input class="form-control input-sm" type="text" name="porcomision" value="{$fsc->agente->porcomision}" autocomplete="off"/>
@@ -497,10 +499,18 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="panel-footer" style="text-align: right;">
-                                <button class="btn btn-sm btn-primary" type="submit">
-                                    <span class="glyphicon glyphicon-floppy-disk"></span> &nbsp; Guardar
-                                </button>
+                            <div class="panel-footer">
+                                <div class="row">
+                                    <div class="col-sm-10">
+                                        <span class="help-block">Los campos con un <span style="color: #bf0000;" class="fa fa-asterisk"></span> son obligatorios</span>
+                                    </div>
+                                    <div class="col-sm-2 text-right">
+                                        <button class="btn btn-sm btn-primary" type="submit">
+                                            <span class="glyphicon glyphicon-floppy-disk"></span> &nbsp; Guardar
+                                        </button>
+                                    </div>
+                                </div>
+                                
                             </div>
                         </div>
                     </form>
