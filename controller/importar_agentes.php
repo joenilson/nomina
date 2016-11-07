@@ -103,7 +103,7 @@ class importar_agentes extends fs_controller
         $assoc_header['DOCUMENTO_IDENTIDAD']='dnicif';
         $assoc_header['NOMBRE_COMPLETO']='nombreap';
         $assoc_header['APELLIDO_PATERNO']='apellidos';
-        $assoc_header['APELLIDO_MATERNO']='apellido_materno';
+        $assoc_header['APELLIDO_MATERNO']='segundo_apellido';
         $assoc_header['NOMBRE']='nombre';
         $assoc_header['SEXO']='sexo';
         $assoc_header['ESTADO_CIVIL']='estado_civil';
