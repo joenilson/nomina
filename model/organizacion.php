@@ -80,18 +80,9 @@ class organizacion extends fs_model{
     protected function install() {
             return "INSERT INTO ".$this->table_name." (codorganizacion, descripcion, padre, tipo, estado) VALUES".
                 " ('1','GERENCIA GENERAL','0','GERENCIA',TRUE),".
-                " ('2','GERENCIA DE ADM Y FINANZAS','1','GERENCIA',TRUE),".
-                " ('3','GERENCIA DE COMERCIAL','1','GERENCIA',TRUE),".
-                " ('4','CONTABILIDAD','2','AREA',TRUE),".
-                " ('5','VENTAS','3','AREA',TRUE), ".
-                " ('6','ADMINISTRACION','2','AREA',TRUE), ".
-                " ('7','TESORERIA','4','DEPARTAMENTO',TRUE), ".
-                " ('8','CUENTAS POR PAGAR','4','DEPARTAMENTO',TRUE), ".
-                " ('9','DESPACHO','5','DEPARTAMENTO',TRUE), ".
-                " ('10','CUENTAS POR COBRAR','5','DEPARTAMENTO',TRUE), ".
-                " ('11','RECEPCION','6','DEPARTAMENTO',TRUE), ".
-                " ('12','MENSAJERIA','6','DEPARTAMENTO',TRUE), ".
-                " ('13','COMPRAS','6','DEPARTAMENTO',TRUE);";
+                " ('2','CONTABILIDAD','1','AREA',TRUE),".
+                " ('3','VENTAS','1','AREA',TRUE), ".
+                " ('4','ADMINISTRACION','1','AREA',TRUE);";
     }
 
     public function url()

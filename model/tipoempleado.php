@@ -60,7 +60,7 @@ class tipoempleado extends fs_model{
                 " ('2','ACCIDENTAL CONTRATO DE SUPLENCIA',TRUE),".
                 " ('3','ACCIDENTAL CONTRATO DE EMERGENCIA',TRUE),".
                 " ('4','TEMPORAL POR INICIO O LANZAMIENTO DE UNA NUEVA ACTIVIDAD',TRUE),".
-                " ('5','TEMPORAL POR NECESIDADESDEL MERCADO',TRUE),".
+                " ('5','TEMPORAL POR NECESIDADES DEL MERCADO',TRUE),".
                 " ('6','TEMPORAL POR RECONVERSIÓN EMPRESARIAL',TRUE),".
                 " ('7','CONTRATO PARA OBRA O SERVICIO ESPECIFICO',TRUE),".
                 " ('8','CONTRATO PARA OBRA O SERVICIO INTERMITENTE',TRUE),".
