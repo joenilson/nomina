@@ -406,8 +406,8 @@ class admin_agentes extends fs_controller {
             ),
             array(
                 'name' => 'cargar_empleados_button',
-                'page_from' => __CLASS__,
-                'page_to' => 'importar_agentes',
+                'page_from' => 'importar_agentes',
+                'page_to' => __CLASS__,
                 'type' => 'button',
                 'text' => '<span class="fa fa-upload" aria-hidden="true"></span> &nbsp; Cargar Empleados',
                 'params' => ''
