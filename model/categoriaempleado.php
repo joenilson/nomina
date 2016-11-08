@@ -157,7 +157,8 @@ class categoriaempleado extends fs_model{
     }
 
     public function delete(){
-        return false;
+        $sql = "DELETE FROM ".$this->table_name." WHERE codcategoria = ".$this->var2str($this->codcategoria).";";
+        return $this->db->exec($sql);
     }
 
     public function corregir(){
@@ -167,6 +168,19 @@ class categoriaempleado extends fs_model{
             $this->update();
         }else{
             $this->save();
+        }
+    }
+    
+    public function superiores(){
+        $sql = "SELECT * FROM ".$this->table_name." WHERE orden < ".$this->intval($this->orden).";";
+        $data = $this->db->select($sql);
+        if($data){
+            foreach($data as $d){
+                $lista[] = new categoriaempleado($d);
+            }
+            return $lista;
+        }else{
+            return false;
         }
     }
 
@@ -196,6 +210,16 @@ class categoriaempleado extends fs_model{
             }
         }
     }
+    
+    public function en_uso(){
+        $sql = "SELECT count(codcargo) as cantidad from hr_cargos where codcategoria = ".$this->var2str($this->codcategoria).";";
+        $data = $this->db->select($sql);
+        if($data){
+            return $data[0]['cantidad'];
+        }else{
+            return false;
+        }
+    }
 
     private function comparar($value, $posicion, $reorden){
         if($value->codcategoria == $this->codcategoria){
@@ -209,5 +233,4 @@ class categoriaempleado extends fs_model{
         }
         return $valor;
     }
-
 }

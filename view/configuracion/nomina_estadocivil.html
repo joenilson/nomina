@@ -39,7 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <input type="text" name="descripcion" value="" autocomplete="off" class="form-control input-sm">
                         </td>
                         <td>
-                            <button type="submit" class="btn btn-sm btn-primary">
+                            <button type="submit" class="btn btn-sm btn-primary" name="accion" value="agregar">
                                 <span class="fa fa-save"></span> Nuevo
                             </button>
                         </td>
@@ -56,11 +56,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </td>
                         <td class="text-right">
                             {if="$fsc->allow_delete"}
-                            <button class="btn btn-sm btn-danger">
+                            <button class="btn btn-sm btn-danger" type="submit" name="accion" value="eliminar" onclick="return confirm('Esta Seguro que quiere eliminar esta entrada?')">
                                 <span class="fa fa-trash"></span>
                             </button>
                             {/if}
-                            <button class="btn btn-sm btn-primary">
+                            <button class="btn btn-sm btn-primary" type="submit" name="accion" value="agregar">
                                 <span class="fa fa-save"></span>
                             </button>
                         </td>

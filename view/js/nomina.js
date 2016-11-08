@@ -139,7 +139,184 @@ function procesar_seleccionados(){
     $('#b_cerrar_modal_estadistica_importacion').show();
 }
 
+function visualizarDocumento(documento){
+    $('#modal_mostrar_documento').modal('show');
+        $("#visor_documento").detach();
+        $("<iframe id='imprimir_ordencarga' />")
+          .attr('src', documento)
+          .attr('width', '100%')
+          .attr('height', '500')
+          .appendTo('#modal_body_mostrar_documento');
+}
+
+/**
+ * Funcion para traer los datos para los distintos gráficos
+ * @param {type} tipo
+ * @returns {response|String|Boolean}
+ */
+function cargarGrafico(tipo,componente,tipo_grafico,options){
+    /**
+     * Hacemos la llamada AJAX, en la página origen del grafico se debe colocar 
+     * el valor de la variable url_graficos
+     */
+    $.ajax({
+        type: 'GET',
+        url : url_graficos,
+        data : 'type=grafico&subtype='+tipo,
+        async: false,
+        success : function(response) {
+            if(response.length !== 0){
+                new Chart($(componente), {
+                    type: tipo_grafico,
+                    data: {
+                        datasets: [{
+                            data: response.datasets.data,
+                            backgroundColor: response.backgroundColor,
+                            borderColor: response.borderColor,
+                            borderWidth: 1
+                        }],
+                        labels: response.labels
+                    },
+                    options: options
+                    
+                });
+            }else{
+               return false;
+            }
+        },
+        error: function(response) {
+            alert(response);
+        }
+    });
+    //return listado;
+}
+
+/**
+ * Funcion para generar el daterangepicker en modo rango de fechas
+ * @param {string} f_rango es el componente donde se mostrará el calendario
+ * @param {string} f_desde es el id del input donde grabaremos la fecha de inicio
+ * @param {string} f_hasta es el id del input donde grabaremos la fecha de fin
+ * @param {string} formato es el formato en que guardaremos y mostraremos la fecha
+ * @param {boolean} rangos es un campo para saber si mostramos o no el selector de rangos predefinidos
+ * @param {boolean} tiempos es un campo booleano para saber si mostramos el selector de tiempo hora, minuto
+ * @returns {empty} devuelve el selector con el rango de fechas
+ */
+function rango_fechas(f_rango, f_desde, f_hasta, formato, rangos, tiempos){
+    moment().format(formato);
+    if(typeof($('#'+f_rango)) !== 'undefined'){
+        $('#'+f_rango).daterangepicker({
+            singleDatePicker: false,
+            showDropdowns: true,
+            timePicker: tiempos,
+            timePickerIncrement: (tiempos)?5:0,
+            ranges: (rangos)?{
+                'Hoy': [moment(), moment()],
+                'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Ultimos 7 Días': [moment().subtract(6, 'days'), moment()],
+                'Ultimos 30 días': [moment().subtract(29, 'days'), moment()],
+                'Este mes': [moment().startOf('month'), moment().endOf('month')],
+                'Anterior Mes': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            }:null,
+            locale: {
+                format: formato,
+                separator: " - ",
+                applyLabel: "Tomar",
+                cancelLabel: "Cancelar",
+                fromLabel: "Desde",
+                toLabel: "Hasta",
+                customRangeLabel: "Manual"
+            },
+            opens: "left",
+            startDate: moment().startOf('month'),
+            endDate: moment()
+        });
+        
+        $('#'+f_rango).on('apply.daterangepicker', function(ev, picker) {
+            $('#'+f_desde).val(picker.startDate.format(formato));
+            $('#'+f_hasta).val(picker.endDate.format(formato));
+        });
+        
+        if($('#'+f_desde).val()){
+            $('#'+f_rango).data('daterangepicker').setStartDate($('#'+f_desde).val());
+        }else{
+            $('#'+f_desde).val($('#'+f_rango).data('daterangepicker').startDate.format(formato));
+        }
+
+        if($('#'+f_hasta).val()){
+            $('#'+f_rango).data('daterangepicker').setEndDate($('#'+f_hasta).val());
+        }else{
+            $('#'+f_hasta).val($('#'+f_rango).data('daterangepicker').endDate.format(formato));
+        }
+    }
+}
+
+/*
+ * Funcion para generar el daterangepicker en modo single
+ * @param id_field es el id donde llamaremos al calendario
+ * @param formato es el formato en que necesitamos la fecha
+ * @param tiempos es un cambo boolean si necesitamos o no la parte de tiempo hora, minuto
+ */
+function fecha(id_field, formato, tiempos){
+    moment().format(formato);
+    if(typeof($('#'+id_field)) !== 'undefined'){
+        $('#'+id_field).daterangepicker({
+            singleDatePicker: true,
+            showDropdowns: true,
+            timePicker: tiempos,
+            timePickerIncrement: (tiempos)?5:0,
+            locale: {
+                format: formato,
+                separator: " - ",
+                applyLabel: "Tomar",
+                cancelLabel: "Cancelar",
+                fromLabel: "Desde",
+                toLabel: "Hasta",
+                customRangeLabel: "Manual"
+            },
+            opens: "left",
+            startDate: moment()
+        });
+    }
+}
+if(typeof(Chart) !=='undefined'){
+    Chart.pluginService.register({
+        beforeDraw: function(chart) {
+            var width = chart.chart.width,
+                height = chart.chart.height,
+                ctx = chart.chart.ctx,
+                type = chart.config.type;
+            ctx.restore();
+            var fontSize = (height / 114).toFixed(2);
+            ctx.font = fontSize + "em sans-serif";
+            ctx.textBaseline = "middle";
+            if (type == 'doughnut')
+            {
+                var total = 0;
+                $.each(chart.config.data.datasets[0].data, function(data){
+                    total += parseInt(this, 10);
+                });
+
+                var oldFill = ctx.fillStyle;
+                var fontSize = ((height - chart.chartArea.top) / 100).toFixed(2);
+
+                ctx.restore();
+                ctx.font = fontSize + "em sans-serif";
+                ctx.textBaseline = "middle"
+
+                var text = total,
+                    textX = Math.round((width - ctx.measureText(text).width) / 2),
+                    textY = (height + chart.chartArea.top) / 2;
+
+                ctx.fillText(text, textX, textY);
+                ctx.fillStyle = oldFill;
+                ctx.save();
+            }
+        }
+    });
+}
+
 $(document).ready(function() {
+    $('[data-toggle="tooltip"]').tooltip();
     if($('#modal_nuevo_agente').length === 1){
         $('#modal_nuevo_agente').html('');
     }
@@ -188,4 +365,8 @@ $(document).ready(function() {
         };
         reader.readAsDataURL(file);
     });
+    
+    if(typeof(locale_user) !== 'undefined'){
+        moment.locale(locale_user);
+    }
 });

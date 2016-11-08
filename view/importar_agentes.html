@@ -63,6 +63,8 @@
                 {label: 'Cargo', name: 'cargo', width: 140, sorttype: 'text'},
                 {label: 'Seg Social', name: 'codseguridadsocial', width: 75, sorttype: 'text'},
                 {label: 'Nro SegSoc', name: 'seg_social', width: 120, sorttype: 'text'},
+                {label: 'Sist. Pensiones', name: 'codsistemapension', width: 75, sorttype: 'text'},
+                {label: 'Nro Sis Pension', name: 'codigo_pension', width: 120, sorttype: 'text'},
                 {label: 'Dependientes', name: 'dependientes', width: 120, sorttype: 'text'},
                 {label: 'Formacion', name: 'codformacion', width: 120, sorttype: 'text'},
                 {label: 'Carrera', name: 'carrera', width: 120, sorttype: 'text'},
@@ -163,6 +165,10 @@
             <div class="col-sm-6 form-group">
                 <input id="empleados" type="file" name="empleados" accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required=""/>
                 <span class="help-block">Seleccione el archivo con los datos a importar de los empleados</span>
+                <span class="help-block">
+                    Puedes descargar la 
+                    <a href="plugins/nomina/extras/plantilla_empleados.xlsx">
+                        <span class='fa fa-file-excel-o'></span>&nbsp;plantilla de datos</a> para llenar la información de los empleados y luego importarla.</span>
             </div>
             <div class="col-sm-4">
                 <button class="btn btn-sm btn-primary" type="button" id="b_importar">

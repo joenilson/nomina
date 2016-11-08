@@ -162,7 +162,7 @@ class tipoausencias extends fs_model{
     }
 
     public function delete(){
-        $sql = "DELETE FROM ".$this->table_name." WHERE codausencia = ".$this->codausencia.";";
+        $sql = "DELETE FROM ".$this->table_name." WHERE codausencia = ".$this->var2str($this->codausencia).";";
         $data = $this->db->exec($sql);
         if($data){
             return true;

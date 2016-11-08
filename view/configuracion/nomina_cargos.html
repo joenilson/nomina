@@ -60,7 +60,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <input type="hidden" name="estado" value="true">
                     </td>
                     <td>
-                        <button type="submit" class="btn btn-sm btn-primary">
+                        <button type="submit" class="btn btn-sm btn-primary" name='accion' value='agregar'>
                             <span class="fa fa-save"></span> Nuevo
                         </button>
                     </td>
@@ -69,13 +69,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             {loop="$fsc->cargo->all()"}
             <form class="form" role="form" action="{$fsc->url()}&type=cargos" method="POST">
             <tr>
-                <td>
-                    <input type="text" name="codcargo" value="{$value->codcargo}" readonly="true">
+                <td class='col-sm-1'>
+                    <input type="text" name="codcargo" value="{$value->codcargo}" readonly="true" class="form-control input-sm">
                 </td>
-                <td>
+                <td class='col-sm-3'>
                     <input type="text" name="descripcion" value="{$value->descripcion}" autocomplete="off" class="form-control input-sm">
                 </td>
-                <td>
+                <td class='col-sm-3'>
                     <select class="form-control input-sm" name="padre">
                         <option value="">Ninguno</option>
                         {loop="$fsc->cargo->all()"}
@@ -83,7 +83,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         {/loop}
                     </select>
                 </td>
-                <td>
+                <td class='col-sm-3'>
                     <select class="form-control input-sm" name="codcategoria">
                         <option value="">Ninguno</option>
                         {loop="$fsc->categoriaempleado->all()"}
@@ -91,16 +91,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         {/loop}
                     </select>
                 </td>
-                <td class="text-center">
+                <td class="text-center col-sm-1">
                     <input type="checkbox" name="estado" value="{if="$value->estado"}true{else}false{/if}" {if="$value->estado"}checked{/if} class="checkbox-control">
                 </td>
-                <td class="text-right">
-                    {if="$fsc->allow_delete"}
-                    <button class="btn btn-sm btn-danger">
-                        <span class="fa fa-trash"></span>
+                <td class="text-right col-sm-1">
+                    {if="$value->en_uso()"}
+                    <button type="button" class="btn btn-sm btn-warning" data-toggle="tooltip" data-placement="top" title="Hay {$value->en_uso()} empleados con este cargo">
+                        <span class="fa fa-lock"></span>
                     </button>
+                    {else}
+                        {if="$fsc->allow_delete"}
+                        <button class="btn btn-sm btn-danger" type='submit' name='accion' value='eliminar' onclick="return confirm('Esta seguro que quiere eliminar el cargo: {$value->descripcion}?');">
+                            <span class="fa fa-trash"></span>
+                        </button>
+                        {/if}
                     {/if}
-                    <button class="btn btn-sm btn-primary">
+                    <button class="btn btn-sm btn-primary" type='submit' name='accion' value='agregar'>
                         <span class="fa fa-save"></span>
                     </button>
                 </td>

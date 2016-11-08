@@ -134,7 +134,8 @@ class estadocivil extends fs_model{
     }
 
     public function delete(){
-        return false;
+        $sql = "DELETE FROM ".$this->table_name." WHERE codestadocivil = ".$this->var2str($this->codestadocivil).";";
+        return $this->db->exec($sql);
     }
 
     public function corregir(){

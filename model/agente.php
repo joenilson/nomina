@@ -139,7 +139,7 @@ class agente extends fs_model
 
    /**
     * Se reemplaza la variable cargo con esta nueva variable que enlaza a una tabla de Cargos
-    * @param type $codcargo Cargos
+    * @var type $codcargo Cargos
     */
    public $codcargo;
 
@@ -476,9 +476,9 @@ class agente extends fs_model
 
    public function get_foto(){
       if($this->foto){
-         return 'tmp/'.FS_TMP_NAME.'nomina/empleados/'.$this->foto;
+         return FS_PATH.FS_MYDOCS.'documentos/nomina/'.$this->idempresa.'/e/'.$this->foto;
       }else{
-         return false;
+         return FS_PATH."plugins/nomina/view/imagenes/no_foto.jpg";
       }
    }
 
@@ -531,12 +531,124 @@ class agente extends fs_model
       $a = $this->db->select("SELECT * FROM ".$this->table_name." WHERE dnicif = ".$this->var2str($dnicif).";");
       if($a)
       {
-         return new agente($a[0]);
+         $valor = new agente($a[0]);
+         $res = $this->info_adicional($valor);
+         return $res;
+      }
+      else
+         return FALSE;
+   }
+   
+   public function get_by_almacen($codalmacen)
+   {
+      $a = $this->db->select("SELECT * FROM ".$this->table_name." WHERE codalmacen = ".$this->var2str($codalmacen).";");
+      if($a)
+      {
+         $lista=array();
+         foreach($a as $d){
+             $item = new agente($d);
+             $value = $this->info_adicional($item);
+             $lista[] = $value;
+         }
+         return $lista;
+      }
+      else
+         return FALSE;
+   }
+   
+   public function get_by_gerencia($codgerencia)
+   {
+      $a = $this->db->select("SELECT * FROM ".$this->table_name." WHERE codgerencia = ".$this->var2str($codgerencia).";");
+      if($a)
+      {
+         $lista=array();
+         foreach($a as $d){
+             $item = new agente($d);
+             $value = $this->info_adicional($item);
+             $lista[] = $value;
+         }
+         return $lista;
+      }
+      else
+         return FALSE;
+   }
+   
+   public function get_by_area($codarea)
+   {
+      $a = $this->db->select("SELECT * FROM ".$this->table_name." WHERE codarea = ".$this->var2str($codarea).";");
+      if($a)
+      {
+         $lista=array();
+         foreach($a as $d){
+             $item = new agente($d);
+             $value = $this->info_adicional($item);
+             $lista[] = $value;
+         }
+         return $lista;
       }
       else
          return FALSE;
    }
 
+   public function get_by_departamento($codepartamento)
+   {
+      $a = $this->db->select("SELECT * FROM ".$this->table_name." WHERE codepartamento = ".$this->var2str($codepartamento).";");
+      if($a)
+      {
+         $lista=array();
+         foreach($a as $d){
+             $item = new agente($d);
+             $value = $this->info_adicional($item);
+             $lista[] = $value;
+         }
+         return $lista;
+      }
+      else
+         return FALSE;
+   }
+   
+   public function get_by_supervisor($codsupervisor)
+   {
+      $a = $this->db->select("SELECT * FROM ".$this->table_name." WHERE codsupervisor = ".$this->var2str($codsupervisor).";");
+      if($a)
+      {
+         $lista=array();
+         foreach($a as $d){
+             $item = new agente($d);
+             $value = $this->info_adicional($item);
+             $lista[] = $value;
+         }
+         return $lista;
+      }
+      else
+         return FALSE;
+   }
+
+   public function get_supervisor()
+   {
+      $c = $this->cargos->get($this->codcargo);
+      $cargos = $c->get_superiores();
+      //print_r($cargos);
+      foreach($cargos as $cargo){
+          $arrayLista[] = $cargo->codcargo; 
+      }
+      $supervisor = ($this->codsupervisor)?" codsupervisor = ".$this->var2str($this->codsupervisor):" codcargo IN ('".implode("','",$arrayLista)."')";
+      $sql = "SELECT * FROM ".$this->table_name." WHERE ".$supervisor.";";
+      $a = $this->db->select($sql);
+      if($a)
+      {
+         $lista=array();
+         foreach($a as $d){
+             $item = new agente($d);
+             $value = $this->info_adicional($item);
+             $lista[] = $value;
+         }
+         return $lista;
+      }else{
+         return FALSE;
+      }
+   }
+   
    public function exists()
    {
       if( is_null($this->codagente) )
@@ -760,15 +872,6 @@ class agente extends fs_model
         return $estados;
     }
 
-    public function estado_civil_agente(){
-        $estado_civil = array();
-        $estado_civil['S']='Soltero';
-        $estado_civil['C']='Casado';
-        $estado_civil['V']='Viudo';
-        $estado_civil['D']='Divorciado';
-        return $estado_civil;
-    }
-
     public function estadistica_sexo($sexo){
         $sql = "select count(sexo) as total from ".$this->table_name." where sexo = ".$this->var2str($sexo).";";
         $data = $this->db->select($sql);
@@ -778,4 +881,66 @@ class agente extends fs_model
             return $valor;
         }
     }
+    
+    public function estadistica_almacen(){
+        $sql = "select codalmacen, count(codagente) as total from ".$this->table_name." GROUP BY codalmacen;";
+        $data = $this->db->select($sql);
+        if($data){
+            $lista = array();
+            foreach($data as $d){
+                $valor = new stdClass();
+                $valor->codalmacen = $d['codalmacen'];
+                $valor->descripcion = $this->almacen->get($d['codalmacen'])->nombre;
+                $valor->total = $d['total'];
+                $lista[] = $valor;
+            }
+            return $lista;
+        } else{
+            return false;
+        }
+    }
+    
+    public function organigrama($opciones = null){
+        $where = "";
+        if($opciones){
+            if(!empty($opciones['almacen'])){
+                $where.=" AND codalmacen = ".$this->var2str($opciones['almacen'])." ";
+            }
+            if(!empty($opciones['gerencia'])){
+                $where.=" AND codgerencia = ".$this->var2str($opciones['gerencia'])." ";
+            }
+            if(!empty($opciones['area'])){
+                $where.=" AND codarea = ".$this->var2str($opciones['area'])." ";
+            }
+        }
+        $sql = "SELECT * FROM ".$this->table_name." WHERE estado = 'A' $where ORDER BY codsupervisor ASC";
+        $data = $this->db->select($sql);
+        if($data){
+            $lista = array();
+            foreach($data as $d){
+                $item = new agente($d);
+                $value = $this->info_adicional($item);
+                $lista[] = $value;
+            }
+            return $this->estructura($lista);
+        }
+    }
+    
+    public function estructura($lista, $raiz = null){
+        $estructura = array();
+        foreach($lista as $key=>$item){
+            if($item->codsupervisor == $raiz){
+                unset($lista[$key]);
+                $estructura[]=array(
+                    'id'=>$item->codagente,
+                    'name'=>$item->nombreap,
+                    'title'=>$item->cargo,
+                    'foto'=>$item->get_foto(),
+                    'children'=>$this->estructura($lista,$item->codagente)
+                );
+            }
+        }
+        return empty($estructura)?null:$estructura;
+    }
+    
 }

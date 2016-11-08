@@ -15,5 +15,52 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-Mi Puesto
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3 col-md-2 pull-left">
+            <div class="info-card">
+                <img style="width: 100%;" src="{$fsc->agente->get_foto()}"/>
+                <div class="info-card-details animate">
+                    <div class="info-card-header">
+                        <h1>{$fsc->agente->nombreap}</h1>
+                        <h3>{$fsc->agente->cargo}</h3>
+                    </div>
+                    <div class="info-card-detail">
+                        <!-- Description -->
+                        <p>Información del empleado</p>
+                    </div>
+                </div>
+            </div>
+            <div class="list-group">
+                <div class="list-group-item active">
+                    <h5 class="list-group-item-heading">Solicitudes</h5>
+                    <p class="list-group-item-text">Vacaciones, Certificados, Ausencias</p>
+                </div>
+                <a href="#" class="list-group-item">
+                    <p class="list-group-item-text">Certificado de Trabajo</p>
+                </a>
+                <a href="#" class="list-group-item">
+                    <p class="list-group-item-text">Solicitud de Vacaciones</p>
+                </a>
+                <a href="#" class="list-group-item">
+                    <p class="list-group-item-text">Solicitud de Ausencia</p>
+                </a>
+            </div>
+        </div>
+        <div class="col-sm-9 col-md-10">
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation"><a href="#empresa" aria-controls="empresa" role="tab" data-toggle="tab"><span class="fa fa-building-o"></span>&nbsp;La Empresa</a></li>
+                <li role="presentation"><a href="#control_tiempo" aria-controls="control_tiempo" role="tab" data-toggle="tab"><span class="fa fa-clock-o"></span>&nbsp;Ingresos y Salidas</a></li>
+                <li role="presentation"><a href="#solicitudes" aria-controls="solicitudes" role="tab" data-toggle="tab"><span class="fa fa-file-text-o"></span>&nbsp;Mis Solicitudes</a></li>
+                <li role="presentation"><a href="#anuncios" aria-controls="anuncios" role="tab" data-toggle="tab"><span class="fa fa-bullhorn"></span>&nbsp;Anuncios</a></li>
+            </ul>
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane fade in active" id="empresa">...</div>
+                <div role="tabpanel" class="tab-pane fade" id="control_tiempo">...</div>
+                <div role="tabpanel" class="tab-pane fade" id="solicitudes">...</div>
+                <div role="tabpanel" class="tab-pane fade" id="anuncios">...</div>
+            </div>
+        </div>
+    </div>
+</div>
 {include="footer"}

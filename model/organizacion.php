@@ -80,18 +80,9 @@ class organizacion extends fs_model{
     protected function install() {
             return "INSERT INTO ".$this->table_name." (codorganizacion, descripcion, padre, tipo, estado) VALUES".
                 " ('1','GERENCIA GENERAL','0','GERENCIA',TRUE),".
-                " ('2','GERENCIA DE ADM Y FINANZAS','1','GERENCIA',TRUE),".
-                " ('3','GERENCIA DE COMERCIAL','1','GERENCIA',TRUE),".
-                " ('4','CONTABILIDAD','2','AREA',TRUE),".
-                " ('5','VENTAS','3','AREA',TRUE), ".
-                " ('6','ADMINISTRACION','2','AREA',TRUE), ".
-                " ('7','TESORERIA','4','DEPARTAMENTO',TRUE), ".
-                " ('8','CUENTAS POR PAGAR','4','DEPARTAMENTO',TRUE), ".
-                " ('9','DESPACHO','5','DEPARTAMENTO',TRUE), ".
-                " ('10','CUENTAS POR COBRAR','5','DEPARTAMENTO',TRUE), ".
-                " ('11','RECEPCION','6','DEPARTAMENTO',TRUE), ".
-                " ('12','MENSAJERIA','6','DEPARTAMENTO',TRUE), ".
-                " ('13','COMPRAS','6','DEPARTAMENTO',TRUE);";
+                " ('2','CONTABILIDAD','1','AREA',TRUE),".
+                " ('3','VENTAS','1','AREA',TRUE), ".
+                " ('4','ADMINISTRACION','1','AREA',TRUE);";
     }
 
     public function url()
@@ -194,8 +185,21 @@ class organizacion extends fs_model{
         }
     }
     
+    public function en_uso(){
+        $where = ($this->tipo=='GERENCIA')?"codgerencia":"";
+        $where = ($this->tipo=='AREA')?"codarea":$where;
+        $where = ($this->tipo=='DEPARTAMENTO')?"coddepartamento":$where;
+        $sql = "SELECT count(*) as cantidad FROM agentes WHERE $where = ".$this->var2str($this->codorganizacion).";";
+        $data = $this->db->select($sql);
+        if($data){
+            return $data[0]['cantidad'];
+        }else{
+            return false;
+        }
+    }
+    
     public function get_estructura($padre){
-        $sql = "SELECT * FROM ".$this->table_name." WHERE estado = TRUE and padre = ".$this->var2str($padre)." ORDER BY descripcion";
+        $sql = "SELECT * FROM ".$this->table_name." WHERE padre = ".$this->var2str($padre)." ORDER BY descripcion";
         $data = $this->db->select($sql);
         $estructura = array();
         if($data){
@@ -207,7 +211,8 @@ class organizacion extends fs_model{
                 $valores->tipo = $linea->tipo;
                 $valores->estado = $linea->estado;
                 $valores->text = $linea->descripcion;
-                $valores->tags = array(ucfirst(strtolower($linea->tipo)));
+                $valores->en_uso = $linea->en_uso();
+                $valores->tags = array(ucfirst(strtolower($linea->tipo)),(!$linea->estado)?"Inactivo":"");
                 $estructura[] = $valores;
             }
             return $estructura;
@@ -294,7 +299,12 @@ class organizacion extends fs_model{
     }
 
     public function delete(){
-        return false;
+        $sql = "DELETE FROM ".$this->table_name." WHERE codorganizacion = ".$this->var2str($this->codorganizacion);
+        if($this->db->exec($sql)){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     public function corregir(){
@@ -325,6 +335,8 @@ class organizacion extends fs_model{
                 $lista[] = $valor;
             }
             return $lista;
+        }else{
+            return false;
         }
     }
 

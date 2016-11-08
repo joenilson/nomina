@@ -49,7 +49,7 @@ class admin_agentes extends fs_controller {
     public $tipoempleado;
     public $categoriaempleado;
     public $foto_empleado;
-    public $noimagen = "plugins/nomina/view/imagenes/no_foto.jpg";
+    public $noimagen;
     private $upload_photo;
     private $dir_empleados;
 
@@ -59,7 +59,8 @@ class admin_agentes extends fs_controller {
 
     protected function private_core() {
         $this->allow_delete = $this->user->allow_delete_on(__CLASS__);
-        $this->dir_empleados = "tmp/" . FS_TMP_NAME . "/nomina/empleados/";
+        $this->dir_empleados = FS_PATH.FS_MYDOCS."documentos/nomina/".$this->empresa->id."/e/";
+        $this->noimagen = FS_PATH."plugins/nomina/view/imagenes/no_foto.jpg";
         $this->share_extensions();
         $this->agente = new agente();
         $this->almacen = new almacen();
@@ -398,19 +399,35 @@ class admin_agentes extends fs_controller {
             array(
                 'name' => 'nomina_jgrid_css',
                 'page_from' => __CLASS__,
-                'page_to' => 'admin_agentes',
+                'page_to' => __CLASS__,
                 'type' => 'head',
-                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="plugins/nomina/view/css/ui.jqgrid-bootstrap.css"/>',
+                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/ui.jqgrid-bootstrap.css"/>',
                 'params' => ''
             ),
             array(
                 'name' => 'cargar_empleados_button',
                 'page_from' => 'importar_agentes',
-                'page_to' => 'admin_agentes',
+                'page_to' => __CLASS__,
                 'type' => 'button',
                 'text' => '<span class="fa fa-upload" aria-hidden="true"></span> &nbsp; Cargar Empleados',
                 'params' => ''
-            )
+            ),
+            array(
+                'name' => 'nuevo_empleado_js',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/nomina.js" type="text/javascript"></script>',
+                'params' => ''
+            ),
+            array(
+                'name' => 'nuevo_empleado_css',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/nomina.css"/>',
+                'params' => ''
+            ),
         );
         foreach($extensiones as $ext){
             $fsext0 = new fs_extension($ext);

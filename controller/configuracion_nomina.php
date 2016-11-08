@@ -17,7 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 require_model('agente.php');
+require_model('ausencias.php');
 require_model('cargos.php');
+require_model('contratos.php');
+require_model('dependientes.php');
+require_model('hoja_vida.php');
+require_model('movimientos_empleados.php');
 require_model('categoriaempleado.php');
 require_model('estadocivil.php');
 require_model('formacion.php');
@@ -63,6 +68,10 @@ class configuracion_nomina extends fs_controller{
     public $existe;
     public $dir;
     public $creada;
+    public $fix_cargos = '';
+    public $nomina_setup;
+    public $nomina_migracion_informacion;
+    public $fsvar;
     public function __construct() {
         parent::__construct(__CLASS__, 'Configuracion Nomina', 'nomina', TRUE, TRUE, FALSE);
     }
@@ -88,8 +97,28 @@ class configuracion_nomina extends fs_controller{
         $this->organizacion = new organizacion();
         $this->tipopago = new tipopago();
         
+        //Tablas de datos para los empleados
+        new ausencias();
+        new contratos();
+        new dependientes();
+        new hoja_vida();
+        new movimientos_empleados();
+        
+        $this->fsvar = new fs_var();
+        //Aqui almacenamos las variables del plugin
+        $this->nomina_setup = $this->fsvar->array_get(
+            array(
+            'nomina_migracion_informacion' => 'FALSE',
+            ), FALSE
+        );
+        
+        $this->nomina_migracion_informacion = $this->nomina_setup['nomina_migracion_informacion'];
+        
         if(isset($_GET['type'])){
             switch($_GET['type']){
+                case "importar_cargos":
+                        $this->importar_cargos();
+                    break;
                 case "cargos":
                     $this->template = 'configuracion/nomina_cargos';
                     if(isset($_POST['codcargo'])){
@@ -188,26 +217,36 @@ class configuracion_nomina extends fs_controller{
                     if(isset($_POST['codtipocese'])){
                         $this->tratar_motivocese();
                     }
-                    break;
                 default:
                     break;
             }
         }
-        //Cargamos los datos por primera vez
-        $this->fix_info();
-        //Movemos Cargo a la tabla de cargos y banco al campo cuenta_banco
-        $this->trasladar_datos();
+        
+        
         //Validamos si existen las carpetas de almacenamiento de datos
         // imagenes de empleados
         $this->creada = false;
         $basepath = dirname(dirname(dirname(__DIR__)));
-        $this->dir_nomina = $basepath."/tmp/".FS_TMP_NAME."nomina";
-        $this->dir_empleados =$this->dir_nomina.DIRECTORY_SEPARATOR."empleados";
-        $this->dir_archivos =$this->dir_nomina.DIRECTORY_SEPARATOR."archivos";
-        //Validamos si existe el directorio raiz dentro de la carpeta tmp para la nomina
+        $this->dir_documentos = $basepath.FS_MYDOCS."/documentos";
+        $this->dir_nomina = $this->dir_documentos.DIRECTORY_SEPARATOR."nomina";
+        $this->dir_empleados = $this->dir_nomina.DIRECTORY_SEPARATOR.$this->empresa->id."/e/";
+        $this->dir_documentos_empleados = $this->dir_nomina.DIRECTORY_SEPARATOR.$this->empresa->id."/d/";
+        
+        //Existe el almacen de documentos?
+        if(!is_dir($this->dir_documentos)){
+            mkdir($this->dir_documentos);
+        }
+        
+        //Existe la carpeta de nomina?
         if(!is_dir($this->dir_nomina)){
             mkdir($this->dir_nomina);
         }
+        
+        //Existe la carpeta para los documentos de la empresa
+        if(!is_dir($this->dir_nomina.DIRECTORY_SEPARATOR.$this->empresa->id)){
+            mkdir($this->dir_nomina.DIRECTORY_SEPARATOR.$this->empresa->id);
+        }
+        
         //Validamos si existe el directorio para las imagenes de los empleados
         $this->creada = false;
         if(!is_dir($this->dir_empleados)){
@@ -222,9 +261,9 @@ class configuracion_nomina extends fs_controller{
         }
         // archivos generados
         // $this->creada = false;
-        if(!is_dir($this->dir_archivos)){
+        if(!is_dir($this->dir_documentos_empleados)){
             $this->existe = "NO";
-            if(mkdir($this->dir_archivos)){
+            if(mkdir($this->dir_documentos_empleados)){
                 $this->existe = "SI";
                 $this->creada = true;
             }
@@ -237,32 +276,71 @@ class configuracion_nomina extends fs_controller{
 
     }
     
+    public function importar_cargos(){
+        //Cargamos los datos por primera vez
+        $this->fix_info();
+        //Movemos Cargo a la tabla de cargos y banco al campo cuenta_banco
+        $this->trasladar_datos();
+        $nomina_setup = array(
+               'nomina_migracion_informacion' => 'TRUE'
+            );
+        $this->fsvar->array_save($nomina_setup);
+        
+        //Aqui almacenamos las variables del plugin
+        $this->nomina_setup = $this->fsvar->array_get(
+            array(
+            'nomina_migracion_informacion' => 'FALSE',
+            ), FALSE
+        );
+        $this->nomina_migracion_informacion = $this->nomina_setup['nomina_migracion_informacion'];
+    }
+    
     public function tratar_ausencias(){
-        $au0 = new tipoausencias();
-        $au0->codausencia = filter_input(INPUT_POST, 'codausencia');
-        $au0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
-        $au0->aplicar_descuento = (isset($_POST['aplicar_descuento']))?filter_input(INPUT_POST, 'aplicar_descuento'):'false';
-        $au0->estado = filter_input(INPUT_POST, 'estado');
-        $estado = $au0->save();
-        if($estado){
-            $this->new_message("Datos guardados correctamente.");
-        }else{
-            $this->new_error_msg("La información con el Id ".$au0->codausencia." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+        $accion = filter_input(INPUT_POST, 'accion');
+        if($accion == 'agregar'){
+            $au0 = new tipoausencias();
+            $au0->codausencia = filter_input(INPUT_POST, 'codausencia');
+            $au0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
+            $au0->aplicar_descuento = (isset($_POST['aplicar_descuento']))?filter_input(INPUT_POST, 'aplicar_descuento'):'false';
+            $au0->estado = filter_input(INPUT_POST, 'estado');
+            $estado = $au0->save();
+            if($estado){
+                $this->new_message("Datos guardados correctamente.");
+            }else{
+                $this->new_error_msg("La información con el Id ".$au0->codausencia." No pudo ser guardada, revise los datos e intente nuevamente. Error: ".$estado);
+            }
+        }elseif($accion=='eliminar'){
+            $ausencia = $this->tipoausencias->get(\filter_input(INPUT_POST, 'codausencia'));
+            if($ausencia->delete()){
+                $this->new_message("Datos eliminados correctamente.");
+            }else{
+                $this->new_error_msg("La información no pudo ser eliminada, revise los datos e intente nuevamente");
+            }
         }
     }
 
     public function tratar_cargos(){
-        $c0 = new cargos();
-        $c0->codcargo = filter_input(INPUT_POST, 'codcargo');
-        $c0->codcategoria = filter_input(INPUT_POST, 'codcategoria');
-        $c0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
-        $c0->padre = filter_input(INPUT_POST, 'padre');
-        $c0->estado = filter_input(INPUT_POST, 'estado');
-        $estado = $c0->save();
-        if($estado){
-            $this->new_message("Datos guardados correctamente.");
-        }else{
-            $this->new_error_msg("El cargo con el Id ".$c0->codcargo." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+        $accion = \filter_input(INPUT_POST, 'accion');
+        if($accion == 'agregar'){
+            $c0 = new cargos();
+            $c0->codcargo = \filter_input(INPUT_POST, 'codcargo');
+            $c0->codcategoria = \filter_input(INPUT_POST, 'codcategoria');
+            $c0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
+            $c0->padre = \filter_input(INPUT_POST, 'padre');
+            $c0->estado = \filter_input(INPUT_POST, 'estado');
+            $estado = $c0->save();
+            if($estado){
+                $this->new_message("Datos guardados correctamente.");
+            }else{
+                $this->new_error_msg("La información con el Id ".$c0->codcargo." No pudo ser guardada, revise los datos e intente nuevamente. Error: ".$estado);
+            }
+        }elseif($accion=='eliminar'){
+            $ausencia = $this->cargos->get(\filter_input(INPUT_POST, 'codcargo'));
+            if($ausencia->delete()){
+                $this->new_message("Datos eliminados correctamente.");
+            }else{
+                $this->new_error_msg("La información no pudo ser eliminada, revise los datos e intente nuevamente");
+            }
         }
     }
 
@@ -272,196 +350,335 @@ class configuracion_nomina extends fs_controller{
             $categoria_reordenar = $ca0->get(filter_input(INPUT_GET, 'codcategoria'));
             $categoria_reordenar->reordenar(filter_input(INPUT_GET, 'reorden'));
         }else{
-            $ca0->codcategoria = filter_input(INPUT_POST, 'codcategoria');
-            $ca0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
-            $ca0->orden = (filter_input(INPUT_POST, 'orden')==0)?$ca0->get_maxorden():filter_input(INPUT_POST, 'orden');
-            $ca0->estado = filter_input(INPUT_POST, 'estado');
-            $estado = $ca0->save();
-            if($estado){
-                $this->new_message("Datos guardados correctamente.");
-            }else{
-                $this->new_error_msg("La Categoria con el Id ".$ca0->codcategoria." No pudo ser guardada, revise los datos e intente nuevamente. Error: ".$estado);
+            $accion = \filter_input(INPUT_POST, 'accion');
+            if($accion == 'agregar'){
+                $ca0->codcategoria = filter_input(INPUT_POST, 'codcategoria');
+                $ca0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
+                $ca0->orden = (filter_input(INPUT_POST, 'orden')==0)?$ca0->get_maxorden():filter_input(INPUT_POST, 'orden');
+                $ca0->estado = filter_input(INPUT_POST, 'estado');
+                $estado = $ca0->save();
+                if($estado){
+                    $this->new_message("Datos guardados correctamente.");
+                }else{
+                    $this->new_error_msg("La Categoria con el Id ".$ca0->codcategoria." No pudo ser guardada, revise los datos e intente nuevamente. Error: ".$estado);
+                }
+            }elseif($accion=='eliminar'){
+                $categorias = $this->categoriaempleado->get(\filter_input(INPUT_POST, 'codcategoria'));
+                if($categorias->delete()){
+                    $this->new_message("Datos eliminados correctamente.");
+                }else{
+                    $this->new_error_msg("La información no pudo ser eliminada, revise los datos e intente nuevamente");
+                }
             }
         }
     }
     
     public function tratar_generaciones(){
-        $gen0 = new generaciones();
-        $gen0->codgeneracion = filter_input(INPUT_POST, 'codgeneracion');
-        $gen0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
-        $gen0->inicio_generacion = filter_input(INPUT_POST, 'inicio_generacion');
-        $gen0->fin_generacion = filter_input(INPUT_POST, 'fin_generacion');
-        $gen0->estado = filter_input(INPUT_POST, 'estado');
-        $estado = $gen0->save();
-        if($estado){
-            $this->new_message("Datos guardados correctamente.");
-        }else{
-            $this->new_error_msg("La información con el Id ".$gen0->codgeneracion." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+        $accion = \filter_input(INPUT_POST, 'accion');
+        if($accion == 'agregar'){
+            $gen0 = new generaciones();
+            $gen0->codgeneracion = filter_input(INPUT_POST, 'codgeneracion');
+            $gen0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
+            $gen0->inicio_generacion = filter_input(INPUT_POST, 'inicio_generacion');
+            $gen0->fin_generacion = filter_input(INPUT_POST, 'fin_generacion');
+            $gen0->estado = filter_input(INPUT_POST, 'estado');
+            $estado = $gen0->save();
+            if($estado){
+                $this->new_message("Datos guardados correctamente.");
+            }else{
+                $this->new_error_msg("La información con el Id ".$gen0->codgeneracion." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+            }
+        }elseif($accion=='eliminar'){
+            $generaciones = $this->generaciones->get(\filter_input(INPUT_POST, 'codgeneracion'));
+            if($generaciones->delete()){
+                $this->new_message("Datos eliminados correctamente.");
+            }else{
+                $this->new_error_msg("La información no pudo ser eliminada, revise los datos e intente nuevamente");
+            }
         }
     }
     
     public function tratar_estadosciviles(){
-        $estciv0 = new estadocivil();
-        $estciv0->codestadocivil = filter_input(INPUT_POST, 'codestadocivil');
-        $estciv0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
-        $estado = $estciv0->save();
-        if($estado){
-            $this->new_message("Datos guardados correctamente.");
-        }else{
-            $this->new_error_msg("La información con el Id ".$estciv0->codestadocivil." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+        $accion = \filter_input(INPUT_POST, 'accion');
+        if($accion == 'agregar'){        
+            $estciv0 = new estadocivil();
+            $estciv0->codestadocivil = filter_input(INPUT_POST, 'codestadocivil');
+            $estciv0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
+            $estado = $estciv0->save();
+            if($estado){
+                $this->new_message("Datos guardados correctamente.");
+            }else{
+                $this->new_error_msg("La información con el Id ".$estciv0->codestadocivil." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+            }
+        }elseif($accion=='eliminar'){
+            $estadocivil = $this->estadosciviles->get(\filter_input(INPUT_POST, 'codestadocivil'));
+            if($estadocivil->delete()){
+                $this->new_message("Datos eliminados correctamente.");
+            }else{
+                $this->new_error_msg("La información no pudo ser eliminada, revise los datos e intente nuevamente");
+            }
         }
     }
     
     public function tratar_motivocese(){
-        $ing0 = new motivocese();
-        $ing0->codmotivocese = filter_input(INPUT_POST, 'codmotivocese');
-        $ing0->codtipocese = filter_input(INPUT_POST, 'codtipocese');
-        $ing0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
-        $ing0->estado = filter_input(INPUT_POST, 'estado');
-        $estado = $ing0->save();
-        if($estado){
-            $this->new_message("Datos guardados correctamente.");
-        }else{
-            $this->new_error_msg("La información con el Id ".$ing0->codmotivocese." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+        $accion = \filter_input(INPUT_POST, 'accion');
+        if($accion == 'agregar'){         
+            $ing0 = new motivocese();
+            $ing0->codmotivocese = filter_input(INPUT_POST, 'codmotivocese');
+            $ing0->codtipocese = filter_input(INPUT_POST, 'codtipocese');
+            $ing0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
+            $ing0->estado = filter_input(INPUT_POST, 'estado');
+            $estado = $ing0->save();
+            if($estado){
+                $this->new_message("Datos guardados correctamente.");
+            }else{
+                $this->new_error_msg("La información con el Id ".$ing0->codmotivocese." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+            }
+        }elseif($accion=='eliminar'){
+            $motivocese = $this->motivocese->get(\filter_input(INPUT_POST, 'codmotivocese'));
+            if($motivocese->delete()){
+                $this->new_message("Datos eliminados correctamente.");
+            }else{
+                $this->new_error_msg("La información no pudo ser eliminada, revise los datos e intente nuevamente");
+            }
         }
     }
     
     public function tratar_tipocese(){
-        $ing0 = new tipocese();
-        $ing0->codtipocese = filter_input(INPUT_POST, 'codtipocese');
-        $ing0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
-        $ing0->estado = filter_input(INPUT_POST, 'estado');
-        $estado = $ing0->save();
-        if($estado){
-            $this->new_message("Datos guardados correctamente.");
-        }else{
-            $this->new_error_msg("La información con el Id ".$ing0->codtipocese." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
-        }
+        $accion = \filter_input(INPUT_POST, 'accion');
+        if($accion == 'agregar'){          
+            $ing0 = new tipocese();
+            $ing0->codtipocese = filter_input(INPUT_POST, 'codtipocese');
+            $ing0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
+            $ing0->estado = filter_input(INPUT_POST, 'estado');
+            $estado = $ing0->save();
+            if($estado){
+                $this->new_message("Datos guardados correctamente.");
+            }else{
+                $this->new_error_msg("La información con el Id ".$ing0->codtipocese." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+            }
+        }elseif($accion=='eliminar'){
+            $tipocese = $this->tipocese->get(\filter_input(INPUT_POST, 'codtipocese'));
+            if($tipocese->delete()){
+                $this->new_message("Datos eliminados correctamente.");
+            }else{
+                $this->new_error_msg("La información no pudo ser eliminada, revise los datos e intente nuevamente");
+            }
+        }            
     }
     
     public function tratar_movimientos(){
-        $tmov0 = new tipomovimiento();
-        $tmov0->codmovimiento = filter_input(INPUT_POST, 'codmovimiento');
-        $tmov0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
-        $tmov0->estado = filter_input(INPUT_POST, 'estado');
-        $estado = $tmov0->save();
-        if($estado){
-            $this->new_message("Datos guardados correctamente.");
-        }else{
-            $this->new_error_msg("La información con el Id ".$tmov0->codmovimiento." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
-        }
+        $accion = \filter_input(INPUT_POST, 'accion');
+        if($accion == 'agregar'){         
+            $tmov0 = new tipomovimiento();
+            $tmov0->codmovimiento = filter_input(INPUT_POST, 'codmovimiento');
+            $tmov0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
+            $tmov0->estado = filter_input(INPUT_POST, 'estado');
+            $estado = $tmov0->save();
+            if($estado){
+                $this->new_message("Datos guardados correctamente.");
+            }else{
+                $this->new_error_msg("La información con el Id ".$tmov0->codmovimiento." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+            }
+        }elseif($accion=='eliminar'){
+            $tipomovimiento = $this->tipomovimiento->get(\filter_input(INPUT_POST, 'codmovimiento'));
+            if($tipomovimiento->delete()){
+                $this->new_message("Datos eliminados correctamente.");
+            }else{
+                $this->new_error_msg("La información no pudo ser eliminada, revise los datos e intente nuevamente");
+            }
+        }            
     }
     
     public function tratar_pagos(){
-        $tp0 = new tipopago();
-        $tp0->codpago = filter_input(INPUT_POST, 'codpago');
-        $tp0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
-        $tp0->es_basico = (isset($_POST['es_basico']))?filter_input(INPUT_POST, 'es_basico'):'false';
-        $tp0->estado = filter_input(INPUT_POST, 'estado');
-        $estado = $tp0->save();
-        if($estado){
-            $this->new_message("Datos guardados correctamente.");
-        }else{
-            $this->new_error_msg("La información con el Id ".$tp0->codpago." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
-        }
-        
+        $accion = \filter_input(INPUT_POST, 'accion');
+        if($accion == 'agregar'){   
+            $tp0 = new tipopago();
+            $tp0->codpago = filter_input(INPUT_POST, 'codpago');
+            $tp0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
+            $tp0->es_basico = (isset($_POST['es_basico']))?filter_input(INPUT_POST, 'es_basico'):'false';
+            $tp0->estado = filter_input(INPUT_POST, 'estado');
+            $estado = $tp0->save();
+            if($estado){
+                $this->new_message("Datos guardados correctamente.");
+            }else{
+                $this->new_error_msg("La información con el Id ".$tp0->codpago." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+            }
+        }elseif($accion=='eliminar'){
+            $tipopago = $this->tipopago->get(\filter_input(INPUT_POST, 'codpago'));
+            if($tipopago->delete()){
+                $this->new_message("Datos eliminados correctamente.");
+            }else{
+                $this->new_error_msg("La información no pudo ser eliminada, revise los datos e intente nuevamente");
+            }
+        }   
     }
     
     public function tratar_formaciones(){
-        $form0 = new formacion();
-        $form0->codformacion = filter_input(INPUT_POST, 'codformacion');
-        $form0->nombre = $this->mayusculas(filter_input(INPUT_POST, 'nombre'));
-        $form0->estado = filter_input(INPUT_POST, 'estado');
-        $estado = $form0->save();
-        if($estado){
-            $this->new_message("Datos guardados correctamente.");
-        }else{
-            $this->new_error_msg("La información con el Id ".$form0->codformacion." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
-        }
+        $accion = \filter_input(INPUT_POST, 'accion');
+        if($accion == 'agregar'){         
+            $form0 = new formacion();
+            $form0->codformacion = filter_input(INPUT_POST, 'codformacion');
+            $form0->nombre = $this->mayusculas(filter_input(INPUT_POST, 'nombre'));
+            $form0->estado = filter_input(INPUT_POST, 'estado');
+            $estado = $form0->save();
+            if($estado){
+                $this->new_message("Datos guardados correctamente.");
+            }else{
+                $this->new_error_msg("La información con el Id ".$form0->codformacion." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+            }
+        }elseif($accion=='eliminar'){
+            $formacion = $this->formacion->get(\filter_input(INPUT_POST, 'codformacion'));
+            if($formacion->delete()){
+                $this->new_message("Datos eliminados correctamente.");
+            }else{
+                $this->new_error_msg("La información no pudo ser eliminada, revise los datos e intente nuevamente");
+            }
+        }              
     }
     
     public function tratar_dependientes(){
-        $dep0 = new tipodependientes();
-        $dep0->coddependiente = filter_input(INPUT_POST, 'coddependiente');
-        $dep0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
-        $dep0->estado = filter_input(INPUT_POST, 'estado');
-        $estado = $dep0->save();
-        if($estado){
-            $this->new_message("Datos guardados correctamente.");
-        }else{
-            $this->new_error_msg("La información con el Id ".$dep0->coddependiente." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
-        }
+        $accion = \filter_input(INPUT_POST, 'accion');
+        if($accion == 'agregar'){        
+            $dep0 = new tipodependientes();
+            $dep0->coddependiente = filter_input(INPUT_POST, 'coddependiente');
+            $dep0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
+            $dep0->estado = filter_input(INPUT_POST, 'estado');
+            $estado = $dep0->save();
+            if($estado){
+                $this->new_message("Datos guardados correctamente.");
+            }else{
+                $this->new_error_msg("La información con el Id ".$dep0->coddependiente." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+            }
+        }elseif($accion=='eliminar'){
+            $formacion = $this->formacion->get(\filter_input(INPUT_POST, 'codformacion'));
+            if($formacion->delete()){
+                $this->new_message("Datos eliminados correctamente.");
+            }else{
+                $this->new_error_msg("La información no pudo ser eliminada, revise los datos e intente nuevamente");
+            }
+        }            
     }
     
     public function tratar_seguridadsocial(){
-        $ss0 = new seguridadsocial();
-        $ss0->codseguridadsocial = filter_input(INPUT_POST, 'codseguridadsocial');
-        $ss0->nombre = $this->mayusculas(filter_input(INPUT_POST, 'nombre'));
-        $ss0->nombre_corto = $this->mayusculas(filter_input(INPUT_POST, 'nombre_corto'));
-        $ss0->tipo = $this->mayusculas(filter_input(INPUT_POST, 'tipo'));
-        $ss0->estado = filter_input(INPUT_POST, 'estado');
-        $estado = $ss0->save();
-        if($estado){
-            $this->new_message("Datos guardados correctamente.");
-        }else{
-            $this->new_error_msg("La información con el Id ".$ss0->codseguridadsocial." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+        $accion = filter_input(INPUT_POST, 'accion');
+        if($accion == 'agregar'){
+            $ss0 = new seguridadsocial();
+            $ss0->codseguridadsocial = filter_input(INPUT_POST, 'codseguridadsocial');
+            $ss0->nombre = $this->mayusculas(filter_input(INPUT_POST, 'nombre'));
+            $ss0->nombre_corto = $this->mayusculas(filter_input(INPUT_POST, 'nombre_corto'));
+            $ss0->tipo = $this->mayusculas(filter_input(INPUT_POST, 'tipo'));
+            $ss0->estado = filter_input(INPUT_POST, 'estado');
+            $estado = $ss0->save();
+            if($estado){
+                $this->new_message("Datos guardados correctamente.");
+            }else{
+                $this->new_error_msg("La información con el Id ".$ss0->codseguridadsocial." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+            }
+        }elseif($accion=='eliminar'){
+            $segsoc = $this->seguridadsocial->get(\filter_input(INPUT_POST, 'codseguridadsocial'));
+            if($segsoc->delete()){
+                $this->new_message("Datos eliminados correctamente.");
+            }else{
+                $this->new_error_msg("La información no pudo ser eliminada, revise los datos e intente nuevamente");
+            }
         }
     }
     
     public function tratar_sistemapension(){
-        $ss0 = new sistemapension();
-        $ss0->codsistemapension = filter_input(INPUT_POST, 'codsistemapension');
-        $ss0->nombre = $this->mayusculas(filter_input(INPUT_POST, 'nombre'));
-        $ss0->nombre_corto = $this->mayusculas(filter_input(INPUT_POST, 'nombre_corto'));
-        $ss0->tipo = $this->mayusculas(filter_input(INPUT_POST, 'tipo'));
-        $ss0->estado = filter_input(INPUT_POST, 'estado');
-        $estado = $ss0->save();
-        if($estado){
-            $this->new_message("Datos guardados correctamente.");
-        }else{
-            $this->new_error_msg("La información con el Id ".$ss0->codsistemapension." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+        $accion = filter_input(INPUT_POST, 'accion');
+        if($accion == 'agregar'){
+            $ss0 = new sistemapension();
+            $ss0->codsistemapension = filter_input(INPUT_POST, 'codsistemapension');
+            $ss0->nombre = $this->mayusculas(filter_input(INPUT_POST, 'nombre'));
+            $ss0->nombre_corto = $this->mayusculas(filter_input(INPUT_POST, 'nombre_corto'));
+            $ss0->tipo = $this->mayusculas(filter_input(INPUT_POST, 'tipo'));
+            $ss0->estado = filter_input(INPUT_POST, 'estado');
+            $estado = $ss0->save();
+            if($estado){
+                $this->new_message("Datos guardados correctamente.");
+            }else{
+                $this->new_error_msg("La información con el Id ".$ss0->codsistemapension." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+            }
+        }elseif($accion=='eliminar'){
+            $sispen = $this->sistemapension->get(\filter_input(INPUT_POST, 'codsistemapension'));
+            if($sispen->delete()){
+                $this->new_message("Datos eliminados correctamente.");
+            }else{
+                $this->new_error_msg("La información no pudo ser eliminada, revise los datos e intente nuevamente");
+            }
         }
     }
     
     public function tratar_sindicalizacion(){
-        $sind0 = new sindicalizacion();
-        $sind0->idsindicato = filter_input(INPUT_POST, 'idsindicato');
-        $sind0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
-        $sind0->estado = filter_input(INPUT_POST, 'estado');
-        $estado = $sind0->save();
-        if($estado){
-            $this->new_message("Datos guardados correctamente.");
-        }else{
-            $this->new_error_msg("La información con el Id ".$sind0->idsindicato." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+        $accion = filter_input(INPUT_POST, 'accion');
+        if($accion == 'agregar'){
+            $sind0 = new sindicalizacion();
+            $sind0->idsindicato = filter_input(INPUT_POST, 'idsindicato');
+            $sind0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
+            $sind0->estado = filter_input(INPUT_POST, 'estado');
+            $estado = $sind0->save();
+            if($estado){
+                $this->new_message("Datos guardados correctamente.");
+            }else{
+                $this->new_error_msg("La información con el Id ".$sind0->idsindicato." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+            }
+        }elseif($accion=='eliminar'){
+            $sindicalizacion = $this->sindicalizacion->get(\filter_input(INPUT_POST, 'idsindicato'));
+            if($sindicalizacion->delete()){
+                $this->new_message("Datos eliminados correctamente.");
+            }else{
+                $this->new_error_msg("La información no pudo ser eliminada, revise los datos e intente nuevamente");
+            }
         }
     }
     
     public function tratar_tipoempleado(){
-        $te0 = new tipoempleado();
-        $te0->codtipo = filter_input(INPUT_POST, 'codtipo');
-        $te0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
-        $te0->estado = filter_input(INPUT_POST, 'estado');
-        $estado = $te0->save();
-        if($estado){
-            $this->new_message("Datos guardados correctamente.");
-        }else{
-            $this->new_error_msg("La información con el Id ".$te0->codtipo." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+        $accion = filter_input(INPUT_POST, 'accion');
+        if($accion == 'agregar'){
+            $te0 = new tipoempleado();
+            $te0->codtipo = filter_input(INPUT_POST, 'codtipo');
+            $te0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
+            $te0->estado = filter_input(INPUT_POST, 'estado');
+            $estado = $te0->save();
+            if($estado){
+                $this->new_message("Datos guardados correctamente.");
+            }else{
+                $this->new_error_msg("La información con el Id ".$te0->codtipo." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+            }
+        }elseif($accion=='eliminar'){
+            $tipoempleado = $this->tipoempleado->get(\filter_input(INPUT_POST, 'codtipo'));
+            if($tipoempleado->delete()){
+                $this->new_message("Datos eliminados correctamente.");
+            }else{
+                $this->new_error_msg("La información no pudo ser eliminada, revise los datos e intente nuevamente");
+            }
         }
     }
     
     public function tratar_organizacion(){
-        $org0 = new organizacion();
-        $org0->codorganizacion = filter_input(INPUT_POST, 'codorganizacion');
-        $org0->padre = filter_input(INPUT_POST, 'padre');
-        $org0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
-        $org0->tipo = $this->mayusculas(filter_input(INPUT_POST, 'tipo'));
-        $org0->estado = filter_input(INPUT_POST, 'estado');
-        $estado = $org0->save();
-        if($estado){
-            $this->new_message("Datos guardados correctamente.");
-        }else{
-            $this->new_error_msg("La información con el Id ".$org0->codorganizacion." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
-        }
+        $accion = filter_input(INPUT_POST, 'accion');
+        if($accion == 'agregar'){        
+            $org0 = new organizacion();
+            $org0->codorganizacion = filter_input(INPUT_POST, 'codorganizacion');
+            $org0->padre = filter_input(INPUT_POST, 'padre');
+            $org0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
+            $org0->tipo = $this->mayusculas(filter_input(INPUT_POST, 'tipo'));
+            $org0->estado = filter_input(INPUT_POST, 'estado');
+            $estado = $org0->save();
+            if($estado){
+                $this->new_message("Datos guardados correctamente.");
+            }else{
+                $this->new_error_msg("La información con el Id ".$org0->codorganizacion." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+            }
+        }elseif($accion=='eliminar'){
+            $organizacion = $this->organizacion->get(\filter_input(INPUT_POST, 'codorganizacion'));
+            if($organizacion->delete()){
+                $this->new_message("Datos eliminados correctamente.");
+            }else{
+                $this->new_error_msg("La información no pudo ser eliminada, revise los datos e intente nuevamente");
+            }
+        }            
         
     }
     
@@ -533,23 +750,13 @@ class configuracion_nomina extends fs_controller{
     }
 
     public function share_extensions(){
-        $fsext1 = new fs_extension(array(
-            'name' => 'cargar_empleados_button',
-            'page_from' => __CLASS__,
-            'page_to' => 'admin_agentes',
-            'type' => 'button',
-            'text' => '<span class="fa fa-upload" aria-hidden="true"></span> &nbsp; Cargar Empleados',
-            'params' => ''
-        ));
-        $fsext1->delete();
         $extensiones = array(
-
             array(
                 'name' => 'nuevo_agente_js',
                 'page_from' => __CLASS__,
                 'page_to' => 'admin_agente',
                 'type' => 'head',
-                'text' => '<script src="plugins/nomina/view/js/nomina.js" type="text/javascript"></script>',
+                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/nomina.js" type="text/javascript"></script>',
                 'params' => ''
             ),
             array(
@@ -557,23 +764,7 @@ class configuracion_nomina extends fs_controller{
                 'page_from' => __CLASS__,
                 'page_to' => 'admin_agente',
                 'type' => 'head',
-                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="plugins/nomina/view/css/nomina.css"/>',
-                'params' => ''
-            ),
-            array(
-                'name' => 'nuevo_empleado_js',
-                'page_from' => __CLASS__,
-                'page_to' => 'admin_agentes',
-                'type' => 'head',
-                'text' => '<script src="plugins/nomina/view/js/nomina.js" type="text/javascript"></script>',
-                'params' => ''
-            ),
-            array(
-                'name' => 'nuevo_empleado_css',
-                'page_from' => __CLASS__,
-                'page_to' => 'admin_agentes',
-                'type' => 'head',
-                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="plugins/nomina/view/css/nomina.css"/>',
+                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/nomina.css"/>',
                 'params' => ''
             ),
             array(
@@ -631,22 +822,6 @@ class configuracion_nomina extends fs_controller{
                 'type' => 'tab',
                 'text' => '<span class="fa fa-clock-o" aria-hidden="true"></span> &nbsp; Control de Horas',
                 'params' => '&type=control_horas'
-            ),
-            array(
-                'name' => 'importar_agentes_js',
-                'page_from' => __CLASS__,
-                'page_to' => 'importar_agentes',
-                'type' => 'head',
-                'text' => '<script src="plugins/nomina/view/js/nomina.js" type="text/javascript"></script>',
-                'params' => ''
-            ),
-            array(
-                'name' => 'importar_agentes_css',
-                'page_from' => __CLASS__,
-                'page_to' => 'importar_agentes',
-                'type' => 'head',
-                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="plugins/nomina/view/css/nomina.css"/>',
-                'params' => ''
             ),
             //Tabs de Configuracion
             array(
@@ -782,7 +957,7 @@ class configuracion_nomina extends fs_controller{
                 'page_from' => __CLASS__,
                 'page_to' => __CLASS__,
                 'type' => 'head',
-                'text' => '<script src="plugins/nomina/view/js/nomina.js" type="text/javascript"></script>',
+                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/nomina.js" type="text/javascript"></script>',
                 'params' => ''
             ),
             array(
@@ -790,7 +965,7 @@ class configuracion_nomina extends fs_controller{
                 'page_from' => __CLASS__,
                 'page_to' => __CLASS__,
                 'type' => 'head',
-                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="plugins/nomina/view/css/nomina.css"/>',
+                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/nomina.css"/>',
                 'params' => ''
             ),
             array(
@@ -798,7 +973,7 @@ class configuracion_nomina extends fs_controller{
                 'page_from' => __CLASS__,
                 'page_to' => __CLASS__,
                 'type' => 'head',
-                'text' => '<script src="plugins/nomina/view/js/bootstrap-treeview.min.js" type="text/javascript"></script>',
+                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/bootstrap-treeview.min.js" type="text/javascript"></script>',
                 'params' => ''
             ),
             array(
@@ -806,7 +981,7 @@ class configuracion_nomina extends fs_controller{
                 'page_from' => __CLASS__,
                 'page_to' => __CLASS__,
                 'type' => 'head',
-                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="plugins/nomina/view/css/bootstrap-treeview.min.css"/>',
+                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/bootstrap-treeview.min.css"/>',
                 'params' => ''
             ),
             array(
@@ -814,7 +989,7 @@ class configuracion_nomina extends fs_controller{
                 'page_from' => __CLASS__,
                 'page_to' => __CLASS__,
                 'type' => 'head',
-                'text' => '<script src="plugins/nomina/view/js/pace.min.js" type="text/javascript"></script>',
+                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/pace.min.js" type="text/javascript"></script>',
                 'params' => ''
             ),
         );

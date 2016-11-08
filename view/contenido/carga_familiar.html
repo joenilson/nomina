@@ -15,5 +15,139 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-Carga Familiar del empleado {$fsc->agente->nombreap}
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            <a class="btn btn-sm btn-primary" href="{$fsc->url()}&type=carga_familiar" title="Recargar la página">
+                <span class="glyphicon glyphicon-refresh"></span>
+            </a>
+            Carga Familiar del empleado {$fsc->agente->nombreap}
+        </h3>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="col-sm-4">
+                    <button class="btn btn-sm btn-primary" type="button" name="accion" value="agregar" data-toggle="modal" data-target="#agregarCargaFamiliar">
+                        <span class="fa fa-plus"></span>&nbsp;Agregar Dependiente
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-responsive">
+                <thead>
+                    <tr>
+                        <th class="col-sm-3">Nombre </th>
+                        <th class="col-sm-2">Fec Nac</th>
+                        <th class="col-sm-1">Genero</th>
+                        <th class="col-sm-1">Doc Identidad</th>
+                        <th class="col-sm-2">Relación</th>
+                        <th class="col-sm-2">Grado Academ.</th>                        
+                        <th class="col-sm-1"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <form action="{$fsc->url()}&type=carga_familiar" method="POST" class="form" role="form">
+                        <tr>
+                            <td>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <input type="text" name="nombres" required class="form-control input-sm" placeholder="Nombres">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <input type="text" name="apellido_paterno" required class="form-control input-sm" placeholder="Apellido Paterno">
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <input type="text" name="apellido_materno" class="form-control input-sm" placeholder="Apellido Materno">
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="row"> 
+                                    <div class="col-sm-12 rango">
+                                        <input type="text" id="f_nacimiento" required name="f_nacimiento" class="form-control input-sm">
+                                        <span class="fa fa-calendar"></span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <label><input class="radio-inline radio-control" type="radio" name="genero" value="M"/> Masculino</label>
+                                <label><input class="radio-inline radio-control" type="radio" name="genero" value="F"/> Femenino</label>
+                            </td>
+                            <td><input type="text" name="doc_identidad" class="form-control input-sm"></td>                            
+                            <td>
+                                <select class="form-control input-sm" required name="tipo_dependiente">
+                                    <option value="">--------</option>
+                                    {loop="$fsc->tipodependientes->all()"}
+                                    <option value="{$value->coddependiente}">{$value->descripcion}</option>
+                                    {/loop}
+                                </select>
+                            </td>                            
+                            <td>
+                                <select class="form-control input-sm" name="grado_academico">
+                                    <option value="">--------</option>
+                                    {loop="$fsc->formacion->all()"}
+                                    <option value="{$value->codformacion}">{$value->nombre}</option>
+                                    {/loop}
+                                </select>
+                            </td>
+                            <td>
+                                <button type="submit" name="accion" value="agregar" class="btn btn-sm btn-primary"  data-toggle="tooltip" data-placement="top" title="Agregar Dependiente" onclick="return confirm('Estan los datos correctos?')">
+                                    <span class="fa fa-user-plus"></span>
+                                </button>
+                            </td>
+                        </tr>
+                    </form>
+                    {loop="$fsc->agente->dependientes"}
+                    <form action="{$fsc->url()}&type=carga_familiar" method="POST" class="form" role="form">
+                        <tr>
+                            <td>
+                            <input type="hidden" name="id" value="{$value->id}">
+                            <input type="hidden" name="codagente" value="{$value->codagente}">
+                            {$value->nombreap()}
+                            </td>
+                            <td>
+                            {$value->f_nacimiento}
+                            </td>
+                            <td>
+                            {$value->genero}
+                            </td>
+                            <td>
+                            {$value->docidentidad}
+                            </td>
+                            <td>
+                            {$value->desc_tipodependiente}
+                            </td>
+                            <td>
+                            {$value->desc_grado_academico}
+                            </td>
+                            <td>
+                            {if="$fsc->allow_delete"}
+                            <button type="submit" class="btn btn-sm btn-danger" name="accion" value="eliminar" onclick="return confirm('Esta seguro que quiere eliminar este dependiente?');">
+                                <span class="fa fa-user-times"></span>
+                            </button>
+                            {/if}
+                            </td>
+                        </tr>
+                    </form>
+                    {/loop}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var locale_user = 'es';
+    $(document).ready(function() {
+        /*
+         * Llamamos a la libreria daterangepicker para que nos genere el calendario y le indicamos que no cree el timer
+         */
+        fecha('f_nacimiento', 'YYYY-MM-DD', false);
+    });
+</script>
 {include="footer"}

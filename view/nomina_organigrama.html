@@ -1,0 +1,161 @@
+{include="header"}
+<!--
+Copyright (C) 2016 Joe Nilson <joenilson at gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-2 col-xs-2">
+            <div class="btn-group hidden-xs">
+                <a class="btn btn-sm btn-default" href="{$fsc->url()}" title="Recargar la página">
+                    <span class="glyphicon glyphicon-refresh"></span>
+                </a>
+                {if="$fsc->page->is_default()"}
+                <a class="btn btn-sm btn-default active" href="{$fsc->url()}&amp;default_page=FALSE" title="desmarcar como página de inicio">
+                    <span class="glyphicon glyphicon-home"></span>
+                </a>
+                {else}
+                <a class="btn btn-sm btn-default" href="{$fsc->url()}&amp;default_page=TRUE" title="marcar como página de inicio">
+                    <span class="glyphicon glyphicon-home"></span>
+                </a>
+                {/if}
+            </div>
+        </div>
+        <div class='col-sm-6 col-xs-6 pull-left'>
+            <form name="mostrar_org" method="POST" action="{$fsc->url()}" class="form">
+                <div class="row">
+                    <div class="form-group-sm col-sm-3">
+                        <label class="control-label" for="codalmacen">Almacén</label>
+                        <select class="form-control" name="codalmacen" id="codalmacen">
+                            <option value="">-------</option>
+                            {loop="$fsc->almacenes->all()"}
+                            <option value="{$value->codalmacen}">{$value->nombre}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group-sm col-sm-3">
+                        <label class="control-label" for="codgerencia">Gerencia</label>
+                        <select class="form-control" name="codgerencia" id="codgerencia">
+                            <option value="">-------</option>
+                            {loop="$fsc->organizacion->all_tipo('GERENCIA')"}
+                            <option value="{$value->codorganizacion}">{$value->descripcion}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group-sm col-sm-3">
+                        <label class="control-label" for="codarea">Area</label>
+                        <select class="form-control" name="codarea" id="codarea">
+                            <option value="">-------</option>
+                            {loop="$fsc->organizacion->all_tipo('AREA')"}"
+                            <option value="{$value->codorganizacion}">{$value->descripcion}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                    <div class="col-sm-3">
+                        <input type="hidden" name="selected-node" id="selected-node" value="">
+                        <button class="btn btn-sm btn-primary" type="button" id="btn-mostrar" onClick="dibujar_organigrama()">
+                            <span class="fa fa-search"></span>&nbsp;Mostrar
+                        </button>
+                        <button class="btn btn-sm btn-warning" type="button" id="btn-selected-node" style="display: none;">
+                            <span class="fa fa-user-md"></span>&nbsp;Editar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-sm-4 col-xs-4 text-right">
+            <h2>
+                <span class="fa fa-share-alt"></span>&nbsp; Organigrama
+            </h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <p class="help-block">
+                <span class="fa fa-circle-thin"></span>&nbsp;Puedes seleccionar un Almacén, Gerencia o Area para filtrar la información o dejar estos cambios en blanco.<br/>
+                <span class="fa fa-circle-thin"></span>&nbsp;Si el organigrama es muy grande, mueve la rueda del mouse para que se active el zoom.<br/>
+                <span class="fa fa-circle-thin"></span>&nbsp;Si el organigrama es muy grande, dale un click al organigrama y manten presionado para que te desplaces dentro del mismo.
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12" id="organigrama-completo"></div>
+    </div>
+</div>
+<script>
+    var url_organigrama = '{$fsc->url()}';
+    function cargar_organigrama() {
+        var listado;
+        var almacen = mostrar_org.codalmacen.value;
+        var gerencia = mostrar_org.codgerencia.value;
+        var area = mostrar_org.codarea.value;
+        $.ajax({
+            type: 'GET',
+            url: url_organigrama,
+            data: 'type=organigrama-completo&almacen='+almacen+'&gerencia='+gerencia+'&area='+area,
+            async: false,
+            success: function (response) {
+                if (response.length !== 0) {
+                    listado = response;
+                } else {
+                    listado = false;
+                }
+            },
+            error: function (response) {
+                alert(response);
+            }
+        });
+        return listado;
+    }
+    
+    function dibujar_organigrama(){
+        $('#organigrama-completo').html('');
+        var organigrama = cargar_organigrama();
+        $('#organigrama-completo').orgchart({
+            'data': organigrama.data,
+            'depth': organigrama.depth,
+            'nodeContent': 'title',
+            'exportButton': true,
+            'exportButtonText': 'Exportar',
+            'exportFilename': 'Organigrama',
+            'pan': true,
+            'zoom': true,
+            'createNode': function($node, $data) {
+                if(typeof($data.foto) !== 'undefined'){
+                    $('<image class="img-circle" width="auto" height="80" src="' + $data.foto + '" />')
+                    .appendTo($('<div class="node"></div>')
+                    .insertBefore($node.find('.title')));
+                }
+            }
+        }).on('click', '.node', function() {
+            var $this = $(this);
+            $('#selected-node').val($this[0].id);
+            $('#btn-selected-node').show();
+        })
+        .on('click', '.orgchart', function(event) {
+            if (!$(event.target).closest('.node').length) {
+                $('#selected-node').val('');
+                $('#btn-selected-node').hide();
+            }
+        }).on('touchmove', function(event) {
+            event.preventDefault();
+        });
+    }
+
+    $(document).ready(function () {
+        
+    });
+</script>
+{include="footer"}

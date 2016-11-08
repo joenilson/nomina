@@ -15,5 +15,139 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-Contratos del empleado {$fsc->agente->nombreap}
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            <a class="btn btn-sm btn-primary" href="{$fsc->url()}&type=contratos" title="Recargar la página">
+                <span class="glyphicon glyphicon-refresh"></span>
+            </a>
+            Contratos del empleado {$fsc->agente->nombreap}
+        </h3>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="col-sm-4">
+                    <button class="btn btn-sm btn-primary" type="button" name="accion" value="agregar" data-toggle="modal" data-target="#agregarContrato">
+                        <span class="fa fa-plus"></span>&nbsp;Agregar Contrato
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-responsive">
+                <thead>
+                    <tr>
+                        <th class="col-sm-2">Contrato</th>
+                        <th class="col-sm-3">Tipo</th>
+                        <th class="col-sm-1">Fecha Inicio</th>
+                        <th class="col-sm-1">Fecha Fin</th>
+                        <th class="col-sm-2">Duracion</th>
+                        <th class="col-sm-1 text-center">Estado</th>
+                        <th class="col-sm-2"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {loop="$fsc->agente->contratos"}
+                <form action="{$fsc->url()}&type=contratos" method="POST" class="form" role="form">
+                        <tr>
+                            <td>
+                            <button class="btn btn-sm btn-default" type="button" onclick="visualizarDocumento('{$fsc->dir_documentos_empleados}/{$value->contrato}');">
+                                <span class="fa fa-file-pdf-o"></span>&nbsp;Ver Contrato
+                            </button>
+                            <input type="hidden" name="id" value="{$value->id}">
+                            <input type="hidden" name="codagente" value="{$value->codagente}">
+                            </td>
+                            <td>
+                            {$value->desc_tipocontrato}
+                            </td>
+                            <td>
+                            {$value->fecha_inicio}
+                            </td>
+                            <td>
+                            {$value->fecha_fin}
+                            </td>
+                            <td>
+                            {$value->duracion_contrato()}
+                            </td>
+                            <td class="text-center">
+                                <span class="fa fa-2x {if="$value->estado"}fa-toggle-on{else}fa-toggle-off{/if}"></span>
+                            </td>
+                            <td>
+                            {if="$fsc->allow_delete"}
+                            <button type="submit" class="btn btn-sm btn-danger" name="accion" value="eliminar" onclick="return confirm('Esta seguro que quiere eliminar este documento?');">
+                                <span class="fa fa-trash"></span>
+                            </button>
+                            {/if}
+                            </td>
+                        </tr>
+                    </form>
+                    {/loop}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="agregarContrato" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Agregar Contrato</h4>
+            </div>
+            <form class="form form-horizontal" enctype="multipart/form-data" role="form" action="{$fsc->url()}&type=contratos" method="POST">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="control-label col-sm-4" for="tipo_contrato">Tipo de Contrato</label>
+                        <div class="col-sm-6">
+                        <select name="tipo_contrato" id="tipo_contrato" class="form-control input-sm" required>
+                            <option value="">Elige un Tipo</option>
+                            {loop="$fsc->tipoempleado->all()"}
+                            <option value="{$value->codtipo}">{$value->descripcion}</option>
+                            {/loop}
+                        </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4" for="c_rango">Duracion Contrato</label>
+                        <div class="col-sm-6 rango">
+                            <input type="text" id="c_rango" class="form-control input-sm">
+                            <span class="fa fa-calendar"></span>
+                            <input type="hidden" name="f_desde" id="c_desde" value="">
+                            <input type="hidden" name="f_hasta" id="c_hasta" value="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4" for="documento">Contrato</label>
+                        <div class="col-sm-8">
+                            <label class="btn btn-sm btn-default btn-file">
+                                <span>Elegir&hellip;</span> <input type="file" required accept="application/pdf" style="display: none;" name="documento" class="form-control input-sm" id="documento" onchange="$(this).prev('span').text($(this).val()!=''?$(this).val():'Elegir &hellip;')">
+                            </label>
+                            <span class="help-block">Suba el documento en formato <b>PDF</b></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4" for="estado_contrato">Estado</label>
+                        <div class="col-sm-6">
+                            <input id="estado_contrato" type="checkbox" name="estado" data-label-text="Activo" data-off-text="No" checked data-on-text="Si">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><span class="fa fa-remove"></span>&nbsp;Cerrar</button>
+                    <button type="submit" class="btn btn-sm btn-primary" name="accion" value="agregar" onclick="return confirm('Esta seguro que todos los datos están correctos?');"><span class="fa fa-save"></span>&nbsp;Agregar</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+{include="contenido/visualizador"}
+<script type="text/javascript">
+    var locale_user = 'es';
+    rango_fechas('c_rango', 'c_desde', 'c_hasta', 'YYYY-MM-DD', false, false);
+    $(document).ready(function () {
+        $('#estado_contrato').bootstrapSwitch();
+        $('input[name=\"estado\"]').bootstrapSwitch();
+    });
+</script>
 {include="footer"}

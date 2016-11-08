@@ -144,7 +144,8 @@ class formacion extends fs_model{
     }
 
     public function delete(){
-        return false;
+        $sql = "DELETE FROM ".$this->table_name." WHERE codformacion = ".$this->var2str($this->codformacion).";";
+        return $this->db->exec($sql);
     }
 
     public function corregir(){

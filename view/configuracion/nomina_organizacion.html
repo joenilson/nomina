@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         $('#tree').treeview({
             highlightSelected: true,
             showTags: true,
+            showLabels: true,
             data: cargarEstructura(),
             onNodeSelected: function (event, node) {
                 $('#node-id').val(node.nodeId);
@@ -76,10 +77,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             f_edit_node.tipo.value = nodo.tipo.toUpperCase();
             f_edit_node.estado.checked = (nodo.estado) ? true : false;
             f_edit_node.estado.value = (nodo.estado) ? "true" : "false";
+            console.log(nodo.en_uso);
+            if(nodo.en_uso !== '0'){
+                $('#btn-eliminar-uo').hide();
+                $('#span-qdad-empleados').html(nodo.en_uso);
+                $('#btn-bloqueo-uo').show();
+            }else{
+                $('#btn-eliminar-uo').show();
+                $('#btn-bloqueo-uo').hide();
+            }
+            
             $('#modal-edit-node').modal('show');
         });
         
         $('#btn-add-org').on('click', function (e){
+            $('#btn-eliminar-uo').hide();
+            $('#btn-bloqueo-uo').hide();
             $('#modal-edit-node').modal('show');
         });
         
@@ -199,14 +212,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <div class="col-sm-offset-2 col-sm-10">
                                 <div class="checkbox">
                                     <label>
-                                        <input type="checkbox" name="estado" value="" onchange="this.value = (this.value === 'true') ? 'false' : 'true';"> Activo
+                                        <input type="checkbox" name="estado" value="true" checked onchange="this.value = (this.value === 'true') ? 'false' : 'true';"> Activo
                                     </label>
                                 </div>
                             </div>
                         </div>
                         <div class="form-group">
-                            <button type="button" class="btn btn-sm btn-default pull-left" data-dismiss="modal">Cerrar</button>
-                            <button type="submit" class="btn btn-sm btn-primary pull-right" id="btn-modal-submit">Guardar Cambios</button>
+                            <button id="btn-eliminar-uo" class="btn btn-sm btn-danger pull-left" type="submit" name="accion" value="eliminar" onclick="return confirm('Esta Seguro que quiere eliminar esta entrada?')">
+                                <span class="fa fa-trash"></span>&nbsp;Eliminar
+                            </button>
+                            <button id="btn-bloqueo-uo" class="btn btn-sm btn-warning pull-left" type="button"  data-toggle="tooltip" data-placement="top" title="Hay empleados en esta Unidad Organizativa, no se puede eliminar.">
+                                <span class="fa fa-lock"></span>&nbsp;En Uso por <b id="span-qdad-empleados"></b> empleados
+                            </button>
+                            <button type="submit" class="btn btn-sm btn-primary pull-right" name="accion" value="agregar" id="btn-modal-submit">Guardar</button>
                         </div>
                     </div>
                 </form>

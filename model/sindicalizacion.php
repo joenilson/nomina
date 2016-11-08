@@ -140,7 +140,13 @@ class sindicalizacion extends fs_model{
     }
 
     public function delete(){
-        return false;
+        $sql = "DELETE FROM ".$this->table_name." WHERE idsindicato = ".$this->var2str($this->idsindicato).";";
+        $data = $this->db->exec($sql);
+        if($data){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     public function corregir(){

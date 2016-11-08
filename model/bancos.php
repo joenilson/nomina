@@ -176,7 +176,8 @@ class bancos extends fs_model{
     }
 
     public function delete(){
-        return false;
+        $sql = "DELETE FROM ".$this->table_name." WHERE codbanco = ".$this->var2str($this->codbanco).";";
+        return $this->db->exec($sql);
     }
 
     public function corregir(){
