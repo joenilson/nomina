@@ -47,7 +47,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <input type="hidden" name="estado" value="true">
                             </td>
                             <td>
-                                <button type="submit" class="btn btn-sm btn-primary">
+                                <button type="submit" class="btn btn-sm btn-primary" name='accion' value='agregar'>
                                     <span class="fa fa-save"></span> Nuevo
                                 </button>
                             </td>
@@ -70,11 +70,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </td>
                             <td class="text-right">
                                 {if="$fsc->allow_delete"}
-                                <button class="btn btn-sm btn-danger">
+                                <button class="btn btn-sm btn-danger" name='accion' value='eliminar' onclick="return confirm('Esta seguro que quiere eliminar el tipo de ausencia: {$value->descripcion}?');">
                                     <span class="fa fa-trash"></span>
                                 </button>
                                 {/if}
-                                <button class="btn btn-sm btn-primary">
+                                <button class="btn btn-sm btn-primary" name='accion' value='agregar'>
                                     <span class="fa fa-save"></span>
                                 </button>
                             </td>

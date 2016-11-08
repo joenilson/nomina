@@ -89,7 +89,7 @@ class estadocivil extends fs_model{
         }else{
             //INSERT DATA
             $sql = "INSERT INTO ".$this->table_name." (codestadocivil, descripcion) VALUES (".
-                $this->var2str($this->get_new_codigo()).", ".
+                $this->var2str($this->codestadocivil).", ".
                 $this->var2str($this->descripcion).");";
             return $this->db->exec($sql);
         }

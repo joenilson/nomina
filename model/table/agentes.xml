@@ -137,7 +137,7 @@
     </columna>
     <columna>
         <nombre>estado_civil</nombre>
-        <tipo>character varying(1)</tipo>
+        <tipo>character varying(3)</tipo>
         <nulo>YES</nulo>
     </columna>
     <columna>

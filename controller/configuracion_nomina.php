@@ -335,7 +335,7 @@ class configuracion_nomina extends fs_controller{
                 $this->new_error_msg("La información con el Id ".$c0->codcargo." No pudo ser guardada, revise los datos e intente nuevamente. Error: ".$estado);
             }
         }elseif($accion=='eliminar'){
-            $ausencia = $this->cargos->get(\filter_input(INPUT_POST, 'codcargo'));
+            $ausencia = $this->cargo->get(\filter_input(INPUT_POST, 'codcargo'));
             if($ausencia->delete()){
                 $this->new_message("Datos eliminados correctamente.");
             }else{
