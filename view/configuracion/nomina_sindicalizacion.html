@@ -58,7 +58,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <input type="text" name="descripcion" value="{$value->descripcion}" autocomplete="off" class="form-control input-sm">
                         </td>
                         <td class="text-center">
-                            <input type="checkbox" onchange="this.value = (this.value === 'true') ? 'false' : 'true';" name="estado" value="{if="$value->estado"}true{else}false{/if}" {if="$value->estado"}checked{/if} class="checkbox-control">
+                            <input type="checkbox" onchange="this.value=(this.value==='true')?'false':'true';" name="estado" value="{if="$value->estado"}true{else}false{/if}" {if="$value->estado"}checked{/if} class="checkbox-control">
                         </td>
                         <td class="text-right">
                             {if="$fsc->allow_delete"}
