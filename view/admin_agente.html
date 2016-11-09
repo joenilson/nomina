@@ -2,12 +2,12 @@
 {if="$fsc->agente"}
 <script type="text/javascript" src="{$fsc->get_js_location('provincias.js')}"></script>
 <script type="text/javascript">
-    var locale_user = 'fr';
+    var locale_user = 'es';
     var url_organizacion = '{$fsc->url()}&type=organizacion';
     $(document).ready(function () {
         $("#b_delete_agente").click(function (event) {
             event.preventDefault();
-            if (confirm("¿Realmente desea eliminar el agente?"))
+            if (confirm("¿Realmente desea eliminar el agente?, Esta operacion no se puede deshacer!"))
             {
                 window.location.href = '{$fsc->ppage->url()}&delete={$fsc->agente->codagente}';
             }
@@ -417,7 +417,12 @@
                                                     <label class="control-label">
                                                         Nº Seguridad Social:
                                                     </label>
-                                                    <input class="form-control input-sm" type="text" name="seg_social" value="{$fsc->agente->seg_social}" autocomplete="off"/>
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon">
+                                                            <i class="fa fa-id-card-o" aria-hidden="true"></i>
+                                                        </span>
+                                                        <input class="form-control input-sm" type="text" name="seg_social" value="{$fsc->agente->seg_social}" autocomplete="off"/>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="col-sm-3">
@@ -459,7 +464,12 @@
                                                     <label class="control-label">
                                                         Cuenta Bancaria:
                                                     </label>
-                                                    <input class="form-control input-sm" type="text" name="cuenta_banco" value="{$fsc->agente->cuenta_banco}" autocomplete="off"/>
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon">
+                                                           <span class="glyphicon glyphicon-credit-card"></span>
+                                                        </span>
+                                                        <input class="form-control input-sm" type="text" name="cuenta_banco" value="{$fsc->agente->cuenta_banco}" autocomplete="off"/>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="col-sm-2">
@@ -505,12 +515,11 @@
                                         <span class="help-block">Los campos con un <span style="color: #bf0000;" class="fa fa-asterisk"></span> son obligatorios</span>
                                     </div>
                                     <div class="col-sm-2 text-right">
-                                        <button class="btn btn-sm btn-primary" type="submit">
+                                        <button class="btn btn-sm btn-primary" type="submit" name="accion" value="agregar">
                                             <span class="glyphicon glyphicon-floppy-disk"></span> &nbsp; Guardar
                                         </button>
                                     </div>
                                 </div>
-                                
                             </div>
                         </div>
                     </form>

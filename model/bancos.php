@@ -49,6 +49,7 @@ class bancos extends fs_model{
      * @var type $estado Boolean
      */
     public $estado;
+    
     public function __construct($t = FALSE) {
         parent::__construct('bancos');
         if($t){
@@ -67,9 +68,10 @@ class bancos extends fs_model{
     protected function install() {
         return "INSERT INTO ".$this->table_name.
                 " (codbanco, nombre, tipo, estado) VALUES".
-                " ('1','BANCO PLANITLLA','BANCO',TRUE),".
-                " ('2','COOPERATIVA PLANTILLA','COOPERATIVA',TRUE),".
-                " ('3','ASOCIACION PLANTILLA','ASOCIACION',TRUE);";
+                " ('1','BANCO','BANCO',TRUE),".
+                " ('2','COOPERATIVA','COOPERATIVA',TRUE),".
+                " ('3','ASOCIACION','ASOCIACION',TRUE),".
+                " ('4','CAJA','CAJA',TRUE);";
     }
 
     public function url()

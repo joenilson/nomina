@@ -142,7 +142,7 @@ function procesar_seleccionados(){
 function visualizarDocumento(documento){
     $('#modal_mostrar_documento').modal('show');
         $("#visor_documento").detach();
-        $("<iframe id='imprimir_ordencarga' />")
+        $("<iframe id='visualizar_documento' />")
           .attr('src', documento)
           .attr('width', '100%')
           .attr('height', '500')
@@ -278,6 +278,7 @@ function fecha(id_field, formato, tiempos){
         });
     }
 }
+
 if(typeof(Chart) !=='undefined'){
     Chart.pluginService.register({
         beforeDraw: function(chart) {
@@ -301,8 +302,7 @@ if(typeof(Chart) !=='undefined'){
 
                 ctx.restore();
                 ctx.font = fontSize + "em sans-serif";
-                ctx.textBaseline = "middle"
-
+                ctx.textBaseline = "middle";
                 var text = total,
                     textX = Math.round((width - ctx.measureText(text).width) / 2),
                     textY = (height + chart.chartArea.top) / 2;
@@ -320,7 +320,6 @@ $(document).ready(function() {
     if($('#modal_nuevo_agente').length === 1){
         $('#modal_nuevo_agente').html('');
     }
-    $('#b_delete_agente').hide();
     $("#b_nuevo_agente").click(function(event) {
         event.preventDefault();
         window.location.href = 'index.php?page=admin_agente&type=nuevo';

@@ -74,14 +74,6 @@ class nomina_organigrama extends fs_controller{
     private function shared_extensions(){
         $extensiones = array(
             array(
-                'name' => 'nomina_organigrama_jquery3_js',
-                'page_from' => __CLASS__,
-                'page_to' => __CLASS__,
-                'type' => 'head',
-                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/0/jquery-3.1.1.min.js" type="text/javascript"></script>',
-                'params' => ''
-            ),
-            array(
                 'name' => 'nomina_organigrama_general_js',
                 'page_from' => __CLASS__,
                 'page_to' => __CLASS__,
@@ -128,6 +120,20 @@ class nomina_organigrama extends fs_controller{
             if (!$fsext0->save()) {
                 $this->new_error_msg('Imposible guardar los datos de la extensión ' . $ext['name'] . '.');
             }
+        }
+        
+        $fsext = new fs_extension(
+            array(
+                'name' => 'nomina_organigrama_jquery3_js',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/0/jquery-3.1.1.min.js" type="text/javascript"></script>',
+                'params' => ''
+            )
+        );
+        if (!$fsext->delete()) {
+            $this->new_error_msg('Imposible eliminar los datos de la extensión nomina_organigrama_jquery3_js.');
         }
     }
 

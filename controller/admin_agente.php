@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of FacturaSctipts
  * Copyright (C) 2014-2016  Carlos Garcia Gomez  neorazorx@gmail.com
