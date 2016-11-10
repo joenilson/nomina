@@ -35,7 +35,6 @@
         <nombre>fecha_documento</nombre>
         <tipo>date</tipo>
         <nulo>NO</nulo>
-        <defecto>now()</defecto>
     </columna>
     <columna>
         <nombre>fecha_modificacion</nombre>
