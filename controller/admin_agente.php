@@ -294,7 +294,7 @@ class admin_agente extends fs_controller {
             $doc = $ausencia->documento;
             if ($ausencia->delete()) {
                 if(file_exists($doc)){
-                    unlink($this->dir_documentos_empleados.$doc);
+                    unlink($this->dir_empleados.'d/'.$doc);
                 }
                 $this->new_message('Ausencia eliminada de las ausencias del empleado correctamente!');
             } else {
@@ -332,7 +332,7 @@ class admin_agente extends fs_controller {
             $contrato = $this->contratos->get($id);
             $doc = $contrato->contrato;
             if ($contrato->delete()) {
-                unlink($this->dir_documentos_empleados.$doc);
+                unlink($this->dir_empleados.'d/'.$doc);
                 $this->new_message('Documento eliminado de los contratos del empleado correctamente!');
             } else {
                 $this->new_error_msg('Ocurrió un error intentando eliminar la informacion, por favor confirmar revisar los datos e intente de nuevo.');
@@ -414,7 +414,7 @@ class admin_agente extends fs_controller {
             $hoja_vida = $this->hoja_vida->get($id);
             $doc = $hoja_vida->documento;
             if ($hoja_vida->delete()) {
-                unlink($this->dir_documentos_empleados.$doc);
+                unlink($this->dir_empleados.'d/'.$doc);
                 $this->new_message('Documento eliminado de la hoja de vida del empleado correctamente!');
             } else {
                 $this->new_error_msg('Ocurrió un error intentando eliminar la informacion, por favor confirmar revisar los datos e intente de nuevo.');
@@ -458,7 +458,7 @@ class admin_agente extends fs_controller {
             $movimiento = $this->movimientos_empleados->get($id);
             $doc = $movimiento->documento;
             if ($movimiento->delete()) {
-                unlink($this->dir_documentos_empleados.$doc);
+                unlink($this->dir_empleados.'d/'.$doc);
                 $this->new_message('Movimiento eliminado del empleado correctamente!');
             } else {
                 $this->new_error_msg('Ocurrió un error intentando eliminar la informacion, por favor confirmar revisar los datos e intente de nuevo.');

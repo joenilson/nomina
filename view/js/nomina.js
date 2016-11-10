@@ -142,7 +142,7 @@ function procesar_seleccionados(){
 function visualizarDocumento(documento){
     $('#modal_mostrar_documento').modal('show');
         $("#visor_documento").detach();
-        $("<iframe id='visualizar_documento' />")
+        $("<iframe id='visor_documento' />")
           .attr('src', documento)
           .attr('width', '100%')
           .attr('height', '500')
