@@ -84,6 +84,8 @@ class admin_agente extends fs_controller {
 
     protected function private_core() {
         $this->ppage = $this->page->get('admin_agentes');
+        $basepath = dirname(dirname(dirname(__DIR__)));
+        $this->dir_documentos = $basepath.DIRECTORY_SEPARATOR.FS_MYDOCS."documentos/nomina/".$this->empresa->id."/";
         $this->dir_empleados = FS_PATH.FS_MYDOCS."documentos/nomina/".$this->empresa->id."/e/";
         $this->dir_documentos_empleados = FS_PATH.FS_MYDOCS."documentos/nomina/".$this->empresa->id."/d/";
         $this->noimagen = FS_PATH."plugins/nomina/view/imagenes/no_foto.jpg";
@@ -479,10 +481,10 @@ class admin_agente extends fs_controller {
     //Con esta funcion guardamos los documentos dependiendo de donde vengan por cada modulo 
     public function guardar_documento($destino) {
         $nombre = \date('dmYhis').str_pad($this->agente->codagente, 6, 0, STR_PAD_LEFT) . "_" . $destino;
-        // Grabar la imagen con un nuevo nombre y con un resize de 120px
+        // Grabar el documento pdf con un nuevo nombre
         $this->upload_documento->file_new_name_body = $nombre;
         $this->upload_documento->file_new_name_ext = 'pdf';
-        $this->upload_documento->Process($this->dir_documentos_empleados);
+        $this->upload_documento->Process($this->dir_documentos."d/");
         if ($this->upload_documento->processed) {
             $this->upload_documento->clean();
             return $nombre.'.pdf';
@@ -507,7 +509,7 @@ class admin_agente extends fs_controller {
         $this->upload_photo->image_x = 120;
         $this->upload_photo->file_overwrite = true;
         $this->upload_photo->image_ratio_y = true;
-        $this->upload_photo->Process($this->dir_empleados);
+        $this->upload_photo->Process($this->dir_documentos."e/");
         if ($this->upload_photo->processed) {
             $this->upload_photo->clean();
             $this->agente->set_foto($newname . ".png");
