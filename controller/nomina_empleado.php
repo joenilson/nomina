@@ -30,7 +30,7 @@ class nomina_empleado extends fs_controller{
     public $resultados;
     public $noimagen;
     public function __construct() {
-        parent::__construct(__CLASS__, 'Mi Puesto', 'nomina', TRUE, FALSE, TRUE);
+        parent::__construct(__CLASS__, 'Mi Puesto', 'nomina', FALSE, TRUE, TRUE);
     }
     
     protected function private_core() {

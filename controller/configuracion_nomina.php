@@ -72,6 +72,7 @@ class configuracion_nomina extends fs_controller{
     public $nomina_setup;
     public $nomina_migracion_informacion;
     public $fsvar;
+    
     public function __construct() {
         parent::__construct(__CLASS__, 'Configuracion Nomina', 'nomina', TRUE, TRUE, FALSE);
     }
