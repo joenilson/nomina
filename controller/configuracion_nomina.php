@@ -228,7 +228,7 @@ class configuracion_nomina extends fs_controller{
         // imagenes de empleados
         $this->creada = false;
         $basepath = dirname(dirname(dirname(__DIR__)));
-        $this->dir_documentos = $basepath.FS_MYDOCS."/documentos";
+        $this->dir_documentos = $basepath.DIRECTORY_SEPARATOR.FS_MYDOCS."documentos";
         $this->dir_nomina = $this->dir_documentos.DIRECTORY_SEPARATOR."nomina";
         $this->dir_empleados = $this->dir_nomina.DIRECTORY_SEPARATOR.$this->empresa->id."/e/";
         $this->dir_documentos_empleados = $this->dir_nomina.DIRECTORY_SEPARATOR.$this->empresa->id."/d/";
