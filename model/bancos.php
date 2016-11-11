@@ -22,7 +22,7 @@
  *
  * @author Joe Nilson <joenilson at gmail dot com>
  */
-class bancos extends fs_model{
+class bancos extends fs_model {
     /**
      * El codigo a generar del Banco
      * @var type $codbanco Banco
@@ -37,9 +37,10 @@ class bancos extends fs_model{
 
     /**
      * Aqui ponemos el tipo de Banco, puede ser
-     * 1 Banco
-     * 2 Cooperativa de Ahorro
-     * 3 Asoc. de Ahorro y Prestamo
+     * 1 BANCO
+     * 2 COOPERATIVA de Ahorro
+     * 3 ASOCIACION de Ahorro y Prestamo
+     * 4 CAJA si el pago va ser interno
      * @var type $tipo Banco
      */
     public $tipo;
@@ -117,9 +118,9 @@ class bancos extends fs_model{
 
     public function update(){
         $sql = "UPDATE ".$this->table_name." SET ".
-            ", estado = ".$this->var2str($this->estado).
+            " estado = ".$this->var2str($this->estado).
             ", tipo = ".$this->var2str($this->tipo).
-            ", nombre = ".$this->intval($this->nombre).
+            ", nombre = ".$this->var2str($this->nombre).
             " WHERE codbanco = ".$this->var2str($this->codbanco).";";
         return $this->db->exec($sql);
     }
@@ -153,7 +154,7 @@ class bancos extends fs_model{
 
     public function all(){
         $lista = array();
-        $data = $this->db->select("SELECT * FROM ".$this->table_name.";");
+        $data = $this->db->select("SELECT * FROM ".$this->table_name." ORDER BY nombre;");
         if($data){
             foreach($data as $d){
                 $lista[] = new bancos($d);
@@ -180,16 +181,6 @@ class bancos extends fs_model{
     public function delete(){
         $sql = "DELETE FROM ".$this->table_name." WHERE codbanco = ".$this->var2str($this->codbanco).";";
         return $this->db->exec($sql);
-    }
-
-    public function corregir(){
-        $sql = "SELECT codbanco FROM ".$this->table_name." WHERE nombre = ".$this->var2str($this->nombre);
-        $data = $this->db->select($sql);
-        if($data){
-            $this->update();
-        }else{
-            $this->save();
-        }
     }
 
 }

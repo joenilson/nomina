@@ -29,6 +29,7 @@ require_model('seguridadsocial.php');
 require_model('tipodependientes.php');
 require_model('tipoempleado.php');
 require_model('tipoausencias.php');
+require_model('tipomovimiento.php');
 require_model('categoriaempleado.php');
 require_model('sindicalizacion.php');
 require_model('sistemapension.php');
@@ -42,6 +43,7 @@ require_once 'plugins/nomina/extras/verot/class.upload.php';
 class admin_agente extends fs_controller {
 
     public $agente;
+    public $agentes;
     public $cargos;
     public $ausencias;
     public $contratos;
@@ -53,6 +55,7 @@ class admin_agente extends fs_controller {
     public $tipoempleado;
     public $tipodependientes;
     public $tipoausencias;
+    public $tipomovimiento;
     public $categoriaempleado;
     public $sindicalizacion;
     public $organizacion;
@@ -94,6 +97,7 @@ class admin_agente extends fs_controller {
         $this->allow_delete = $this->user->allow_delete_on(__CLASS__);
         $this->share_extensions();
         $this->almacen = new almacen();
+        $this->agentes = new agente();
         $this->bancos = new bancos();
         $this->cargos = new cargos();
         $this->formacion = new formacion();
@@ -106,6 +110,7 @@ class admin_agente extends fs_controller {
         $this->estadocivil = new estadocivil();
         $this->tipoausencias = new tipoausencias();
         $this->tipodependientes = new tipodependientes();
+        $this->tipomovimiento = new tipomovimiento();
         $this->agente = FALSE;
         if (isset($_GET['cod'])) {
             $agente = new agente();
@@ -444,7 +449,7 @@ class admin_agente extends fs_controller {
             $hv0->codautoriza = $codautoriza;
             $hv0->observaciones = $observaciones;
             $hv0->f_desde = $f_desde;
-            $hv0->f_hasta = $f_hasta;
+            $hv0->f_hasta = (!empty($f_hasta))?$f_hasta:NULL;
             $hv0->codagente = $this->agente->codagente;
             $hv0->estado = ($estado)?'TRUE':'FALSE';
             $hv0->usuario_creacion = $this->user->nick;
@@ -601,7 +606,63 @@ class admin_agente extends fs_controller {
                 'type' => 'head',
                 'text' => '<link href="'.FS_PATH.'plugins/nomina/view/css/nomina.css?build=' . rand(1, 1000) . '" rel="stylesheet" type="text/css"/>',
                 'params' => ''
-            )
+            ),
+            array(
+                'name' => 'movimientos_empleado',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'tab',
+                'text' => '<span class="fa fa-code-fork" aria-hidden="true"></span> &nbsp; Movimientos',
+                'params' => '&type=movimientos'
+            ),
+            array(
+                'name' => 'contratos_empleado',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'tab',
+                'text' => '<span class="fa fa-archive" aria-hidden="true"></span> &nbsp; Contratos',
+                'params' => '&type=contratos'
+            ),
+            array(
+                'name' => 'ausencias_empleado',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'tab',
+                'text' => '<span class="fa fa-calendar-minus-o" aria-hidden="true"></span> &nbsp; Ausencias',
+                'params' => '&type=ausencias'
+            ),
+            array(
+                'name' => 'carga_familiar_empleado',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'tab',
+                'text' => '<span class="fa fa-group" aria-hidden="true"></span> &nbsp; Carga Familiar',
+                'params' => '&type=carga_familiar'
+            ),
+            array(
+                'name' => 'hoja_vida_empleado',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'tab',
+                'text' => '<span class="fa fa-suitcase" aria-hidden="true"></span> &nbsp; Hoja de Vida',
+                'params' => '&type=hoja_vida'
+            ),
+            array(
+                'name' => 'pagos_incentivos_empleado',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'tab',
+                'text' => '<span class="fa fa-money" aria-hidden="true"></span> &nbsp; Pagos e Incentivos',
+                'params' => '&type=pagos_incentivos'
+            ),
+            array(
+                'name' => 'control_horas_empleado',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'tab',
+                'text' => '<span class="fa fa-clock-o" aria-hidden="true"></span> &nbsp; Control de Horas',
+                'params' => '&type=control_horas'
+            ),
         );
 
         foreach ($extensiones as $ext) {

@@ -38,13 +38,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <table class="table table-responsive">
                 <thead>
                     <tr>
-                        <th class="col-sm-2">Contrato</th>
-                        <th class="col-sm-3">Tipo</th>
+                        <th class="col-sm-1">Documento</th>
+                        <th class="col-sm-2">Tipo</th>
+                        <th class="col-sm-2">Autoriza</th>
                         <th class="col-sm-1">Fecha Inicio</th>
                         <th class="col-sm-1">Fecha Fin</th>
                         <th class="col-sm-2">Duracion</th>
+                        <th class="col-sm-2">Observaciones</th>
                         <th class="col-sm-1 text-center">Estado</th>
-                        <th class="col-sm-2"></th>
+                        <th class="col-sm-1"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -52,23 +54,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <form action="{$fsc->url()}&type=movimientos" method="POST" class="form" role="form">
                         <tr>
                             <td>
-                            <button class="btn btn-sm btn-default" type="button" onclick="visualizarDocumento('{$fsc->dir_documentos_empleados}/{$value->contrato}');">
-                                <span class="fa fa-file-pdf-o"></span>&nbsp;Ver Contrato
+                            <button class="btn btn-sm btn-default" type="button" onclick="visualizarDocumento('{$fsc->dir_documentos_empleados}/{$value->documento}');">
+                                <span class="fa fa-file-pdf-o"></span>&nbsp;Ver Sustento
                             </button>
                             <input type="hidden" name="id" value="{$value->id}">
                             <input type="hidden" name="codagente" value="{$value->codagente}">
                             </td>
                             <td>
-                            {$value->desc_tipocontrato}
+                            {$value->desc_movimiento}
                             </td>
                             <td>
-                            {$value->fecha_inicio}
+                            {$value->desc_autoriza}
                             </td>
                             <td>
-                            {$value->fecha_fin}
+                            {$value->f_desde}
                             </td>
                             <td>
-                            {$value->duracion_contrato()}
+                            {$value->f_hasta}
+                            </td>
+                            <td>
+                            {$value->duracion_movimiento()}
+                            </td>
+                            <td>
+                            {$value->observaciones}
                             </td>
                             <td class="text-center">
                                 <span class="fa fa-2x {if="$value->estado"}fa-toggle-on{else}fa-toggle-off{/if}"></span>
@@ -95,41 +103,74 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title">Agregar Movimiento</h4>
             </div>
-            <form class="form form-horizontal" enctype="multipart/form-data" role="form" action="{$fsc->url()}&type=contratos" method="POST">
+            <form class="form form-horizontal" enctype="multipart/form-data" role="form" action="{$fsc->url()}&type=movimientos" method="POST">
                 <div class="modal-body">
                     <div class="form-group">
-                        <label class="control-label col-sm-4" for="tipo_contrato">Tipo de Contrato</label>
+                        <input type="hidden" name="id" value="">
+                        <label class="control-label col-sm-4" for="codmovimiento">Tipo de Movimiento</label>
                         <div class="col-sm-6">
-                        <select name="tipo_contrato" id="tipo_contrato" class="form-control input-sm" required>
+                        <select name="codmovimiento" id="codmovimiento" class="form-control input-sm" required>
                             <option value="">Elige un Tipo</option>
-                            {loop="$fsc->tipoempleado->all()"}
-                            <option value="{$value->codtipo}">{$value->descripcion}</option>
+                            {loop="$fsc->tipomovimiento->all()"}
+                            <option value="{$value->codmovimiento}">{$value->descripcion}</option>
                             {/loop}
                         </select>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-4" for="c_rango">Duracion Contrato</label>
-                        <div class="col-sm-6 rango">
-                            <input type="text" id="c_rango" class="form-control input-sm">
-                            <span class="fa fa-calendar"></span>
-                            <input type="hidden" name="f_desde" id="c_desde" value="">
-                            <input type="hidden" name="f_hasta" id="c_hasta" value="">
+                        <label class="control-label col-sm-4">Duracion Movimiento</label>
+                        <div class="col-sm-6">
+                            <label class="control-label col-sm-3" for="c_desde">Desde</label>
+                            <div class="input-group">
+                                <div class="input-group-addon">
+                                    <span class="fa fa-calendar"></span>
+                                </div>
+                                <input type="text" class="form-control input-sm" name="f_desde" id="c_desde" value="">
+                            </div>
+                            <label class="control-label col-sm-3" for="c_hasta">Hasta</label>
+                            <div class="input-group">
+                                <div class="input-group-addon">
+                                    <span class="fa fa-calendar"></span>
+                                </div>
+                                <input type="text" class="form-control input-sm" name="f_hasta" id="c_hasta" value="">
+                            </div>
+                            <div class="col-sm-3"></div>
+                            <label class="control-label" for="habilitar">
+                                <input type="checkbox" id="habilitar" name="habilitar" onclick="(this.checked === true)?form.f_hasta.value='':true">
+                                Tiempo indeterminado
+                            </label>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-4" for="documento">Contrato</label>
-                        <div class="col-sm-8">
+                        <label class="control-label col-sm-4" for="documento">Documento Sustento</label>
+                        <div class="col-sm-6">
                             <label class="btn btn-sm btn-default btn-file">
                                 <span>Elegir&hellip;</span> <input type="file" required accept="application/pdf" style="display: none;" name="documento" class="form-control input-sm" id="documento" onchange="$(this).prev('span').text($(this).val()!=''?$(this).val():'Elegir &hellip;')">
                             </label>
-                            <span class="help-block">Suba el documento en formato <b>PDF</b></span>
+                            <span class="help-block">Suba el documento sustento en formato <b>PDF</b></span>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-4" for="estado_contrato">Estado</label>
+                        <label class="control-label col-sm-4" for="codautoriza">Quien autoriza Movimiento</label>
                         <div class="col-sm-6">
-                            <input id="estado_contrato" type="checkbox" name="estado" data-label-text="Activo" data-off-text="No" checked data-on-text="Si">
+                        <select name="codautoriza" id="codautoriza" class="form-control input-sm">
+                            <option value="">Elige quien autoriza</option>
+                            {loop="$fsc->agentes->all()"}
+                            <option value="{$value->codagente}">{$value->nombreap}</option>
+                            {/loop}
+                        </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4" for="observaciones">Observaciones</label>
+                        <div class="col-sm-6">
+                            <textarea name="observaciones" id="observaciones" rows="4" class="form-control input-sm"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4" for="estado_movimiento">Estado</label>
+                        <div class="col-sm-6">
+                            <input id="estado_movimiento" type="checkbox" name="estado" data-label-text="Activo" data-off-text="No" checked data-on-text="Si">
                         </div>
                     </div>
                 </div>
@@ -144,9 +185,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 {include="contenido/visualizador"}
 <script type="text/javascript">
     var locale_user = 'es';
-    rango_fechas('c_rango', 'c_desde', 'c_hasta', 'YYYY-MM-DD', false, false);
+    fecha('c_desde', 'YYYY-MM-DD', false);
+    fecha('c_hasta', 'YYYY-MM-DD', false);
     $(document).ready(function () {
-        $('#estado_contrato').bootstrapSwitch();
+        //$('#estado_movimiento').bootstrapSwitch();
         $('input[name=\"estado\"]').bootstrapSwitch();
     });
 </script

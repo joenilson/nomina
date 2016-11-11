@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+require_model('agente.php');
 require_model('tipomovimiento.php');
 /**
  * Description of movimientos_empleados
@@ -111,6 +112,7 @@ class movimientos_empleados extends fs_model{
         }
         
         $this->tipomovimiento = new tipomovimiento();
+        $this->agente = new agente();
     }
     
     protected function install() {
@@ -119,6 +121,7 @@ class movimientos_empleados extends fs_model{
     
     protected function info_adicional($val){
         $val->desc_movimiento = $this->tipomovimiento->get($val->codmovimiento)->descripcion;
+        $val->desc_autoriza = (!empty($this->codautoriza))?$this->agente->get($this->codautoriza)->nombreap:null;
         return $val;
     }
     
@@ -279,7 +282,7 @@ class movimientos_empleados extends fs_model{
             $to   = new DateTime($this->f_hasta);
             $duracion = $this->duracion($from->diff($to));
         }else{
-            $duracion = "Indefinido";
+            $duracion = "Indeterminado";
         }
         return $duracion;
     }
@@ -290,7 +293,7 @@ class movimientos_empleados extends fs_model{
             $to   = new DateTime('today');
             $duracion = $this->duracion($from->diff($to));
         }else{
-            $duracion = "Indefinido";
+            $duracion = "Indeterminado";
         }
         return $duracion;
     }

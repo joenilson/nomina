@@ -18,6 +18,7 @@
  */
 require_model('agente.php');
 require_model('ausencias.php');
+require_model('bancos.php');
 require_model('cargos.php');
 require_model('contratos.php');
 require_model('dependientes.php');
@@ -45,6 +46,7 @@ require_model('tipopago.php');
  */
 class configuracion_nomina extends fs_controller{
     public $agente;
+    public $bancos;
     public $cargo;
     public $cargos;
     public $estadocivil;
@@ -81,6 +83,7 @@ class configuracion_nomina extends fs_controller{
         $this->allow_delete = $this->user->allow_delete_on(__CLASS__);
         $this->share_extensions();
         $this->agente = new agente();
+        $this->bancos = new bancos();
         $this->cargo = new cargos();
         $this->estadosciviles = new estadocivil();
         $this->formacion = new formacion();
@@ -119,6 +122,12 @@ class configuracion_nomina extends fs_controller{
             switch($_GET['type']){
                 case "importar_cargos":
                         $this->importar_cargos();
+                    break;
+                case "bancos":
+                    $this->template = 'configuracion/nomina_bancos';
+                    if(isset($_POST['codbanco'])){
+                        $this->tratar_bancos();
+                    }
                     break;
                 case "cargos":
                     $this->template = 'configuracion/nomina_cargos';
@@ -313,6 +322,30 @@ class configuracion_nomina extends fs_controller{
         }elseif($accion=='eliminar'){
             $ausencia = $this->tipoausencias->get(\filter_input(INPUT_POST, 'codausencia'));
             if($ausencia->delete()){
+                $this->new_message("Datos eliminados correctamente.");
+            }else{
+                $this->new_error_msg("La información no pudo ser eliminada, revise los datos e intente nuevamente");
+            }
+        }
+    }
+    
+    public function tratar_bancos(){
+        $accion = filter_input(INPUT_POST, 'accion');
+        if($accion == 'agregar'){
+            $ss0 = new bancos();
+            $ss0->codbanco = filter_input(INPUT_POST, 'codbanco');
+            $ss0->nombre = $this->mayusculas(filter_input(INPUT_POST, 'nombre'));
+            $ss0->tipo = $this->mayusculas(filter_input(INPUT_POST, 'tipo'));
+            $ss0->estado = filter_input(INPUT_POST, 'estado');
+            $estado = $ss0->save();
+            if($estado){
+                $this->new_message("Datos guardados correctamente.");
+            }else{
+                $this->new_error_msg("La información con el Id ".$ss0->codbanco." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+            }
+        }elseif($accion=='eliminar'){
+            $segsoc = $this->bancos->get(\filter_input(INPUT_POST, 'codbanco'));
+            if($segsoc->delete()){
                 $this->new_message("Datos eliminados correctamente.");
             }else{
                 $this->new_error_msg("La información no pudo ser eliminada, revise los datos e intente nuevamente");
@@ -752,79 +785,15 @@ class configuracion_nomina extends fs_controller{
 
     public function share_extensions(){
         $extensiones = array(
-            array(
-                'name' => 'nuevo_agente_js',
-                'page_from' => __CLASS__,
-                'page_to' => 'admin_agente',
-                'type' => 'head',
-                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/nomina.js" type="text/javascript"></script>',
-                'params' => ''
-            ),
-            array(
-                'name' => 'nuevo_agente_css',
-                'page_from' => __CLASS__,
-                'page_to' => 'admin_agente',
-                'type' => 'head',
-                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/nomina.css"/>',
-                'params' => ''
-            ),
-            array(
-                'name' => 'movimientos_empleado',
-                'page_from' => 'admin_agente',
-                'page_to' => 'admin_agente',
-                'type' => 'tab',
-                'text' => '<span class="fa fa-code-fork" aria-hidden="true"></span> &nbsp; Movimientos',
-                'params' => '&type=movimientos'
-            ),
-            array(
-                'name' => 'contratos_empleado',
-                'page_from' => 'admin_agente',
-                'page_to' => 'admin_agente',
-                'type' => 'tab',
-                'text' => '<span class="fa fa-archive" aria-hidden="true"></span> &nbsp; Contratos',
-                'params' => '&type=contratos'
-            ),
-            array(
-                'name' => 'ausencias_empleado',
-                'page_from' => 'admin_agente',
-                'page_to' => 'admin_agente',
-                'type' => 'tab',
-                'text' => '<span class="fa fa-calendar-minus-o" aria-hidden="true"></span> &nbsp; Ausencias',
-                'params' => '&type=ausencias'
-            ),
-            array(
-                'name' => 'carga_familiar_empleado',
-                'page_from' => 'admin_agente',
-                'page_to' => 'admin_agente',
-                'type' => 'tab',
-                'text' => '<span class="fa fa-group" aria-hidden="true"></span> &nbsp; Carga Familiar',
-                'params' => '&type=carga_familiar'
-            ),
-            array(
-                'name' => 'hoja_vida_empleado',
-                'page_from' => 'admin_agente',
-                'page_to' => 'admin_agente',
-                'type' => 'tab',
-                'text' => '<span class="fa fa-suitcase" aria-hidden="true"></span> &nbsp; Hoja de Vida',
-                'params' => '&type=hoja_vida'
-            ),
-            array(
-                'name' => 'pagos_incentivos_empleado',
-                'page_from' => 'admin_agente',
-                'page_to' => 'admin_agente',
-                'type' => 'tab',
-                'text' => '<span class="fa fa-money" aria-hidden="true"></span> &nbsp; Pagos e Incentivos',
-                'params' => '&type=pagos_incentivos'
-            ),
-            array(
-                'name' => 'control_horas_empleado',
-                'page_from' => 'admin_agente',
-                'page_to' => 'admin_agente',
-                'type' => 'tab',
-                'text' => '<span class="fa fa-clock-o" aria-hidden="true"></span> &nbsp; Control de Horas',
-                'params' => '&type=control_horas'
-            ),
             //Tabs de Configuracion
+            array(
+                'name' => 'config_nomina_bancos',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'tab',
+                'text' => '<span class="fa fa-bank" aria-hidden="true"></span> &nbsp; Bancos',
+                'params' => '&type=bancos'
+            ),
             array(
                 'name' => 'config_nomina_cargos',
                 'page_from' => __CLASS__,
@@ -994,10 +963,38 @@ class configuracion_nomina extends fs_controller{
                 'params' => ''
             ),
         );
+        
+        //Correcciones entre cambios de version
+        //Se mantendra vacio cada que se publique una versión nueva
+        $eliminar = array(
+            array(
+                'name' => 'nuevo_agente_js',
+                'page_from' => __CLASS__,
+                'page_to' => 'admin_agente',
+                'type' => 'head',
+                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/nomina.js" type="text/javascript"></script>',
+                'params' => ''
+            ),
+            array(
+                'name' => 'nuevo_agente_css',
+                'page_from' => __CLASS__,
+                'page_to' => 'admin_agente',
+                'type' => 'head',
+                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/nomina.css"/>',
+                'params' => ''
+            ),
+        );
 
         foreach ($extensiones as $ext) {
             $fsext0 = new fs_extension($ext);
             if (!$fsext0->save()) {
+                $this->new_error_msg('Imposible guardar los datos de la extensión ' . $ext['name'] . '.');
+            }
+        }
+        
+        foreach ($eliminar as $ext) {
+            $fsext0 = new fs_extension($ext);
+            if (!$fsext0->delete()) {
                 $this->new_error_msg('Imposible guardar los datos de la extensión ' . $ext['name'] . '.');
             }
         }
