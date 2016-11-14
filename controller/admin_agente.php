@@ -273,8 +273,8 @@ class admin_agente extends fs_controller {
         $accion = \filter_input(INPUT_POST, 'accion');
         $id = \filter_input(INPUT_POST, 'id');
         $tipo_ausencia = \filter_input(INPUT_POST, 'tipo_ausencia');
-        $fecha_desde = \filter_input(INPUT_POST, 'f_desde');
-        $fecha_hasta = \filter_input(INPUT_POST, 'f_hasta');
+        $fecha_desde = \date('d-m-Y H:i:s', strtotime(\filter_input(INPUT_POST, 'f_desde')));
+        $fecha_hasta = \date('d-m-Y H:i:s', strtotime(\filter_input(INPUT_POST, 'f_hasta')));
         $justificada = \filter_input(INPUT_POST, 'justificada');
         $estado = \filter_input(INPUT_POST, 'estado');
         $this->upload_documento = (isset($_FILES['documento']))?new Upload($_FILES['documento']):false;
@@ -285,10 +285,12 @@ class admin_agente extends fs_controller {
             $hv0->f_desde = $fecha_desde;
             $hv0->f_hasta = $fecha_hasta;
             $hv0->codagente = $this->agente->codagente;
-            $hv0->justificada = ($justificada)?'TRUE':'FALSE';
-            $hv0->estado = ($estado)?'TRUE':'FALSE';
+            $hv0->justificada = ($justificada)?TRUE:FALSE;
+            $hv0->estado = ($estado)?TRUE:FALSE;
             $hv0->usuario_creacion = $this->user->nick;
             $hv0->fecha_creacion = \Date('Y-m-d H:i:s');
+            $hv0->usuario_modificacion = $this->user->nick;
+            $hv0->fecha_modificacion = \Date('Y-m-d H:i:s');
             if ($hv0->save()) {
                 $this->new_message('Ausencia agregada al empleado correctamente!');
             } else {
@@ -325,7 +327,7 @@ class admin_agente extends fs_controller {
             $hv0->fecha_inicio = $fecha_inicio;
             $hv0->fecha_fin = $fecha_fin;
             $hv0->codagente = $this->agente->codagente;
-            $hv0->estado = ($estado)?'TRUE':'FALSE';
+            $hv0->estado = ($estado)?TRUE:FALSE;
             $hv0->usuario_creacion = $this->user->nick;
             $hv0->fecha_creacion = \Date('Y-m-d H:i:s');
             if ($hv0->save()) {
@@ -373,7 +375,7 @@ class admin_agente extends fs_controller {
             $hv0->f_nacimiento = $f_nacimiento;            
             $hv0->genero = $genero;
             $hv0->grado_academico = $grado_academico;
-            $hv0->estado = ($estado)?'TRUE':'FALSE';
+            $hv0->estado = ($estado)?TRUE:FALSE;
             $hv0->usuario_creacion = $this->user->nick;
             $hv0->fecha_creacion = \Date('Y-m-d H:i:s');
             if ($hv0->save()) {
@@ -451,7 +453,7 @@ class admin_agente extends fs_controller {
             $hv0->f_desde = $f_desde;
             $hv0->f_hasta = (!empty($f_hasta))?$f_hasta:NULL;
             $hv0->codagente = $this->agente->codagente;
-            $hv0->estado = ($estado)?'TRUE':'FALSE';
+            $hv0->estado = ($estado)?TRUE:FALSE;
             $hv0->usuario_creacion = $this->user->nick;
             $hv0->fecha_creacion = \Date('Y-m-d H:i:s');
             if ($hv0->save()) {

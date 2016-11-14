@@ -81,8 +81,8 @@ class ausencias extends fs_model{
             $this->codagente = $t['codagente'];
             $this->documento = $t['documento'];
             $this->tipo_ausencia = $t['tipo_ausencia'];
-            $this->f_desde = $t['f_desde'];
-            $this->f_hasta = $t['f_hasta'];
+            $this->f_desde = \date('d-m-Y H:i:s', strtotime($t['f_desde']));
+            $this->f_hasta = \date('d-m-Y H:i:s', strtotime($t['f_hasta']));
             $this->justificada = $this->str2bool($t['justificada']);
             $this->estado = $this->str2bool($t['estado']);
             $this->usuario_creacion = $t['usuario_creacion'];
@@ -94,8 +94,8 @@ class ausencias extends fs_model{
             $this->codagente = NULL;
             $this->documento = NULL;
             $this->tipo_ausencia = NULL;
-            $this->f_desde = NULL;
-            $this->f_hasta = NULL;
+            $this->f_desde = \date('d-m-Y H:i:s');
+            $this->f_hasta = \date('d-m-Y H:i:s');
             $this->justificada = FALSE;
             $this->estado = FALSE;
             $this->usuario_creacion = NULL;

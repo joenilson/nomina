@@ -25,21 +25,25 @@
         <nombre>f_desde</nombre>
         <tipo>timestamp without time zone</tipo>
         <nulo>NO</nulo>
+        <defecto>CURRENT_TIMESTAMP</defecto>
     </columna>
     <columna>
         <nombre>f_hasta</nombre>
         <tipo>timestamp without time zone</tipo>
         <nulo>NO</nulo>
+        <defecto>CURRENT_TIMESTAMP</defecto>
     </columna>
     <columna>
         <nombre>fecha_creacion</nombre>
         <tipo>timestamp without time zone</tipo>
         <nulo>NO</nulo>
+        <defecto>CURRENT_TIMESTAMP</defecto>
     </columna>
     <columna>
         <nombre>fecha_modificacion</nombre>
         <tipo>timestamp without time zone</tipo>
         <nulo>YES</nulo>
+        <defecto>CURRENT_TIMESTAMP</defecto>
     </columna>
     <columna>
         <nombre>id</nombre>
