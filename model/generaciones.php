@@ -183,7 +183,7 @@ class generaciones extends fs_model{
     }
     
     public function resumen_generaciones(){
-        $agentes = $this->agentes->all();
+        $agentes = $this->agentes->all_activos();
         $lista = array();
         foreach($agentes as $a){
             if(!empty($a->f_nacimiento)){

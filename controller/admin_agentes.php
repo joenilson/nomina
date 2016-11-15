@@ -50,6 +50,7 @@ class admin_agentes extends fs_controller {
     public $categoriaempleado;
     public $foto_empleado;
     public $noimagen;
+    public $mostrar;
     private $upload_photo;
     private $dir_empleados;
 
@@ -69,7 +70,10 @@ class admin_agentes extends fs_controller {
         $this->tipoempleado = new tipoempleado();
         $this->categoriaempleado = new categoriaempleado();
         $this->cache->delete('m_agente_all');
-
+        $mostrar_g = filter_input(INPUT_GET, 'mostrar');
+        $mostrar_p = filter_input(INPUT_POST, 'mostrar');
+        $mostrar = ($mostrar_p)?$mostrar_p:$mostrar_g;
+        $this->mostrar = ($mostrar)?$mostrar:'all';
         if (isset($_GET['type'])) {
             $type = filter_input(INPUT_GET, 'type');
             switch ($type) {
@@ -139,7 +143,7 @@ class admin_agentes extends fs_controller {
             } else
                 $this->new_error_msg("¡Imposible guardar el empleado!");
         }
-        else if (isset($_GET['delete'])) {
+        elseif (isset($_GET['delete'])) {
             $age0 = $this->agente->get($_GET['delete']);
             if ($age0) {
                 if (FS_DEMO) {
@@ -150,10 +154,6 @@ class admin_agentes extends fs_controller {
                     $this->new_error_msg("¡Imposible eliminar el empleado!");
             } else
                 $this->new_error_msg("¡Empleado no encontrado!");
-        }
-        elseif (isset($_POST['importar'])) {
-            $this->archivo = $_FILES['empleados'];
-            $this->importar_empleados();
         }
 
         $this->offset = 0;
@@ -202,7 +202,8 @@ class admin_agentes extends fs_controller {
                 . "&ciudad=" . $this->ciudad
                 . "&provincia=" . $this->provincia
                 . "&offset=" . ($this->offset + FS_ITEM_LIMIT)
-                . "&orden=" . $this->orden;
+                . "&orden=" . $this->orden
+                . "&mostrar=" . $this->mostrar;
 
         $paginas = array();
         $i = 0;
@@ -315,6 +316,15 @@ class admin_agentes extends fs_controller {
                     . " OR lower(apellidos) LIKE '%" . $buscar . "%'"
                     . " OR lower(dnicif) LIKE '%" . $buscar . "%'"
                     . " OR lower(email) LIKE '%" . $buscar . "%')";
+            $and = ' AND ';
+        }
+        
+        if($this->mostrar != 'all'){
+            if($this->mostrar == 'activos'){
+                $sql .= $and." f_baja IS NULL ";
+            }elseif($this->mostrar == 'inactivos'){
+                $sql .= $and." f_baja IS NOT NULL ";
+            }
             $and = ' AND ';
         }
 

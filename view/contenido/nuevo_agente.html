@@ -18,6 +18,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <script type="text/javascript" src="{$fsc->get_js_location('provincias.js')}"></script>
 <script type="text/javascript">
     var url_organizacion = '{$fsc->url()}&type=organizacion';
+    $(document).ready(function () {
+        $("#ac_reporta").autocomplete({
+            serviceUrl: '{$fsc->url()}',
+            paramName: 'buscar_empleado',
+            onSelect: function (suggestion) {
+               if(suggestion)
+               {
+                  if(document.f_agente.codsupervisor.value !== suggestion.codigo)
+                  {
+                     document.f_agente.codsupervisor.value = suggestion.codigo;
+                  }
+               }
+            }
+        });
+    });
 </script>
 <div class="container-fluid">
     <div class="row" style="margin-bottom: 10px;">
@@ -177,15 +192,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </div>
                             <div class="col-sm-3">
                                 <div class="form-group">
-                                    <label class="control-label" for="codsupervisor">
+                                    <label class="control-label" for="ac_reporta">
                                         Reporta a:
                                     </label>
-                                    <select name="codsupervisor" class="form-control input-sm">
-                                        <option value="">--------</option>
-                                        {loop="$fsc->agente->all()"}
-                                        <option value="{$value->codagente}" {if="$fsc->agente->codsupervisor==$value->codagente"}selected{/if}>{$value->nombreap}</option>
-                                        {/loop}
-                                    </select>
+                                    <input type='hidden' name='codsupervisor' value=''>
+                                    <input type='text' name='ac_reporta' id='ac_reporta' autocomplete="off" value='' class='form-control input-sm'>
                                 </div>
                             </div>
                             <div class="col-sm-3">

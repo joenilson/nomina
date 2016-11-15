@@ -415,7 +415,7 @@ class agente extends fs_model
          VALUES ('1','Juan','Perez','Prado','00000014Z','M','A','S'),".
               "('1','Maria','Ruiz','Diaz','00000019Z','F','A','D');";
    }
-
+   
    public function info_adicional($res){
        $res->gerencia = (!empty($res->codgerencia))?$this->organizacion->get($res->codgerencia)->descripcion:"";
        $res->area = (!empty($res->codarea))?$this->organizacion->get($res->codarea)->descripcion:"";
@@ -430,6 +430,7 @@ class agente extends fs_model
            $res->codcategoria = $info_cargos->codcategoria;
            $res->categoria = $info_categoria->descripcion;
        }
+       $res->nombre_supervisor = ($res->codsupervisor)?$this->get($res->codsupervisor)->nombreap:'';
        $res->edad = $this->edad($res->f_nacimiento);
        $res->permanencia = $this->permanencia($res->f_alta, $res->f_baja);
        return $res;
@@ -489,6 +490,30 @@ class agente extends fs_model
       }else{
          return false;
       }
+   }
+   
+   public function search($value_orig){
+        $value = strtoupper(trim($value_orig));
+        $select = "SELECT * FROM ".$this->table_name." WHERE ";
+        $where = " nombre LIKE '%".$value."%' ".
+                " OR apellidos LIKE '%".$value."%' ".
+                " OR segundo_apellido LIKE '%".$value."%' ".
+                " OR codagente LIKE '%".$value."%' ";
+        $order = " ORDER BY apellidos, segundo_apellido, nombre";
+        $sql = $select.$where.$order;
+        $data = $this->db->select($sql);
+        if($data){
+            $lista=array();
+            foreach($data as $d){
+                $item = new agente($d);
+                $value = $this->info_adicional($item);
+                $lista[] = $value;
+            }
+            return $lista;
+        }else{
+            return false;
+        }
+        
    }
 
    public function get_new_codigo()
@@ -827,6 +852,26 @@ class agente extends fs_model
 
       return $listagentes;
    }
+   
+   public function all_activos()
+   {
+      $listagentes = $this->cache->get_array('m_agente_all');
+      if(!$listagentes)
+      {
+         $agentes = $this->db->select("SELECT * FROM ".$this->table_name." WHERE f_baja IS NULL ORDER BY nombre ASC;");
+         if($agentes)
+         {
+            foreach($agentes as $a){
+                $valor = new agente($a);
+                $res = $this->info_adicional($valor);
+                $listagentes[] = $res;
+            }
+         }
+         $this->cache->set('m_agente_all', $listagentes);
+      }
+
+      return $listagentes;
+   }
 
    public function corregir(){
        if( $this->exists() )
@@ -873,7 +918,7 @@ class agente extends fs_model
     }
 
     public function estadistica_sexo($sexo){
-        $sql = "select count(sexo) as total from ".$this->table_name." where sexo = ".$this->var2str($sexo).";";
+        $sql = "select count(sexo) as total from ".$this->table_name." where sexo = ".$this->var2str($sexo)." AND f_baja IS NULL;";
         $data = $this->db->select($sql);
         if($data){
             $valor = new stdClass();
@@ -883,7 +928,7 @@ class agente extends fs_model
     }
     
     public function estadistica_almacen(){
-        $sql = "select codalmacen, count(codagente) as total from ".$this->table_name." GROUP BY codalmacen;";
+        $sql = "select codalmacen, count(codagente) as total from ".$this->table_name." WHERE f_baja IS NULL GROUP BY codalmacen;";
         $data = $this->db->select($sql);
         if($data){
             $lista = array();
@@ -913,7 +958,7 @@ class agente extends fs_model
                 $where.=" AND codarea = ".$this->var2str($opciones['area'])." ";
             }
         }
-        $sql = "SELECT * FROM ".$this->table_name." WHERE estado = 'A' $where ORDER BY codsupervisor ASC";
+        $sql = "SELECT * FROM ".$this->table_name." WHERE  f_baja IS NULL $where ORDER BY codsupervisor ASC";
         $data = $this->db->select($sql);
         if($data){
             $lista = array();

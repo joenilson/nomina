@@ -98,7 +98,9 @@ class nomina_dashboard extends fs_controller{
         $subtype = (!empty($subtype_g))?$subtype_g:$subtype_p;
         switch ($subtype){
             case "resumen-empleados":
-                //@TO-DO
+                /**
+                 * @todo Generar el resumen de empleados
+                 */
                 break;
             case "resumen-generacion":
                 $res = $this->generaciones->resumen_generaciones();

@@ -116,6 +116,9 @@ class admin_agente extends fs_controller {
             $agente = new agente();
             $this->agente = $agente->get($_GET['cod']);
         }
+        if(filter_input(INPUT_GET, 'buscar_empleado')){
+            $this->buscar_empleado();
+        }
 
         if (isset($_GET['type'])) {
             $type = filter_input(INPUT_GET, 'type');
@@ -220,8 +223,10 @@ class admin_agente extends fs_controller {
                     }
 
                     $this->agente->f_baja = NULL;
+                    $inactivo = false;
                     if ($_POST['f_baja'] != '') {
                         $this->agente->f_baja = $_POST['f_baja'];
+                        $inactivo = true;
                     }
 
                     $this->agente->codtipo = $_POST['codtipo'];
@@ -243,7 +248,7 @@ class admin_agente extends fs_controller {
                     $this->agente->porcomision = floatval($_POST['porcomision']);
                     $this->agente->dependientes = $_POST['dependientes'];
                     $this->agente->idsindicato = $_POST['idsindicalizado'];
-                    $this->agente->estado = $_POST['estado'];
+                    $this->agente->estado = ($inactivo)?'I':$_POST['estado'];
                     $this->agente->estado_civil = $_POST['estado_civil'];
 
                     if ($this->agente->save()) {
@@ -260,6 +265,21 @@ class admin_agente extends fs_controller {
         } else
             $this->new_error_msg("Empleado no encontrado.");
     }
+    
+    private function buscar_empleado()
+    {
+        /// desactivamos la plantilla HTML
+        $this->template = FALSE;
+        $query = filter_input(INPUT_GET, 'buscar_empleado');
+        $json = array();
+        foreach($this->agente->search($query) as $cli)
+        {
+            $json[] = array('value' => $cli->nombreap, 'codigo' => $cli->codagente);
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode( array('query' => $query, 'suggestions' => $json) );
+   }
 
     public function mostrar_informacion($solicitud) {
         if ($solicitud == 'buscar') {

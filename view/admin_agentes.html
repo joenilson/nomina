@@ -138,6 +138,22 @@
          </div>
       </div>
       <div class="row">
+         <div class="col-sm-2">
+             <div class="radio-inline">
+                 <label class="control-label" style="margin-right: 25px;">
+                     <input type="radio" name="mostrar" value="all" {if="$fsc->mostrar=='all'"}checked{/if} onchange="this.form.submit()">
+                     Todos 
+                 </label>
+                 <label class="control-label" style="margin-right: 25px;">
+                     <input type="radio" name="mostrar" value="activos" {if="$fsc->mostrar=='activos'"}checked{/if} onchange="this.form.submit()">
+                     Activos
+                 </label>
+                 <label class="control-label"style="margin-right: 25px;">
+                     <input type="radio" name="mostrar" value="inactivos" {if="$fsc->mostrar=='inactivos'"}checked{/if} onchange="this.form.submit()">
+                     Inactivos
+                 </label>
+             </div>
+         </div>
          <div class="col-sm-2 pull-right">
             <div class="input-group">
                <div class="input-group-addon">

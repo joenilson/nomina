@@ -12,6 +12,20 @@
                 window.location.href = '{$fsc->ppage->url()}&delete={$fsc->agente->codagente}';
             }
         });
+        
+        $("#ac_reporta").autocomplete({
+            serviceUrl: '{$fsc->url()}',
+            paramName: 'buscar_empleado',
+            onSelect: function (suggestion) {
+               if(suggestion)
+               {
+                  if(document.f_agente.codsupervisor.value !== suggestion.codigo)
+                  {
+                     document.f_agente.codsupervisor.value = suggestion.codigo;
+                  }
+               }
+            }
+        });
     });
 </script>
 
@@ -73,7 +87,7 @@
         <div class="col-sm-9 col-lg-10">
             <div class="tab-content">
                 <div role="tabpanel" class="tab-pane active" id="general">
-                    <form class="form" role="form" enctype="multipart/form-data" action="{$fsc->url()}" method="post">
+                    <form name='f_agente' class="form" role="form" enctype="multipart/form-data" action="{$fsc->url()}" method="post">
                         <div class='panel {if="$fsc->agente->f_baja"}panel-danger{else}panel-primary{/if}' id='panel_generales'>
                             <div class="panel-heading">
                                 <h3 class="panel-title">
@@ -259,15 +273,11 @@
                                             </div>
                                             <div class="col-sm-3">
                                                 <div class="form-group">
-                                                    <label class="control-label" for="codsupervisor">
+                                                    <label class="control-label" for="ac_reporta">
                                                         Reporta a:
                                                     </label>
-                                                    <select name="codsupervisor" class="form-control input-sm">
-                                                        <option value="">--------</option>
-                                                        {loop="$fsc->agente->get_supervisor()"}
-                                                        <option value="{$value->codagente}" {if="$fsc->agente->codsupervisor==$value->codagente"}selected{/if}>{$value->nombreap}</option>
-                                                        {/loop}
-                                                    </select>
+                                                    <input type='hidden' name='codsupervisor' value='{$fsc->agente->codsupervisor}'>
+                                                    <input type='text' name='ac_reporta' id='ac_reporta' autocomplete="off" value='{$fsc->agente->nombre_supervisor}' class='form-control input-sm'>
                                                 </div>
                                             </div>
                                             <div class="col-sm-3">
