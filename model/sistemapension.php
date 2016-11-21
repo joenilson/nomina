@@ -193,7 +193,7 @@ class sistemapension extends fs_model{
     }
 
     public function delete(){
-        $sql = "DELETE FROM ".$this->table_name." WHERE codseguridadsocial = ".$this->var2str($this->codsistemapension);
+        $sql = "DELETE FROM ".$this->table_name." WHERE codsistemapension = ".$this->var2str($this->codsistemapension);
         if($this->db->exec($sql)){
             return true;
         }else{

@@ -921,7 +921,7 @@ class configuracion_nomina extends fs_controller{
                 'type' => 'tab',
                 'text' => '<span class="fa fa-gear" aria-hidden="true"></span> &nbsp; Tipo de Ceses',
                 'params' => '&type=tipocese'
-            ),            
+            ),                  
             array(
                 'name' => 'configurar_nomina_js',
                 'page_from' => __CLASS__,
