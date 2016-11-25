@@ -426,11 +426,11 @@ class agente extends fs_model
        $res->categoria = '';
        if($res->codcargo){
            $info_cargos = $this->cargos->get($res->codcargo);
-           $info_categoria = $this->categoriaempleado->get($info_cargos->codcategoria);
+           $info_categoria = ($info_cargos->codcategoria)?$this->categoriaempleado->get($info_cargos->codcategoria):false;
            $res->codcategoria = $info_cargos->codcategoria;
-           $res->categoria = $info_categoria->descripcion;
+           $res->categoria = ($info_categoria)?$info_categoria->descripcion:false;
        }
-       $res->nombre_supervisor = ($res->codsupervisor)?$this->get($res->codsupervisor)->nombreap:'';
+       $res->nombre_supervisor = (isset($res->codsupervisor))?$this->supervisor($res->codsupervisor)->nombreap:'';
        $res->edad = $this->edad($res->f_nacimiento);
        $res->permanencia = $this->permanencia($res->f_alta, $res->f_baja);
        return $res;
@@ -441,6 +441,17 @@ class agente extends fs_model
         $to   = new DateTime('today');
         $edad = $from->diff($to)->y;
         return $edad;
+   }
+   
+   public function supervisor($codsupervisor){
+       $a = $this->db->select("SELECT * FROM ".$this->table_name." WHERE codagente = ".$this->var2str($codsupervisor).";");
+      if($a)
+      {
+         $valor = new agente($a[0]);
+         return $res;
+      }
+      else
+         return FALSE;
    }
 
    public function permanencia($f_alta,$f_baja){
