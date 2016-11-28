@@ -455,7 +455,7 @@ class agente extends fs_model
       if($a)
       {
          $valor = new agente($a[0]);
-         return $res;
+         return $valor;
       }
       else
          return FALSE;
