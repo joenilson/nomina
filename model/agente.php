@@ -69,7 +69,7 @@ class agente extends fs_model
     * @var type $codigo_pension
     */
    public $codigo_pension;
-   
+
    /**
     * @deprecated since 10/05/2016 FS 2016.004
     */
@@ -160,7 +160,7 @@ class agente extends fs_model
     * @var type $codseguridadsocial Seguridadsocial
     */
    public $codseguridadsocial;
-   
+
    /**
     * Se elige la compañia que maneja el fondo de pensiones o el estado o gobierno
     * @var type $codsistemapension SistemaPension
@@ -415,7 +415,7 @@ class agente extends fs_model
          VALUES ('1','Juan','Perez','Prado','00000014Z','M','A','S'),".
               "('1','Maria','Ruiz','Diaz','00000019Z','F','A','D');";
    }
-   
+
    public function info_adicional($res){
        $res->gerencia = (!empty($res->codgerencia))?$this->organizacion->get($res->codgerencia)->descripcion:"";
        $res->area = (!empty($res->codarea))?$this->organizacion->get($res->codarea)->descripcion:"";
@@ -430,7 +430,14 @@ class agente extends fs_model
            $res->codcategoria = $info_cargos->codcategoria;
            $res->categoria = ($info_categoria)?$info_categoria->descripcion:false;
        }
-       $res->nombre_supervisor = (isset($res->codsupervisor))?$this->supervisor($res->codsupervisor)->nombreap:'';
+       if(isset($res->codsupervisor)){
+           $nombre = $this->supervisor($res->codsupervisor);
+           if(!empty($nombre)){
+              $res->nombre_supervisor = $nombre->nombreap;
+           }else{
+               $res->nombre_supervisor = '';
+           }
+       }
        $res->edad = $this->edad($res->f_nacimiento);
        $res->permanencia = $this->permanencia($res->f_alta, $res->f_baja);
        return $res;
@@ -442,7 +449,7 @@ class agente extends fs_model
         $edad = $from->diff($to)->y;
         return $edad;
    }
-   
+
    public function supervisor($codsupervisor){
        $a = $this->db->select("SELECT * FROM ".$this->table_name." WHERE codagente = ".$this->var2str($codsupervisor).";");
       if($a)
@@ -502,7 +509,7 @@ class agente extends fs_model
          return false;
       }
    }
-   
+
    public function search($value_orig){
         $value = strtoupper(trim($value_orig));
         $select = "SELECT * FROM ".$this->table_name." WHERE ";
@@ -524,7 +531,7 @@ class agente extends fs_model
         }else{
             return false;
         }
-        
+
    }
 
    public function get_new_codigo()
@@ -574,7 +581,7 @@ class agente extends fs_model
       else
          return FALSE;
    }
-   
+
    public function get_by_almacen($codalmacen)
    {
       $a = $this->db->select("SELECT * FROM ".$this->table_name." WHERE codalmacen = ".$this->var2str($codalmacen).";");
@@ -591,7 +598,7 @@ class agente extends fs_model
       else
          return FALSE;
    }
-   
+
    public function get_by_gerencia($codgerencia)
    {
       $a = $this->db->select("SELECT * FROM ".$this->table_name." WHERE codgerencia = ".$this->var2str($codgerencia).";");
@@ -608,7 +615,7 @@ class agente extends fs_model
       else
          return FALSE;
    }
-   
+
    public function get_by_area($codarea)
    {
       $a = $this->db->select("SELECT * FROM ".$this->table_name." WHERE codarea = ".$this->var2str($codarea).";");
@@ -642,7 +649,7 @@ class agente extends fs_model
       else
          return FALSE;
    }
-   
+
    public function get_by_supervisor($codsupervisor)
    {
       $a = $this->db->select("SELECT * FROM ".$this->table_name." WHERE codsupervisor = ".$this->var2str($codsupervisor).";");
@@ -666,7 +673,7 @@ class agente extends fs_model
       $cargos = $c->get_superiores();
       //print_r($cargos);
       foreach($cargos as $cargo){
-          $arrayLista[] = $cargo->codcargo; 
+          $arrayLista[] = $cargo->codcargo;
       }
       $supervisor = ($this->codsupervisor)?" codsupervisor = ".$this->var2str($this->codsupervisor):" codcargo IN ('".implode("','",$arrayLista)."')";
       $sql = "SELECT * FROM ".$this->table_name." WHERE ".$supervisor.";";
@@ -684,7 +691,7 @@ class agente extends fs_model
          return FALSE;
       }
    }
-   
+
    public function exists()
    {
       if( is_null($this->codagente) )
@@ -863,7 +870,7 @@ class agente extends fs_model
 
       return $listagentes;
    }
-   
+
    public function all_activos()
    {
       $listagentes = $this->cache->get_array('m_agente_all');
@@ -937,7 +944,7 @@ class agente extends fs_model
             return $valor;
         }
     }
-    
+
     public function estadistica_almacen(){
         $sql = "select codalmacen, count(codagente) as total from ".$this->table_name." WHERE f_baja IS NULL GROUP BY codalmacen;";
         $data = $this->db->select($sql);
@@ -955,7 +962,7 @@ class agente extends fs_model
             return false;
         }
     }
-    
+
     public function organigrama($opciones = null){
         $where = "";
         if($opciones){
@@ -981,7 +988,7 @@ class agente extends fs_model
             return $this->estructura($lista);
         }
     }
-    
+
     public function estructura($lista, $raiz = null){
         $estructura = array();
         foreach($lista as $key=>$item){
@@ -998,5 +1005,5 @@ class agente extends fs_model
         }
         return empty($estructura)?null:$estructura;
     }
-    
+
 }
