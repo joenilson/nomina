@@ -53,7 +53,6 @@ class importar_agentes extends fs_controller
    public $allow_delete;
    public $foto_empleado;
    public $noimagen = "plugins/nomina/view/imagenes/no_foto.jpg";
-   private $upload_photo;
    public $archivo;
    public $resultado;
    public $arrayCabeceras = array('sede','empresa','dnicif','nombreap','apellidos',
@@ -61,7 +60,7 @@ class importar_agentes extends fs_controller
             ,'telefono','f_alta','f_baja','gerencia','area','departamento','cargo'
             ,'codsistemapension','codigo_pension'
             ,'codseguridadsocial','seg_social','dependientes','codformacion','carrera'
-            ,'centroestudios','idsindicato','codtipo','pago_total','pago_neto','email');
+            ,'centroestudios','idsindicato','codtipo','pago_total','pago_neto','email','codbanco','cuenta_banco');
     public function __construct() {
         parent::__construct(__CLASS__, 'Importar Empleados', 'admin', 'false', FALSE, FALSE);
     }
@@ -127,6 +126,8 @@ class importar_agentes extends fs_controller
         $assoc_header['SINDICATO']='idsindicato';
         $assoc_header['TIPO_CONTRATO']='codtipo';
         $assoc_header['EMAIL']='email';
+        $assoc_header['BANCO']='banco';
+        $assoc_header['CUENTA_BANCO']='cuenta_banco';
         $assoc_header['TALLA_POLO']='talla_polo';
         $assoc_header['PAGO_ASIGNACION_FAMILIAR']='pago_asignacion_familiar';
         $assoc_header['PAGO_BONO_CARGO']='pago_bono_cargo';
@@ -267,6 +268,20 @@ class importar_agentes extends fs_controller
             $estado_civil = NULL;
         }
         
+        $codbanco = NULL;
+        if($_POST['codbanco'] != ''){
+            if($this->bancos->get_by_nombre($this->mayusculas($_POST['codbanco']))){
+                $codbanco = $this->bancos->get_by_nombre($this->mayusculas($_POST['codbanco']))->codbanco;
+            }else{
+                $codbanco = NULL;
+            }
+        }
+        
+        $codseguridadsocial = NULL;
+        if($_POST['codseguridadsocial'] != ''){
+            $codseguridadsocial = (strlen($_POST['codseguridadsocial'])<=4)?$this->seguridadsocial->get_by_nombre_corto($_POST['codseguridadsocial'])->codseguridadsocial:$this->seguridadsocial->get_by_nombre(strtoupper($_POST['codseguridadsocial']))->codseguridadsocial;
+        }
+        
         $codseguridadsocial = NULL;
         if($_POST['codseguridadsocial'] != ''){
             $codseguridadsocial = (strlen($_POST['codseguridadsocial'])<=4)?$this->seguridadsocial->get_by_nombre_corto($_POST['codseguridadsocial'])->codseguridadsocial:$this->seguridadsocial->get_by_nombre(strtoupper($_POST['codseguridadsocial']))->codseguridadsocial;
@@ -360,6 +375,8 @@ class importar_agentes extends fs_controller
         $age0->coddepartamento = $coddepartamento;
         $age0->codcargo = $cargo->codcargo;
         $age0->cargo = $cargo->descripcion;
+        $age0->codbanco = $codbanco;
+        $age0->cuenta_banco = trim($_POST['cuenta_banco']);
         $age0->codformacion = $codformacion;
         $age0->carrera = $this->mayusculas($_POST['carrera']);
         $age0->centroestudios = $this->mayusculas($_POST['centroestudios']);
