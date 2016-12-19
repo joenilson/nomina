@@ -77,7 +77,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             f_edit_node.tipo.value = nodo.tipo.toUpperCase();
             f_edit_node.estado.checked = (nodo.estado) ? true : false;
             f_edit_node.estado.value = (nodo.estado) ? "true" : "false";
-            console.log(nodo.en_uso);
             if(nodo.en_uso !== '0'){
                 $('#btn-eliminar-uo').hide();
                 $('#span-qdad-empleados').html(nodo.en_uso);
@@ -86,16 +85,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 $('#btn-eliminar-uo').show();
                 $('#btn-bloqueo-uo').hide();
             }
-            
+
             $('#modal-edit-node').modal('show');
         });
-        
+
         $('#btn-add-org').on('click', function (e){
             $('#btn-eliminar-uo').hide();
             $('#btn-bloqueo-uo').hide();
             $('#modal-edit-node').modal('show');
         });
-        
+
         $('#modal-edit-node').on('hidden.bs.modal', function () {
             document.f_edit_node.reset();
         });
@@ -170,7 +169,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 <div class="modal fade" id="modal-edit-node" tabindex="-1" role="dialog" aria-labelledby="modalEditNode">
     <div class="modal-dialog" role="document">
-        <div class="modal-content"> 
+        <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="myModalLabel">Estructura Organizacional</h4>
