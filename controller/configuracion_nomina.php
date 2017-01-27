@@ -74,7 +74,7 @@ class configuracion_nomina extends fs_controller{
     public $nomina_setup;
     public $nomina_migracion_informacion;
     public $fsvar;
-    
+
     public function __construct() {
         parent::__construct(__CLASS__, 'Configuracion Nomina', 'nomina', TRUE, TRUE, FALSE);
     }
@@ -100,14 +100,14 @@ class configuracion_nomina extends fs_controller{
         $this->sistemapension = new sistemapension();
         $this->organizacion = new organizacion();
         $this->tipopago = new tipopago();
-        
+
         //Tablas de datos para los empleados
         new ausencias();
         new contratos();
         new dependientes();
         new hoja_vida();
         new movimientos_empleados();
-        
+
         $this->fsvar = new fs_var();
         //Aqui almacenamos las variables del plugin
         $this->nomina_setup = $this->fsvar->array_get(
@@ -115,9 +115,9 @@ class configuracion_nomina extends fs_controller{
             'nomina_migracion_informacion' => 'FALSE',
             ), FALSE
         );
-        
+
         $this->nomina_migracion_informacion = $this->nomina_setup['nomina_migracion_informacion'];
-        
+
         if(isset($_GET['type'])){
             switch($_GET['type']){
                 case "importar_cargos":
@@ -231,8 +231,8 @@ class configuracion_nomina extends fs_controller{
                     break;
             }
         }
-        
-        
+
+
         //Validamos si existen las carpetas de almacenamiento de datos
         // imagenes de empleados
         $this->creada = false;
@@ -241,22 +241,22 @@ class configuracion_nomina extends fs_controller{
         $this->dir_nomina = $this->dir_documentos.DIRECTORY_SEPARATOR."nomina";
         $this->dir_empleados = $this->dir_nomina.DIRECTORY_SEPARATOR.$this->empresa->id."/e/";
         $this->dir_documentos_empleados = $this->dir_nomina.DIRECTORY_SEPARATOR.$this->empresa->id."/d/";
-        
+
         //Existe el almacen de documentos?
         if(!is_dir($this->dir_documentos)){
             mkdir($this->dir_documentos);
         }
-        
+
         //Existe la carpeta de nomina?
         if(!is_dir($this->dir_nomina)){
             mkdir($this->dir_nomina);
         }
-        
+
         //Existe la carpeta para los documentos de la empresa
         if(!is_dir($this->dir_nomina.DIRECTORY_SEPARATOR.$this->empresa->id)){
             mkdir($this->dir_nomina.DIRECTORY_SEPARATOR.$this->empresa->id);
         }
-        
+
         //Validamos si existe el directorio para las imagenes de los empleados
         $this->creada = false;
         if(!is_dir($this->dir_empleados)){
@@ -285,7 +285,7 @@ class configuracion_nomina extends fs_controller{
         //@TODO
 
     }
-    
+
     public function importar_cargos(){
         //Cargamos los datos por primera vez
         $this->fix_info();
@@ -295,7 +295,7 @@ class configuracion_nomina extends fs_controller{
                'nomina_migracion_informacion' => 'TRUE'
             );
         $this->fsvar->array_save($nomina_setup);
-        
+
         //Aqui almacenamos las variables del plugin
         $this->nomina_setup = $this->fsvar->array_get(
             array(
@@ -304,7 +304,7 @@ class configuracion_nomina extends fs_controller{
         );
         $this->nomina_migracion_informacion = $this->nomina_setup['nomina_migracion_informacion'];
     }
-    
+
     public function tratar_ausencias(){
         $accion = filter_input(INPUT_POST, 'accion');
         if($accion == 'agregar'){
@@ -328,7 +328,7 @@ class configuracion_nomina extends fs_controller{
             }
         }
     }
-    
+
     public function tratar_bancos(){
         $accion = filter_input(INPUT_POST, 'accion');
         if($accion == 'agregar'){
@@ -361,7 +361,7 @@ class configuracion_nomina extends fs_controller{
             $c0->codcategoria = \filter_input(INPUT_POST, 'codcategoria');
             $c0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
             $c0->padre = \filter_input(INPUT_POST, 'padre');
-            $c0->estado = \filter_input(INPUT_POST, 'estado');
+            $c0->estado = (\filter_input(INPUT_POST, 'estado'))?'TRUE':'FALSE';
             $estado = $c0->save();
             if($estado){
                 $this->new_message("Datos guardados correctamente.");
@@ -406,7 +406,7 @@ class configuracion_nomina extends fs_controller{
             }
         }
     }
-    
+
     public function tratar_generaciones(){
         $accion = \filter_input(INPUT_POST, 'accion');
         if($accion == 'agregar'){
@@ -431,10 +431,10 @@ class configuracion_nomina extends fs_controller{
             }
         }
     }
-    
+
     public function tratar_estadosciviles(){
         $accion = \filter_input(INPUT_POST, 'accion');
-        if($accion == 'agregar'){        
+        if($accion == 'agregar'){
             $estciv0 = new estadocivil();
             $estciv0->codestadocivil = filter_input(INPUT_POST, 'codestadocivil');
             $estciv0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
@@ -453,10 +453,10 @@ class configuracion_nomina extends fs_controller{
             }
         }
     }
-    
+
     public function tratar_motivocese(){
         $accion = \filter_input(INPUT_POST, 'accion');
-        if($accion == 'agregar'){         
+        if($accion == 'agregar'){
             $ing0 = new motivocese();
             $ing0->codmotivocese = filter_input(INPUT_POST, 'codmotivocese');
             $ing0->codtipocese = filter_input(INPUT_POST, 'codtipocese');
@@ -477,10 +477,10 @@ class configuracion_nomina extends fs_controller{
             }
         }
     }
-    
+
     public function tratar_tipocese(){
         $accion = \filter_input(INPUT_POST, 'accion');
-        if($accion == 'agregar'){          
+        if($accion == 'agregar'){
             $ing0 = new tipocese();
             $ing0->codtipocese = filter_input(INPUT_POST, 'codtipocese');
             $ing0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
@@ -498,12 +498,12 @@ class configuracion_nomina extends fs_controller{
             }else{
                 $this->new_error_msg("La información no pudo ser eliminada, revise los datos e intente nuevamente");
             }
-        }            
+        }
     }
-    
+
     public function tratar_movimientos(){
         $accion = \filter_input(INPUT_POST, 'accion');
-        if($accion == 'agregar'){         
+        if($accion == 'agregar'){
             $tmov0 = new tipomovimiento();
             $tmov0->codmovimiento = filter_input(INPUT_POST, 'codmovimiento');
             $tmov0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
@@ -521,12 +521,12 @@ class configuracion_nomina extends fs_controller{
             }else{
                 $this->new_error_msg("La información no pudo ser eliminada, revise los datos e intente nuevamente");
             }
-        }            
+        }
     }
-    
+
     public function tratar_pagos(){
         $accion = \filter_input(INPUT_POST, 'accion');
-        if($accion == 'agregar'){   
+        if($accion == 'agregar'){
             $tp0 = new tipopago();
             $tp0->codpago = filter_input(INPUT_POST, 'codpago');
             $tp0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
@@ -545,12 +545,12 @@ class configuracion_nomina extends fs_controller{
             }else{
                 $this->new_error_msg("La información no pudo ser eliminada, revise los datos e intente nuevamente");
             }
-        }   
+        }
     }
-    
+
     public function tratar_formaciones(){
         $accion = \filter_input(INPUT_POST, 'accion');
-        if($accion == 'agregar'){         
+        if($accion == 'agregar'){
             $form0 = new formacion();
             $form0->codformacion = filter_input(INPUT_POST, 'codformacion');
             $form0->nombre = $this->mayusculas(filter_input(INPUT_POST, 'nombre'));
@@ -568,12 +568,12 @@ class configuracion_nomina extends fs_controller{
             }else{
                 $this->new_error_msg("La información no pudo ser eliminada, revise los datos e intente nuevamente");
             }
-        }              
+        }
     }
-    
+
     public function tratar_dependientes(){
         $accion = \filter_input(INPUT_POST, 'accion');
-        if($accion == 'agregar'){        
+        if($accion == 'agregar'){
             $dep0 = new tipodependientes();
             $dep0->coddependiente = filter_input(INPUT_POST, 'coddependiente');
             $dep0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
@@ -591,9 +591,9 @@ class configuracion_nomina extends fs_controller{
             }else{
                 $this->new_error_msg("La información no pudo ser eliminada, revise los datos e intente nuevamente");
             }
-        }            
+        }
     }
-    
+
     public function tratar_seguridadsocial(){
         $accion = filter_input(INPUT_POST, 'accion');
         if($accion == 'agregar'){
@@ -618,7 +618,7 @@ class configuracion_nomina extends fs_controller{
             }
         }
     }
-    
+
     public function tratar_sistemapension(){
         $accion = filter_input(INPUT_POST, 'accion');
         if($accion == 'agregar'){
@@ -643,7 +643,7 @@ class configuracion_nomina extends fs_controller{
             }
         }
     }
-    
+
     public function tratar_sindicalizacion(){
         $accion = filter_input(INPUT_POST, 'accion');
         if($accion == 'agregar'){
@@ -666,7 +666,7 @@ class configuracion_nomina extends fs_controller{
             }
         }
     }
-    
+
     public function tratar_tipoempleado(){
         $accion = filter_input(INPUT_POST, 'accion');
         if($accion == 'agregar'){
@@ -689,10 +689,10 @@ class configuracion_nomina extends fs_controller{
             }
         }
     }
-    
+
     public function tratar_organizacion(){
         $accion = filter_input(INPUT_POST, 'accion');
-        if($accion == 'agregar'){        
+        if($accion == 'agregar'){
             $org0 = new organizacion();
             $org0->codorganizacion = filter_input(INPUT_POST, 'codorganizacion');
             $org0->padre = filter_input(INPUT_POST, 'padre');
@@ -712,10 +712,10 @@ class configuracion_nomina extends fs_controller{
             }else{
                 $this->new_error_msg("La información no pudo ser eliminada, revise los datos e intente nuevamente");
             }
-        }            
-        
+        }
+
     }
-    
+
     public function tareas_organizacion(){
         $subtype = filter_input(INPUT_GET, 'subtype');
         if($subtype == 'arbol_estructura'){
@@ -889,7 +889,7 @@ class configuracion_nomina extends fs_controller{
                 'type' => 'tab',
                 'text' => '<span class="fa fa-gear" aria-hidden="true"></span> &nbsp; Tipo de Ausencias',
                 'params' => '&type=ausencias'
-            ),            
+            ),
             array(
                 'name' => 'config_nomina_estadocivil',
                 'page_from' => __CLASS__,
@@ -897,7 +897,7 @@ class configuracion_nomina extends fs_controller{
                 'type' => 'tab',
                 'text' => '<span class="fa fa-gear" aria-hidden="true"></span> &nbsp; Estados Civiles',
                 'params' => '&type=estadocivil'
-            ),            
+            ),
             array(
                 'name' => 'config_nomina_pagos',
                 'page_from' => __CLASS__,
@@ -905,7 +905,7 @@ class configuracion_nomina extends fs_controller{
                 'type' => 'tab',
                 'text' => '<span class="fa fa-gear" aria-hidden="true"></span> &nbsp; Tipos de Pago',
                 'params' => '&type=pagos'
-            ),            
+            ),
             array(
                 'name' => 'config_nomina_motivocese',
                 'page_from' => __CLASS__,
@@ -913,7 +913,7 @@ class configuracion_nomina extends fs_controller{
                 'type' => 'tab',
                 'text' => '<span class="fa fa-gear" aria-hidden="true"></span> &nbsp; Motivos de Cese',
                 'params' => '&type=motivocese'
-            ),            
+            ),
             array(
                 'name' => 'config_nomina_tipocese',
                 'page_from' => __CLASS__,
@@ -921,7 +921,7 @@ class configuracion_nomina extends fs_controller{
                 'type' => 'tab',
                 'text' => '<span class="fa fa-gear" aria-hidden="true"></span> &nbsp; Tipo de Ceses',
                 'params' => '&type=tipocese'
-            ),                  
+            ),
             array(
                 'name' => 'configurar_nomina_js',
                 'page_from' => __CLASS__,
@@ -963,7 +963,7 @@ class configuracion_nomina extends fs_controller{
                 'params' => ''
             ),
         );
-        
+
         //Correcciones entre cambios de version
         //Se mantendra vacio cada que se publique una versión nueva
         $eliminar = array(
@@ -991,7 +991,7 @@ class configuracion_nomina extends fs_controller{
                 $this->new_error_msg('Imposible guardar los datos de la extensión ' . $ext['name'] . '.');
             }
         }
-        
+
         foreach ($eliminar as $ext) {
             $fsext0 = new fs_extension($ext);
             if (!$fsext0->delete()) {
