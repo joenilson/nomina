@@ -87,7 +87,7 @@ class dependientes extends fs_model{
 
     public $tipodependientes;
     public $formacion;
-    
+
     public function __construct($t = FALSE) {
         parent::__construct('hr_dependientes');
         if($t){
@@ -123,21 +123,21 @@ class dependientes extends fs_model{
             $this->fecha_creacion = NULL;
             $this->fecha_modificacion = NULL;
         }
-        
+
         $this->tipodependientes = new tipodependientes();
         $this->formacion = new formacion();
     }
-    
+
     protected function install() {
         return '';
     }
-    
+
     protected function info_adicional($val){
         $val->desc_tipodependiente = $this->tipodependientes->get($val->coddependiente)->descripcion;
         $val->desc_grado_academico = $this->formacion->get($val->grado_academico)->nombre;
         return $val;
     }
-    
+
     public function exists() {
         if(is_null($this->id)){
             return false;
@@ -145,7 +145,7 @@ class dependientes extends fs_model{
             return $this->get($this->id);
         }
     }
-    
+
     public function save() {
         if($this->exists()){
             return $this->update();
@@ -166,11 +166,11 @@ class dependientes extends fs_model{
             return $this->db->exec($sql);
         }
     }
-    
+
     public function nombreap(){
         return $this->nombres.' '.$this->apellido_paterno.' '.$this->apellido_materno;
     }
-    
+
     public function update() {
         $sql = "UPDATE ".$this->table_name." SET ".
             " grado_academico = ".$this->var2str($this->grado_academico).
@@ -187,13 +187,13 @@ class dependientes extends fs_model{
             " WHERE id = ".$this->intval($this->id)." AND codagente = ".$this->var2str($this->codagente).";";
         return $this->db->exec($sql);
     }
-    
+
     public function delete() {
         $sql = "DELETE FROM ".$this->table_name." WHERE ".
                 " id = ".$this->intval($this->id)." AND codagente = ".$this->var2str($this->codagente).";";
         return $this->db->exec($sql);
     }
-    
+
     public function get($id){
         $sql = "SELECT * FROM ".$this->table_name." WHERE ".
             " id = ".$this->intval($id).";";
@@ -206,7 +206,7 @@ class dependientes extends fs_model{
             return false;
         }
     }
-    
+
     public function all(){
         $sql = "SELECT * FROM ".$this->table_name." ORDER BY codagente,f_nacimiento,coddependiente;";
         $data = $this->db->select($sql);
@@ -221,7 +221,7 @@ class dependientes extends fs_model{
             return false;
         }
     }
-    
+
     public function activos(){
         $sql = "SELECT * FROM ".$this->table_name." WHERE estado = TRUE ORDER BY codagente,f_nacimiento,coddependiente;";
         $data = $this->db->select($sql);
@@ -236,7 +236,7 @@ class dependientes extends fs_model{
             return false;
         }
     }
-    
+
     public function tipo_dependiente($coddependiente){
         $sql = "SELECT * FROM ".$this->table_name." WHERE coddependiente = ".$this->var2str($coddependiente)." AND estado = TRUE ORDER BY codagente,f_nacimiento,coddependiente;";
         $data = $this->db->select($sql);
@@ -251,7 +251,7 @@ class dependientes extends fs_model{
             return false;
         }
     }
-    
+
     public function all_agente($codagente){
         $sql = "SELECT * FROM ".$this->table_name." WHERE codagente = ".$this->var2str($codagente)." ORDER BY codagente,f_nacimiento,coddependiente;";
         $data = $this->db->select($sql);
@@ -266,7 +266,7 @@ class dependientes extends fs_model{
             return false;
         }
     }
-    
+
     public function activos_agente($codagente){
         $sql = "SELECT * FROM ".$this->table_name." WHERE codagente = ".$this->var2str($codagente)." AND estado = TRUE ORDER BY codagente,f_nacimiento,coddependiente;";
         $data = $this->db->select($sql);
@@ -281,7 +281,7 @@ class dependientes extends fs_model{
             return false;
         }
     }
-    
+
     public function tipo_dependiente_agente($coddependiente,$codagente){
         $sql = "SELECT * FROM ".$this->table_name." WHERE coddependiente = ".$this->var2str($coddependiente)." AND codagente = ".$this->var2str($codagente)." AND estado = TRUE ORDER BY codagente,f_nacimiento,coddependiente;";
         $data = $this->db->select($sql);
@@ -296,14 +296,14 @@ class dependientes extends fs_model{
             return false;
         }
     }
-    
+
     public function edad_dependiente(){
         $from = new DateTime($this->f_nacimiento);
         $to   = new DateTime($this->genero);
         $edad = $this->calculo_edad($from->diff($to));
         return $edad;
     }
-    
+
     public function calculo_edad($fecha_diff){
         $years = $fecha_diff->y;
         $months = $fecha_diff->m;
@@ -322,5 +322,24 @@ class dependientes extends fs_model{
             $fecha.=($days>1)?"días ":"día ";
         }
         return $fecha;
+    }
+
+    public function resumen_dependientes(){
+        $sql = "SELECT coddependiente,genero,count(id) as cantidad FROM ".$this->table_name." WHERE estado = TRUE group BY coddependiente,genero";
+        $data = $this->db->select($sql);
+        if($data){
+            $lista = array();
+            foreach($data as $d){
+                $linea = new stdClass();
+                $linea->coddependiente = $d['coddependiente'];
+                $linea->descripcion = $this->tipodependientes->get($d['coddependiente'])->descripcion;
+                $linea->genero = $d['genero'];
+                $linea->cantidad = $d['cantidad'];
+                $lista[] = $linea;
+            }
+            return $lista;
+        }else{
+            return false;
+        }
     }
 }

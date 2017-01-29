@@ -34,13 +34,13 @@ class generaciones extends fs_model{
      * @var type $descripcion Descripcion
      */
     public $descripcion;
-    
+
     /**
      * Se coloca el año de inicio de la Genereracion en formato YYYY
      * @var type $inicio_generacion Date::Year
      */
     public $inicio_generacion;
-    
+
     /**
      * Se coloca el año de fin de la Generacion en formato YYYY
      * @var type $fin_generacion Date::Year
@@ -52,9 +52,9 @@ class generaciones extends fs_model{
      * @var type $estado Boolean
      */
     public $estado;
-    
+
     public $agentes;
-    
+
     public function __construct($t = FALSE) {
         parent::__construct('hr_generaciones');
         if($t){
@@ -70,7 +70,7 @@ class generaciones extends fs_model{
             $this->fin_generacion = NULL;
             $this->estado = FALSE;
         }
-        
+
         $this->agentes = new agente();
     }
 
@@ -152,7 +152,7 @@ class generaciones extends fs_model{
             return false;
         }
     }
-    
+
     public function get_by_year($year){
         $sql = "SELECT * FROM ".$this->table_name." WHERE inicio_generacion <= ".$this->intval($year)." AND fin_generacion >= ".$this->intval($year).";";
         $data = $this->db->select($sql);
@@ -181,13 +181,13 @@ class generaciones extends fs_model{
         $sql = "DELETE FROM ".$this->table_name." WHERE codgeneracion = ".$this->var2str($this->codgeneracion).";";
         return $this->db->exec($sql);
     }
-    
+
     public function resumen_generaciones(){
         $agentes = $this->agentes->all_activos();
         $lista = array();
         foreach($agentes as $a){
             if(!empty($a->f_nacimiento)){
-                $dateEmpleado = new DateTime($a->f_nacimiento);
+                $dateEmpleado = new \DateTime($a->f_nacimiento);
                 $datos = $this->get_by_year($dateEmpleado->format('Y'));
                 if(!isset($lista[$datos->codgeneracion])){
                     $lista[$datos->codgeneracion] = new stdClass();

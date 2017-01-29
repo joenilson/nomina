@@ -74,6 +74,11 @@ class admin_agentes extends fs_controller {
         $mostrar_p = filter_input(INPUT_POST, 'mostrar');
         $mostrar = ($mostrar_p)?$mostrar_p:$mostrar_g;
         $this->mostrar = ($mostrar)?$mostrar:'all';
+
+        if(filter_input(INPUT_GET, 'buscar_empleado')){
+            $this->buscar_empleado();
+        }
+
         if (isset($_GET['type'])) {
             $type = filter_input(INPUT_GET, 'type');
             switch ($type) {
@@ -318,7 +323,7 @@ class admin_agentes extends fs_controller {
                     . " OR lower(email) LIKE '%" . $buscar . "%')";
             $and = ' AND ';
         }
-        
+
         if($this->mostrar != 'all'){
             if($this->mostrar == 'activos'){
                 $sql .= $and." f_baja IS NULL ";
@@ -370,6 +375,21 @@ class admin_agentes extends fs_controller {
             }
         }
     }
+
+    private function buscar_empleado()
+    {
+        /// desactivamos la plantilla HTML
+        $this->template = FALSE;
+        $query = filter_input(INPUT_GET, 'buscar_empleado');
+        $json = array();
+        foreach($this->agente->search($query) as $cli)
+        {
+            $json[] = array('value' => $cli->nombreap, 'codigo' => $cli->codagente);
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode( array('query' => $query, 'suggestions' => $json) );
+   }
 
     //Para guardar la foto hacemos uso de la libreria de class.upload.php que esta en extras/verot/
     //Con esta libreria estandarizamos todas las imagenes en PNG y les hacemos un resize a 120px
@@ -423,6 +443,14 @@ class admin_agentes extends fs_controller {
                 'params' => ''
             ),
             array(
+                'name' => 'cargar_dependientes_button',
+                'page_from' => 'importar_dependientes',
+                'page_to' => __CLASS__,
+                'type' => 'button',
+                'text' => '<span class="fa fa-upload" aria-hidden="true"></span> &nbsp; Cargar Dependientes',
+                'params' => ''
+            ),
+            array(
                 'name' => 'nuevo_empleado_js',
                 'page_from' => __CLASS__,
                 'page_to' => __CLASS__,
@@ -445,7 +473,7 @@ class admin_agentes extends fs_controller {
                 $this->new_error_msg('Imposible guardar los datos de la extensión ' . $ext['name'] . '.');
             }
         }
-        
+
     }
 
 }

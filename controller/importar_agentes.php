@@ -96,7 +96,7 @@ class importar_agentes extends fs_controller
         $agentes = new agente();
         $objPHPExcel = PHPExcel_IOFactory::load($this->archivo['tmp_name']);
         $l = 0;
-        
+
         $assoc_header['SEDE']='sede';
         $assoc_header['EMPRESA']='empresa';
         $assoc_header['DOCUMENTO_IDENTIDAD']='dnicif';
@@ -143,7 +143,7 @@ class importar_agentes extends fs_controller
         foreach($this->almacen->all() as $vals){
             $sedesArray[$vals->nombre]=$vals->codalmacen;
         }
-        
+
         $worksheet = $objPHPExcel->getSheet(0);
         $worksheetTitle     = $worksheet->getTitle();
         $highestRow         = $worksheet->getHighestRow(); // e.g. 10
@@ -174,7 +174,7 @@ class importar_agentes extends fs_controller
                         $val = ($agentes->get_by_dnicif($val))?null:$val;
                         $linea['estado']=($val)?$linea['estado']:'Ya existe';
                     }
-                    
+
                     //Verificamos si tiene f_nacimiento
                     if($cabeceraRecibida[$col]=='f_nacimiento' AND (empty($val) OR $val == null)){
                         $error = true;
@@ -188,7 +188,7 @@ class importar_agentes extends fs_controller
                         $val = strtolower($val);
                     }
                     if(PHPExcel_Shared_Date::isDateTime($cell)) {
-                        $val = (is_null($val) OR empty($val))?'':date('d-m-Y', PHPExcel_Shared_Date::ExcelToPHP($val));
+                        $val =  (is_null($val) OR empty($val)) ? '' : \PHPExcel_Style_NumberFormat::toFormattedString($val, 'dd-mm-YYYY');
                     }
                     //Verificamos si la sede existe
                     if($cabeceraRecibida[$col]=='sede' AND (!empty($val) OR $val !== null)){
@@ -230,6 +230,9 @@ class importar_agentes extends fs_controller
                $this->resultado['estado']='existe';
                $this->resultado['dnicif']=$age0->get_by_dnicif($_POST['dnicif']);
            }
+       }else{
+           $this->resultado['estado']='no_ingresado';
+           $this->resultado['dnicif']=$_POST['dnicif'];
        }
 
        header('Content-Type: application/json');
@@ -267,7 +270,7 @@ class importar_agentes extends fs_controller
         }else{
             $estado_civil = NULL;
         }
-        
+
         $codbanco = NULL;
         if($_POST['codbanco'] != ''){
             if($this->bancos->get_by_nombre($this->mayusculas($_POST['codbanco']))){
@@ -276,17 +279,17 @@ class importar_agentes extends fs_controller
                 $codbanco = NULL;
             }
         }
-        
+
         $codseguridadsocial = NULL;
         if($_POST['codseguridadsocial'] != ''){
             $codseguridadsocial = (strlen($_POST['codseguridadsocial'])<=4)?$this->seguridadsocial->get_by_nombre_corto($_POST['codseguridadsocial'])->codseguridadsocial:$this->seguridadsocial->get_by_nombre(strtoupper($_POST['codseguridadsocial']))->codseguridadsocial;
         }
-        
+
         $codseguridadsocial = NULL;
         if($_POST['codseguridadsocial'] != ''){
             $codseguridadsocial = (strlen($_POST['codseguridadsocial'])<=4)?$this->seguridadsocial->get_by_nombre_corto($_POST['codseguridadsocial'])->codseguridadsocial:$this->seguridadsocial->get_by_nombre(strtoupper($_POST['codseguridadsocial']))->codseguridadsocial;
         }
-        
+
         $codsistemapension = NULL;
         if($_POST['codsistemapension'] != ''){
             $codsistemapension = (strlen($_POST['codsistemapension'])<=4)?$this->sistemapension->get_by_nombre_corto($_POST['codsistemapension'])->codsistemapension:$this->sistemapension->get_by_nombre(strtoupper($_POST['codsistemapension']))->codsistemapension;
@@ -306,7 +309,7 @@ class importar_agentes extends fs_controller
         }else{
             $codformacion = NULL;
         }
-        
+
         $codtipo = NULL;
         if($_POST['codtipo'] != ''){
             if($this->tipoempleado->get_by_descripcion($this->mayusculas($_POST['codtipo']))){
@@ -388,7 +391,7 @@ class importar_agentes extends fs_controller
         $age0->idsindicato = $idsindicato;
         $age0->estado = 'A';
         $age0->estado_civil = $estado_civil;
-        $age0->fecha_creacion = date('d-m-y H:m:s');
+        $age0->fecha_creacion = \Date('d-m-y H:i:s');
         $age0->usuario_creacion = $this->user->nick;
         try {
             $age0->save();

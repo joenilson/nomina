@@ -20,6 +20,7 @@ require_model('agente.php');
 require_model('almacen.php');
 require_model('cargos.php');
 require_model('bancos.php');
+require_model('dependientes.php');
 require_model('generaciones.php');
 require_model('seguridadsocial.php');
 require_model('tipoempleado.php');
@@ -33,11 +34,12 @@ require_model('organizacion.php');
  * @author Joe Nilson <joenilson at gmail.com>
  */
 class nomina_dashboard extends fs_controller{
-    
+
     public $logo_empresa;
     public $agentes;
     public $almacen;
     public $cargos;
+    public $dependientes;
     public $generaciones;
     public $seguridadsocial;
     public $tipoempleado;
@@ -50,12 +52,13 @@ class nomina_dashboard extends fs_controller{
     public function __construct() {
         parent::__construct(__CLASS__, 'Nomina Dashboard', 'nomina', FALSE, TRUE, FALSE);
     }
-    
+
     protected function private_core() {
         $this->share_extensions();
         $this->agentes = new agente();
         $this->almacen = new organizacion();
         $this->cargos = new cargos();
+        $this->dependientes = new dependientes();
         $this->seguridadsocial = new seguridadsocial();
         $this->tipoempleado = new tipoempleado();
         $this->categoriaempleado = new categoriaempleado();
@@ -73,11 +76,11 @@ class nomina_dashboard extends fs_controller{
                 default:
                     break;
             }
-            
+
         }
         $this->logo_empresa = FS_PATH.FS_MYDOCS."images/logo.png";
     }
-    
+
     public function generar_grafico(){
         $backgroundColor = array(
         'rgba(255, 99, 132, 0.2)',
@@ -102,6 +105,18 @@ class nomina_dashboard extends fs_controller{
                  * @todo Generar el resumen de empleados
                  */
                 break;
+            case "resumen-dependientes":
+                $res = $this->dependientes->resumen_dependientes();
+                $data = "";
+                $labels = "";
+                foreach($res as $values){
+                    $labels[] = $values->descripcion." - ".$values->genero;
+                    $data[] = $values->cantidad;
+                }
+                $resultado =array('datasets'=>array('data'=>$data,'backgroundColor'=>array("#FF6384","#008CBA","#FF6384"),'hoverBackgroundColor'=>array("#FF6384",
+                            "#008CBA","#FF6384")),'labels'=>$labels,'backgroundColor'=>$backgroundColor,'borderColor'=>$borderColor);
+                break;
+                break;
             case "resumen-generacion":
                 $res = $this->generaciones->resumen_generaciones();
                 $data = "";
@@ -114,12 +129,12 @@ class nomina_dashboard extends fs_controller{
                             "#008CBA","#FF6384")),'labels'=>$labels,'backgroundColor'=>$backgroundColor,'borderColor'=>$borderColor);
                 break;
         }
-        
+
         $this->template = false;
         header('Content-Type: application/json');
         echo json_encode($resultado,JSON_NUMERIC_CHECK);
     }
-    
+
     //Empleados por Año
     public function estadistica_anual(){
         $lista_anual_total = array();
@@ -136,7 +151,7 @@ class nomina_dashboard extends fs_controller{
             }
         }
     }
-    
+
     public function share_extensions(){
         $extensiones = array(
             array(
@@ -180,7 +195,7 @@ class nomina_dashboard extends fs_controller{
                 'params' => ''
             )
         );
-        
+
         foreach ($extensiones as $ext) {
             $fsext0 = new fs_extension($ext);
             if (!$fsext0->save()) {

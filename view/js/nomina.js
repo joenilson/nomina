@@ -156,7 +156,7 @@ function visualizarDocumento(documento){
  */
 function cargarGrafico(tipo,componente,tipo_grafico,options){
     /**
-     * Hacemos la llamada AJAX, en la página origen del grafico se debe colocar 
+     * Hacemos la llamada AJAX, en la página origen del grafico se debe colocar
      * el valor de la variable url_graficos
      */
     $.ajax({
@@ -178,7 +178,7 @@ function cargarGrafico(tipo,componente,tipo_grafico,options){
                         labels: response.labels
                     },
                     options: options
-                    
+
                 });
             }else{
                return false;
@@ -230,12 +230,12 @@ function rango_fechas(f_rango, f_desde, f_hasta, formato, rangos, tiempos){
             startDate: moment().startOf('month'),
             endDate: moment()
         });
-        
+
         $('#'+f_rango).on('apply.daterangepicker', function(ev, picker) {
             $('#'+f_desde).val(picker.startDate.format(formato));
             $('#'+f_hasta).val(picker.endDate.format(formato));
         });
-        
+
         if($('#'+f_desde).val()){
             $('#'+f_rango).data('daterangepicker').setStartDate($('#'+f_desde).val());
         }else{
@@ -355,6 +355,32 @@ $(document).ready(function() {
         });
     });
 
+    $("#b_guardar_dependientes").click(function(event) {
+        event.preventDefault();
+        bootbox.dialog({
+            message: "Esta seguro de haber revisado la información de los dependientes?<br />"+
+                    "Si decide subir esta información, tendrá que corregir luego manualmente la información faltante o errónea.",
+            title: "Confirmar subir dependientes",
+            buttons: {
+                success: {
+                    label: "Confirmar",
+                    className: "btn-success",
+                    callback: function() {
+                        this.hide();
+                        procesar_seleccionados();
+                    }
+                },
+                danger: {
+                    label: "Cancelar",
+                    className: "btn-danger",
+                    callback: function() {
+                        this.hide();
+                    }
+                }
+            }
+        });
+    });
+
     $(".image-input input:file").change(function (){
         var img = $('#imagen-empleado');
         var file = this.files[0];
@@ -364,7 +390,7 @@ $(document).ready(function() {
         };
         reader.readAsDataURL(file);
     });
-    
+
     if(typeof(locale_user) !== 'undefined'){
         moment.locale(locale_user);
     }
