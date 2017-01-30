@@ -246,7 +246,7 @@ class importar_dependientes extends fs_controller {
             array(
                 'name' => 'nomina_impdep_jgrid_css',
                 'page_from' => __CLASS__,
-                'page_to' => 'importar_dependientes',
+                'page_to' => __CLASS__,
                 'type' => 'head',
                 'text' => '<link rel="stylesheet" type="text/css" media="screen" href="' . FS_PATH . 'plugins/nomina/view/css/ui.jqgrid-bootstrap.css"/>',
                 'params' => ''
@@ -254,7 +254,7 @@ class importar_dependientes extends fs_controller {
             array(
                 'name' => 'importar_impdep_agentes_js',
                 'page_from' => __CLASS__,
-                'page_to' => 'importar_dependientes',
+                'page_to' => __CLASS__,
                 'type' => 'head',
                 'text' => '<script src="' . FS_PATH . 'plugins/nomina/view/js/nomina.js" type="text/javascript"></script>',
                 'params' => ''
@@ -262,7 +262,7 @@ class importar_dependientes extends fs_controller {
             array(
                 'name' => 'importar_dependientes_css',
                 'page_from' => __CLASS__,
-                'page_to' => 'importar_dependientes',
+                'page_to' => __CLASS__,
                 'type' => 'head',
                 'text' => '<link rel="stylesheet" type="text/css" media="screen" href="' . FS_PATH . 'plugins/nomina/view/css/nomina.css"/>',
                 'params' => ''
