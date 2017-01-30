@@ -169,7 +169,7 @@ class importar_dependientes extends fs_controller {
     public function guardar_dependientes() {
         $this->template = false;
         $this->resultado = array();
-        if (isset($_POST['codagente']) AND ! empty($_POST['codagente']) AND $_POST['f_nacimiento'] AND ! empty($_POST['f_nacimiento'] AND $_POST['genero']) AND ! empty($_POST['genero'])) {
+        if (isset($_POST['codagente']) AND !empty($_POST['codagente']) AND $_POST['f_nacimiento'] AND !empty($_POST['f_nacimiento']) AND $_POST['genero'] AND !empty($_POST['genero'])) {
             if ($this->guardar_dependiente()) {
                 $this->resultado['estado'] = 'ingresado';
                 $this->resultado['codagente'] = $_POST['codagente'];
