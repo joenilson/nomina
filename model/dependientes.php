@@ -207,6 +207,19 @@ class dependientes extends fs_model{
         }
     }
 
+    public function get_by_docidentidad($docidentidad){
+        $sql = "SELECT * FROM ".$this->table_name." WHERE ".
+            " docidentidad = ".$this->var2str($docidentidad).";";
+        $data = $this->db->select($sql);
+        if($data){
+            $linea = new dependientes($data[0]);
+            $d = $this->info_adicional($linea);
+            return $d;
+        }else{
+            return false;
+        }
+    }
+
     public function all(){
         $sql = "SELECT * FROM ".$this->table_name." ORDER BY codagente,f_nacimiento,coddependiente;";
         $data = $this->db->select($sql);

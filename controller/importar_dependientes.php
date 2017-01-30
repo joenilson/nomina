@@ -212,7 +212,14 @@ class importar_dependientes extends fs_controller {
         $apellido_paterno = $this->mayusculas(\filter_input(INPUT_POST, 'apellido_paterno'));
         $apellido_materno = $this->mayusculas(\filter_input(INPUT_POST, 'apellido_materno'));
 
+        $existe = false;
+        if(!empty($docidentidad)){
+            $dependiente = $this->dependientes->get_by_docidentidad($docidentidad);
+        }
+        $id = ($existe)?$dependiente->id:null;
+
         $dep0 = new dependientes();
+        $dep0->id = $id;
         $dep0->codagente = $codagente;
         $dep0->coddependiente = $coddependiente;
         $dep0->nombres = $nombres;
