@@ -1,6 +1,6 @@
 <?php
 /*
- * This file is part of FacturaSctipts
+ * This file is part of FacturaScripts
  * Copyright (C) 2014-2016  Carlos Garcia Gomez  neorazorx@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
@@ -40,8 +40,8 @@ require_model('movimientos_empleados.php');
 require_once 'helper_nomina.php';
 require_once 'plugins/nomina/extras/verot/class.upload.php';
 
-class admin_agente extends fs_controller {
-
+class admin_agente extends fs_controller 
+{
     public $agente;
     public $agentes;
     public $cargos;
@@ -75,7 +75,7 @@ class admin_agente extends fs_controller {
     private $upload_documento;
     private $dir_empleados;
     public $dir_documentos_empleados;
-
+    public $campos_obligatorios;
     /*
      * Esta página está en la carpeta admin, pero no se necesita ser admin para usarla.
      * Está en la carpeta admin porque su antecesora también lo está (y debe estarlo).
@@ -92,7 +92,6 @@ class admin_agente extends fs_controller {
         $this->dir_empleados = FS_PATH.FS_MYDOCS."documentos/nomina/".$this->empresa->id."/e/";
         $this->dir_documentos_empleados = FS_PATH.FS_MYDOCS."documentos/nomina/".$this->empresa->id."/d/";
         $this->noimagen = FS_PATH."plugins/nomina/view/imagenes/no_foto.jpg";
-       
         /// ¿El usuario tiene permiso para eliminar en esta página?
         $this->allow_delete = $this->user->allow_delete_on(__CLASS__);
         $this->share_extensions();
@@ -111,11 +110,36 @@ class admin_agente extends fs_controller {
         $this->tipoausencias = new tipoausencias();
         $this->tipodependientes = new tipodependientes();
         $this->tipomovimiento = new tipomovimiento();
+        //Aqui se configurarán los campos obligatorios bajo demanda del usuario
+        $this->campos_obligatorios = array(
+            'nombre'=>'Nombre',
+            'apellidos'=>'Primer Apellido',
+            'dnicif'=>FS_CIFNIF,
+            'f_nacimiento'=>'Fecha de nacimiento',
+            'sexo'=>'Sexo',
+            'estado_civil'=>'Estado Civil',
+            'codalmacen'=>'Almacén',
+            'codcargo'=>'Cargo',
+            'codtipo'=>'Tipo de Contrato',
+            'codgerencia'=>'Gerencia',
+            'codarea'=>'Area',
+            'f_alta'=>'Fecha de Alta',
+            'estado'=>'Estado',
+            'idsindicalizado'=>'Sindicalización',
+            'codformacion'=>'Formación',
+            'codseguridadsocial'=>'Seguridad Social',
+            'codsistemapension'=>'Sistema de Pensión',
+            'codbanco'=>'Banco'
+        );
+        
         $this->agente = FALSE;
-        if (isset($_GET['cod'])) {
+        
+        $codagente = \filter_input(INPUT_GET, 'cod');
+        if (isset($codagente)) {
             $agente = new agente();
-            $this->agente = $agente->get($_GET['cod']);
-        }
+            $this->agente = $agente->get($codagente);
+        }        
+        
         if(filter_input(INPUT_GET, 'buscar_empleado')){
             $this->buscar_empleado();
         }
@@ -194,76 +218,13 @@ class admin_agente extends fs_controller {
 
         if ($this->agente) {
             $this->page->title .= ' ' . $this->agente->codagente;
-
-            if (isset($_POST['nombre'])) {
-                //En la edición solo se permite campos no sensibles genéricos
-                if ($this->user_can_edit()) {
-                    if ($_POST['codcargo'] != '') {
-                        $cargo = $this->cargos->get($_POST['codcargo']);
-                    }
-                    $this->agente->nombre = $this->mayusculas($_POST['nombre']);
-                    $this->agente->apellidos = $this->mayusculas($_POST['apellidos']);
-                    $this->agente->segundo_apellido = $this->mayusculas($_POST['segundo_apellido']);
-                    $this->agente->dnicif = $_POST['dnicif'];
-                    $this->agente->telefono = $_POST['telefono'];
-                    $this->agente->email = $this->minusculas($_POST['email']);
-                    $this->agente->provincia = $_POST['provincia'];
-                    $this->agente->ciudad = $this->mayusculas($_POST['ciudad']);
-                    $this->agente->direccion = $this->mayusculas($_POST['direccion']);
-                    $this->agente->sexo = $_POST['sexo'];
-
-                    $this->agente->f_nacimiento = NULL;
-                    if ($_POST['f_nacimiento'] != '') {
-                        $this->agente->f_nacimiento = $_POST['f_nacimiento'];
-                    }
-
-                    $this->agente->f_alta = NULL;
-                    if ($_POST['f_alta'] != '') {
-                        $this->agente->f_alta = $_POST['f_alta'];
-                    }
-
-                    $this->agente->f_baja = NULL;
-                    $inactivo = false;
-                    if ($_POST['f_baja'] != '') {
-                        $this->agente->f_baja = $_POST['f_baja'];
-                        $inactivo = true;
-                    }
-
-                    $this->agente->codtipo = $_POST['codtipo'];
-                    $this->agente->codsupervisor = $_POST['codsupervisor'];
-                    $this->agente->codgerencia = $_POST['codgerencia'];
-                    $this->agente->codcargo = $_POST['codcargo'];
-                    $this->agente->cargo = $cargo->descripcion;
-                    $this->agente->codarea = $_POST['codarea'];
-                    $this->agente->coddepartamento = $_POST['coddepartamento'];
-                    $this->agente->codformacion = $_POST['codformacion'];
-                    $this->agente->carrera = $this->mayusculas($_POST['carrera']);
-                    $this->agente->centroestudios = $this->mayusculas($_POST['centroestudios']);
-                    $this->agente->codseguridadsocial = $_POST['codseguridadsocial'];
-                    $this->agente->codsistemapension = $_POST['codsistemapension'];
-                    $this->agente->seg_social = $_POST['seg_social'];
-                    $this->agente->codigo_pension = $_POST['codigo_pension'];
-                    $this->agente->codbanco = $_POST['codbanco'];
-                    $this->agente->cuenta_banco = $_POST['cuenta_banco'];
-                    $this->agente->porcomision = floatval($_POST['porcomision']);
-                    $this->agente->dependientes = $_POST['dependientes'];
-                    $this->agente->idsindicato = $_POST['idsindicalizado'];
-                    $this->agente->estado = ($inactivo)?'I':$_POST['estado'];
-                    $this->agente->estado_civil = $_POST['estado_civil'];
-
-                    if ($this->agente->save()) {
-                        $this->upload_photo = new Upload($_FILES['foto']);
-                        if ($this->upload_photo->uploaded) {
-                            $this->guardar_foto();
-                        }
-                        $this->new_message("Datos del empleado guardados correctamente.");
-                    } else
-                        $this->new_error_msg("¡Imposible guardar los datos del empleado!");
-                } else
-                    $this->new_error_msg('No tienes permiso para modificar estos datos.');
+            $accion = \filter_input(INPUT_POST, 'accion');
+            if($accion=='agregar_agente'){
+                $this->tratar_agente();
             }
-        } else
+        } else {
             $this->new_error_msg("Empleado no encontrado.");
+        }
     }
     
     private function buscar_empleado()
@@ -286,6 +247,79 @@ class admin_agente extends fs_controller {
             $this->desde = \filter_input(INPUT_POST, 'f_desde');
             $this->hasta = \filter_input(INPUT_POST, 'f_hasta');
             $this->resultados = 0;
+        }
+    }
+    
+    public function tratar_agente(){
+        if (isset($_POST['nombre'])) {
+            //En la edición solo se permite campos no sensibles genéricos
+            if ($this->user_can_edit()) {
+                if ($_POST['codcargo'] != '') {
+                    $cargo = $this->cargos->get($_POST['codcargo']);
+                }
+                $this->agente->nombre = $this->mayusculas($_POST['nombre']);
+                $this->agente->apellidos = $this->mayusculas($_POST['apellidos']);
+                $this->agente->segundo_apellido = $this->mayusculas($_POST['segundo_apellido']);
+                $this->agente->dnicif = $_POST['dnicif'];
+                $this->agente->telefono = $_POST['telefono'];
+                $this->agente->email = $this->minusculas($_POST['email']);
+                $this->agente->provincia = $_POST['provincia'];
+                $this->agente->ciudad = $this->mayusculas($_POST['ciudad']);
+                $this->agente->direccion = $this->mayusculas($_POST['direccion']);
+                $this->agente->sexo = $_POST['sexo'];
+
+                $this->agente->f_nacimiento = NULL;
+                if ($_POST['f_nacimiento'] != '') {
+                    $this->agente->f_nacimiento = $_POST['f_nacimiento'];
+                }
+
+                $this->agente->f_alta = NULL;
+                if ($_POST['f_alta'] != '') {
+                    $this->agente->f_alta = $_POST['f_alta'];
+                }
+
+                $this->agente->f_baja = NULL;
+                $inactivo = false;
+                if ($_POST['f_baja'] != '') {
+                    $this->agente->f_baja = $_POST['f_baja'];
+                    $inactivo = true;
+                }
+
+                $this->agente->codtipo = $_POST['codtipo'];
+                $this->agente->codsupervisor = $_POST['codsupervisor'];
+                $this->agente->codgerencia = $_POST['codgerencia'];
+                $this->agente->codcargo = $_POST['codcargo'];
+                $this->agente->cargo = $cargo->descripcion;
+                $this->agente->codarea = $_POST['codarea'];
+                $this->agente->coddepartamento = $_POST['coddepartamento'];
+                $this->agente->codformacion = $_POST['codformacion'];
+                $this->agente->carrera = $this->mayusculas($_POST['carrera']);
+                $this->agente->centroestudios = $this->mayusculas($_POST['centroestudios']);
+                $this->agente->codseguridadsocial = $_POST['codseguridadsocial'];
+                $this->agente->codsistemapension = $_POST['codsistemapension'];
+                $this->agente->seg_social = $_POST['seg_social'];
+                $this->agente->codigo_pension = $_POST['codigo_pension'];
+                $this->agente->codbanco = $_POST['codbanco'];
+                $this->agente->cuenta_banco = $_POST['cuenta_banco'];
+                $this->agente->porcomision = floatval($_POST['porcomision']);
+                $this->agente->dependientes = $_POST['dependientes'];
+                $this->agente->idsindicato = $_POST['idsindicalizado'];
+                $this->agente->estado = ($inactivo)?'I':$_POST['estado'];
+                $this->agente->estado_civil = $_POST['estado_civil'];
+
+                if ($this->agente->save()) {
+                    $this->upload_photo = new Upload($_FILES['foto']);
+                    if ($this->upload_photo->uploaded) {
+                        $this->guardar_foto();
+                    }
+                    $this->agente = $this->agente->get(\filter_input(INPUT_GET, 'cod'));
+                    $this->new_message("Datos del empleado guardados correctamente.");
+                } else {
+                    $this->new_error_msg("¡Imposible guardar los datos del empleado!");
+                }
+            } else {
+                $this->new_error_msg('No tienes permiso para modificar estos datos.');
+            }
         }
     }
     

@@ -424,18 +424,18 @@ class agente extends fs_model
        $res->tipo = (!empty($res->codtipo))?$this->tipoempleado->get($res->codtipo)->descripcion:"";
        $res->codcategoria = '';
        $res->categoria = '';
+       $res->nombre_supervisor = '';
        if($res->codcargo){
            $info_cargos = $this->cargos->get($res->codcargo);
            $info_categoria = ($info_cargos->codcategoria)?$this->categoriaempleado->get($info_cargos->codcategoria):false;
            $res->codcategoria = $info_cargos->codcategoria;
            $res->categoria = ($info_categoria)?$info_categoria->descripcion:false;
        }
+
        if(isset($res->codsupervisor)){
            $nombre = $this->supervisor($res->codsupervisor);
            if(!empty($nombre)){
               $res->nombre_supervisor = $nombre->nombreap;
-           }else{
-               $res->nombre_supervisor = '';
            }
        }
        $res->edad = $this->edad($res->f_nacimiento);

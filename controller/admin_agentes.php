@@ -1,7 +1,6 @@
 <?php
-
 /*
- * This file is part of FacturaSctipts
+ * This file is part of FacturaScripts
  * Copyright (C) 2014-2016  Carlos Garcia Gomez  neorazorx@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
@@ -28,8 +27,8 @@ require_once 'helper_nomina.php';
 require_once('plugins/nomina/extras/PHPExcel/PHPExcel/IOFactory.php');
 require_once 'plugins/nomina/extras/verot/class.upload.php';
 
-class admin_agentes extends fs_controller {
-
+class admin_agentes extends fs_controller 
+{
     public $agente;
     public $categoria;
     public $tipo;
@@ -53,12 +52,17 @@ class admin_agentes extends fs_controller {
     public $mostrar;
     private $upload_photo;
     private $dir_empleados;
+    public $campos_obligatorios;
+    public $opciones_nomina;
+    public $fsvar;
 
-    public function __construct() {
+    public function __construct() 
+    {
         parent::__construct(__CLASS__, 'Empleados', 'nomina', FALSE, TRUE);
     }
 
-    protected function private_core() {
+    protected function private_core() 
+    {
         $this->allow_delete = $this->user->allow_delete_on(__CLASS__);
         $this->dir_empleados = FS_PATH.FS_MYDOCS."documentos/nomina/".$this->empresa->id."/e/";
         $this->noimagen = FS_PATH."plugins/nomina/view/imagenes/no_foto.jpg";
@@ -74,7 +78,54 @@ class admin_agentes extends fs_controller {
         $mostrar_p = filter_input(INPUT_POST, 'mostrar');
         $mostrar = ($mostrar_p)?$mostrar_p:$mostrar_g;
         $this->mostrar = ($mostrar)?$mostrar:'all';
-
+        //Aqui se configurarán los campos obligatorios bajo demanda del usuario
+        $this->campos_obligatorios = array(
+            'nombre'=>'Nombre',
+            'apellidos'=>'Primer Apellido',
+            'apellido_materno'=>'Segundo Apellido',
+            'dnicif'=>FS_CIFNIF,
+            'f_nacimiento'=>'Fecha de nacimiento',
+            'sexo'=>'Sexo',
+            'estado_civil'=>'Estado Civil',
+            'codalmacen'=>'Almacén',
+            'codcargo'=>'Cargo',
+            'codtipo'=>'Tipo de Contrato',
+            'codgerencia'=>'Gerencia',
+            'codarea'=>'Area',
+            'f_alta'=>'Fecha de Alta',
+            'estado'=>'Estado',
+            'idsindicalizado'=>'Sindicalización',
+            'codformacion'=>'Formación',
+            'codseguridadsocial'=>'Seguridad Social',
+            'codsistemapension'=>'Sistema de Pensión',
+            'codbanco'=>'Banco',
+            'banco'=>'Cuenta Banco'
+        );
+        $this->fsvar = new fs_var();
+        $this->opciones_nomina = $this->fsvar->array_get(
+            array(
+                'nomina_nombre'=>1,
+                'nomina_apellidos'=>1,
+                'nomina_apellido_materno'=>0,
+                'nomina_dnicif'=>1,
+                'nomina_f_nacimiento'=>1,
+                'nomina_sexo'=>1,
+                'nomina_estado_civil'=>0,
+                'nomina_codalmacen'=>1,
+                'nomina_codcargo'=>0,
+                'nomina_codtipo'=>0,
+                'nomina_codgerencia'=>0,
+                'nomina_codarea'=>0,
+                'nomina_f_alta'=>0,
+                'nomina_estado'=>0,
+                'nomina_idsindicalizado'=>0,
+                'nomina_codformacion'=>0,
+                'nomina_codseguridadsocial'=>0,
+                'nomina_codsistemapension'=>0,
+                'nomina_codbanco'=>0,
+                'nomina_banco'=>0
+            ), FALSE
+        );
         if(filter_input(INPUT_GET, 'buscar_empleado')){
             $this->buscar_empleado();
         }
@@ -90,6 +141,9 @@ class admin_agentes extends fs_controller {
                 case "nuevo":
                     $this->agente = new agente();
                     $this->template = 'contenido/nuevo_agente';
+                    break;
+                case "opciones_agentes":
+                    $this->tratar_opciones();
                     break;
                 default:
                     break;
@@ -198,6 +252,52 @@ class admin_agentes extends fs_controller {
 
         $this->buscar();
     }
+    
+    public function opcionesNomina($clave){
+        $this->new_message($clave);
+        $existe = $this->fsvar->simple_get($clave);
+        if(!$existe){
+            return false;
+        }else{
+            return $existe;
+        }
+    }
+    
+    public function tratar_opciones(){
+        foreach($this->campos_obligatorios as $key=>$linea){
+            $clave = 'nomina_'.$key;
+            $opciones_nomina[$clave]=(int)\filter_input(INPUT_POST, $key);
+            $this->new_message($clave." - ".\filter_input(INPUT_POST, $key));
+        }
+        //Aqui almacenamos las variables del plugin
+        $this->fsvar->array_save($opciones_nomina);
+        $this->new_message('Opciones de Empleados actualizadas correctamente');
+        $this->opciones_nomina = $this->fsvar->array_get(
+            array(
+                'nomina_nombre'=>0,
+                'nomina_apellidos'=>0,
+                'nomina_apellido_materno'=>0,
+                'nomina_dnicif'=>0,
+                'nomina_f_nacimiento'=>0,
+                'nomina_sexo'=>0,
+                'nomina_estado_civil'=>0,
+                'nomina_codalmacen'=>0,
+                'nomina_codcargo'=>0,
+                'nomina_codtipo'=>0,
+                'nomina_codgerencia'=>0,
+                'nomina_codarea'=>0,
+                'nomina_f_alta'=>0,
+                'nomina_estado'=>0,
+                'nomina_idsindicalizado'=>0,
+                'nomina_codformacion'=>0,
+                'nomina_codseguridadsocial'=>0,
+                'nomina_codsistemapension'=>0,
+                'nomina_codbanco'=>0,
+                'nomina_banco'=>0,
+            ), FALSE
+        );
+        
+    }
 
     public function paginas() {
         $url = $this->url() . "&query=" . $this->query
@@ -259,7 +359,7 @@ class admin_agentes extends fs_controller {
             $sql = "SELECT DISTINCT ciudad FROM agentes ORDER BY ciudad ASC;";
             if ($this->provincia != '') {
                 $sql = "SELECT DISTINCT ciudad FROM agentes WHERE lower(provincia) = "
-                        . $this->agente->var2str($this->provincia) . " ORDER BY ciudad ASC;";
+                        .$this->agente->var2str($this->provincia)." ORDER BY ciudad ASC;";
             }
 
             $data = $this->db->select($sql);

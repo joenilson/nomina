@@ -41,6 +41,10 @@
                <span class="glyphicon glyphicon-plus"></span>
                <span class="hidden-xs">&nbsp; Nuevo</span>
             </a>
+            <a class="btn btn-sm btn-default" href="#" data-toggle="modal" data-target="#opcionesAgentes">
+                <span class="fa fa-gears"></span>
+               <span class="hidden-xs">&nbsp;Opciones de Empleados</span>
+            </a>
             {loop="$fsc->extensions"}
                {if="$value->type=='button'"}
                <a href="index.php?page={$value->from}{$value->params}" class="btn btn-sm btn-default">{$value->text}</a>
@@ -317,5 +321,5 @@
       </div>
    </div>
 </form>
-
+{include="opciones_agentes"}
 {include="footer"}

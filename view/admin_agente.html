@@ -28,15 +28,32 @@
         });
     });
     function verificarEstado(){
+        var inputAgregarAgente = $("<input>")
+               .attr("type", "hidden")
+               .attr("name", "accion").val("agregar_agente");
+        var continuar = true;
+        var campos_faltantes = '';
         $('#error_estado').html('');
-        var estado = document.f_agente.estado.value;
+        {loop="$fsc->campos_obligatorios"}
+            var {$key} = document.f_agente.{$key}.value;
+            if({$key} === ''){
+                continuar = false;
+                campos_faltantes=campos_faltantes+'<b>{$value}</b><br/>';
+            }
+        {/loop}
         var f_baja = document.f_agente.f_baja.value;
+        
         if(estado === 'I' && f_baja === ''){
             $('#error_estado').html('<p class="text-danger"><span class="fa fa-warning"></span>&nbsp;Para desactivar a un empleado debe consignar su fecha de baja!</p>');
             document.f_agente.f_baja.focus();
-            return false;
-        }else if(estado === 'I' && f_baja !== ''){
-            return true;
+        }else if(estado === 'I' && f_baja !== '' && continuar){
+            $('#f_agente').append($(inputAgregarAgente));
+            document.f_agente.submit();
+        }else if(!continuar){
+            $('#error_estado').html('<p class="text-danger"><span class="fa fa-warning"></span>&nbsp;Corrija la información de los siguientes campos:</p> '+campos_faltantes);
+        }else if(continuar){
+            $('#f_agente').append($(inputAgregarAgente));
+            document.f_agente.submit();
         }
     }
 </script>
@@ -99,7 +116,7 @@
         <div class="col-sm-9 col-lg-10">
             <div class="tab-content">
                 <div role="tabpanel" class="tab-pane active" id="general">
-                    <form name='f_agente' class="form" role="form" enctype="multipart/form-data" action="{$fsc->url()}" method="post">
+                    <form name='f_agente' id='f_agente' class="form" role="form" enctype="multipart/form-data" action="{$fsc->url()}" method="post">
                         <div class='panel {if="$fsc->agente->f_baja"}panel-danger{else}panel-primary{/if}' id='panel_generales'>
                             <div class="panel-heading">
                                 <h3 class="panel-title">
@@ -393,7 +410,7 @@
                                         </div>
                                         <div role="tabpanel" class="tab-pane fade" id="tab-sociales">
                                             <div class="col-sm-3">
-                                                <div class="form-group">
+                                                <div class="form-group required">
                                                     <label class="control-label" for="codformacion">
                                                         <a href="{$fsc->formacion->url()}">Formación:</a>
                                                     </label>
@@ -523,7 +540,7 @@
                                                     <label class="control-label">Tiempo de Contrato:</label>
                                                     <div class="input-group">
                                                         <span class="input-group-addon input-sm"><span class="fa fa-calendar"></span></span>
-                                                        <input class="form-control input-sm" type="text" name="porcomision" value="{$fsc->agente->porcomision}" autocomplete="off"/>
+                                                        <input class="form-control input-sm" type="text" name="tipo_contrato" value="" autocomplete="off"/>
                                                     </div>
                                                 </div>
                                             </div>
@@ -538,7 +555,7 @@
                                         <div id='error_estado'></div>
                                     </div>
                                     <div class="col-sm-2 text-right">
-                                        <button class="btn btn-sm btn-primary" type="submit" name="accion" value="agregar" onclick='return verificarEstado()'>
+                                        <button class="btn btn-sm btn-primary" type="button" name="accion" value="agregar_agente" role="button" onClick="verificarEstado();">
                                             <span class="glyphicon glyphicon-floppy-disk"></span> &nbsp; Guardar
                                         </button>
                                     </div>

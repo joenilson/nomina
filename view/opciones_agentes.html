@@ -1,0 +1,51 @@
+<!--
+Copyright (C) 2017 Joe Nilson <joenilson at gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<div class="modal fade" id="opcionesAgentes">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form class="form" id="f_opciones_agentes" name="f_opciones_agentes" role="form" action="{$fsc->url()}&type=opciones_agentes" method="POST">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Opciones de Empleados</h4>
+                </div>
+                <div class="modal-body">
+                    <p align="justify">
+                        Aqui puede definir que campos serán obligatorios para los Empleados<br/>
+                        <b class='bg-danger'>[Nota] Esta función está en desarrollo</b>
+                    </p>
+                    <hr/>
+                    <div class="col-sm-12">
+                        {loop="$fsc->campos_obligatorios"}
+                        <div class='col-sm-6'>
+                            <div class="form-group">
+                                <label class="" for='nomina_{$key}'><b>{$value}:</b><br/>
+                                <input type="checkbox" name="{$key}" id='nomina_{$key}' value="1" {if="$fsc->opcionesNomina('nomina_'.$key)"}checked{/if}>Obligatorio</label>
+                            </div>
+                        </div>
+                        {/loop}
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary" name="accion" value="opciones_agentes">
+                        <span class="glyphicon glyphicon-floppy-disk"></span> &nbsp;Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
