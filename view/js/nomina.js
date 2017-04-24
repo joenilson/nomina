@@ -27,11 +27,11 @@ function llenar_organizacion(obj,padre,destino){
                 if(response.length !== 0){
                     data = response;
                 }else{
-                   alert('¡No hay una estructura asignada para este padre!');
+                   bootbox.alert('¡No hay una estructura asignada para este padre!');
                 }
             },
             error: function(response) {
-                alert(response);
+                bootbox.alert(response);
             }
         });
         var select = $(iddestino);
@@ -58,11 +58,11 @@ function cargarEstructura(){
             if(response.length !== 0){
                 listado = response;
             }else{
-               alert('¡No hay una estructura asignada para este padre!');
+               bootbox.alert('¡No hay una estructura asignada para este padre!');
             }
         },
         error: function(response) {
-            alert(response);
+            bootbox.alert(response);
         }
     });
     return listado;
@@ -71,7 +71,6 @@ function cargarEstructura(){
 function getSelectedRows(gridid) {
     var grid = $("#"+gridid);
     var rowKey = grid.getGridParam("selrow");
-    console.log(rowKey);
     if (!rowKey)
         return 0;
     else {
@@ -127,11 +126,11 @@ function procesar_seleccionados(){
                         error++;
                     }
                 }else{
-                    alert(response);
+                    bootbox.alert(response);
                 }
             },
             error: function(response) {
-                alert(response);
+                bootbox.alert(response);
             }
         });
     }
@@ -185,7 +184,7 @@ function cargarGrafico(tipo,componente,tipo_grafico,options){
             }
         },
         error: function(response) {
-            alert(response);
+            bootbox.alert(response);
         }
     });
     //return listado;

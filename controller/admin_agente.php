@@ -598,7 +598,7 @@ class admin_agente extends fs_controller
     }
 
     public function share_extensions() {
-        $extensiones = array(
+        $extensiones_old = array(
             array(
                 'name' => 'pace_loader_admin_agente_js',
                 'page_from' => __CLASS__,
@@ -661,6 +661,80 @@ class admin_agente extends fs_controller
                 'page_to' => __CLASS__,
                 'type' => 'head',
                 'text' => '<link href="'.FS_PATH.'plugins/nomina/view/css/nomina.css?build=' . rand(1, 1000) . '" rel="stylesheet" type="text/css"/>',
+                'params' => ''
+            ),
+        );
+        
+        foreach ($extensiones_old as $ext) {
+            $fsext0 = new fs_extension($ext);
+            if (!$fsext0->delete()) {
+                $this->new_error_msg('Imposible guardar los datos de la extensión ' . $ext['name'] . '.');
+            }
+        }
+        
+        $extensiones = array(
+            array(
+                'name' => '001_admin_agente_css',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<link href="'.FS_PATH.'plugins/nomina/view/css/bootstrap-switch.min.css" rel="stylesheet" type="text/css"/>',
+                'params' => ''
+            ),
+            array(
+                'name' => '002_admin_agente_css',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<link href="'.FS_PATH.'plugins/nomina/view/css/daterangepicker.css" rel="stylesheet" type="text/css"/>',
+                'params' => ''
+            ),
+            array(
+                'name' => '003_admin_agente_css',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<link href="'.FS_PATH.'plugins/nomina/view/css/nomina.css?build=' . rand(1, 1000) . '" rel="stylesheet" type="text/css"/>',
+                'params' => ''
+            ),
+            array(
+                'name' => '001_admin_agente_js',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/pace.min.js" type="text/javascript"></script>',
+                'params' => ''
+            ),
+            array(
+                'name' => '002_admin_agente_js',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/3/bootstrap-switch.min.js" type="text/javascript"></script>',
+                'params' => ''
+            ),
+            array(
+                'name' => '003_admin_agente_js',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/1/moment-with-locales.min.js" type="text/javascript"></script>',
+                'params' => ''
+            ),
+            array(
+                'name' => '004_admin_agente_js',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/2/daterangepicker.js" type="text/javascript"></script>',
+                'params' => ''
+            ),
+            array(
+                'name' => '005_admin_agente_js',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/nomina.js?build=' . rand(1, 1000) . '" type="text/javascript"></script>',
                 'params' => ''
             ),
             array(

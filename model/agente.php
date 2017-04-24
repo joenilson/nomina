@@ -1,6 +1,6 @@
 <?php
 /*
- * This file is part of FacturaSctipts
+ * This file is part of FacturaScripts
  * Copyright (C) 2013-2016  Carlos Garcia Gomez  neorazorx@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
@@ -35,7 +35,7 @@ class agente extends fs_model
    public $codagente;
 
    /**
-    * Identificador fiscal.
+    * Identificador fiscal (CIF/NIF).
     * @var type
     */
    public $dnicif;
@@ -546,6 +546,10 @@ class agente extends fs_model
          return 1;
    }
 
+   /**
+    * Devuelve la url donde se pueden ver/modificar estos datos
+    * @return string
+    */
    public function url()
    {
       if( is_null($this->codagente) )
@@ -556,6 +560,11 @@ class agente extends fs_model
          return "index.php?page=admin_agente&cod=".$this->codagente;
    }
 
+   /**
+    * Devuelve el empleado/agente con codagente = $cod
+    * @param type $cod
+    * @return \agente|boolean
+    */
    public function get($cod)
    {
       $a = $this->db->select("SELECT * FROM ".$this->table_name." WHERE codagente = ".$this->var2str($cod).";");
@@ -702,6 +711,10 @@ class agente extends fs_model
          return $this->db->select("SELECT * FROM ".$this->table_name." WHERE codagente = ".$this->var2str($this->codagente).";");
    }
 
+   /**
+    * Comprueba los datos del empleado/agente, devuelve TRUE si son correctos
+    * @return boolean
+    */
    public function test()
    {
       $status = FALSE;
@@ -721,9 +734,9 @@ class agente extends fs_model
       {
          $this->new_error_msg("El nombre de empleado no puede superar los 50 caracteres.");
       }
-      else if( strlen($this->apellidos) < 1 OR strlen($this->apellidos) > 100 )
+      else if( strlen($this->apellidos) < 1 OR strlen($this->apellidos) > 200 )
       {
-         $this->new_error_msg("Los apellidos del empleado no pueden superar los 100 caracteres.");
+         $this->new_error_msg("Los apellidos del empleado no pueden superar los 200 caracteres.");
       }
       else
          $status = TRUE;
@@ -784,6 +797,10 @@ class agente extends fs_model
          }
          else
          {
+            if( is_null($this->codagente) )
+            {
+               $this->codagente = $this->get_new_codigo();
+            }             
             $sql = "INSERT INTO ".$this->table_name." (codalmacen,idempresa,codagente,nombre,apellidos,segundo_apellido,nombreap,dnicif,telefono,
                email,codcargo,cargo,codsupervisor,codgerencia,codtipo,codarea,coddepartamento,provincia,ciudad,direccion,f_nacimiento,
                f_alta,f_baja,sexo,idsindicato,codseguridadsocial,seg_social,codsistemapension,codigo_pension,cuenta_banco,codbanco,codformacion,carrera,centroestudios,dependientes,estado,estado_civil,banco,
@@ -840,19 +857,31 @@ class agente extends fs_model
          return FALSE;
    }
 
+   /**
+    * Elimina este empleado/agente
+    * @return type
+    */
    public function delete()
    {
       $this->clean_cache();
       return $this->db->exec("DELETE FROM ".$this->table_name." WHERE codagente = ".$this->var2str($this->codagente).";");
    }
 
+   /**
+    * Limpiamos la caché
+    */
    private function clean_cache()
    {
       $this->cache->delete('m_agente_all');
    }
 
+   /**
+    * Devuelve un array con todos los agentes/empleados.
+    * @return \agente
+    */
    public function all()
    {
+      /// leemos esta lista de la caché
       $listagentes = $this->cache->get_array('m_agente_all');
       if(!$listagentes)
       {

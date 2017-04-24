@@ -72,7 +72,7 @@ class nomina_organigrama extends fs_controller{
     }
     
     private function shared_extensions(){
-        $extensiones = array(
+        $extensiones_old = array(
             array(
                 'name' => 'nomina_organigrama_general_js',
                 'page_from' => __CLASS__,
@@ -113,16 +113,6 @@ class nomina_organigrama extends fs_controller{
                 'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/jquery.orgchart.css"/>',
                 'params' => ''
             ),
-        );
-        
-        foreach ($extensiones as $ext) {
-            $fsext0 = new fs_extension($ext);
-            if (!$fsext0->save()) {
-                $this->new_error_msg('Imposible guardar los datos de la extensión ' . $ext['name'] . '.');
-            }
-        }
-        
-        $fsext = new fs_extension(
             array(
                 'name' => 'nomina_organigrama_jquery3_js',
                 'page_from' => __CLASS__,
@@ -130,10 +120,64 @@ class nomina_organigrama extends fs_controller{
                 'type' => 'head',
                 'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/0/jquery-3.1.1.min.js" type="text/javascript"></script>',
                 'params' => ''
-            )
+            )            
         );
-        if (!$fsext->delete()) {
-            $this->new_error_msg('Imposible eliminar los datos de la extensión nomina_organigrama_jquery3_js.');
+        
+        foreach ($extensiones_old as $ext) {
+            $fsext0 = new fs_extension($ext);
+            if (!$fsext0->delete()) {
+                $this->new_error_msg('Imposible guardar los datos de la extensión ' . $ext['name'] . '.');
+            }
+        }
+        
+        $extensiones = array(
+            array(
+                'name' => '001_nomina_organigrama_css',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/nomina.css"/>',
+                'params' => ''
+            ),
+            array(
+                'name' => '002_nomina_organigrama_css',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/jquery.orgchart.css"/>',
+                'params' => ''
+            ),            
+            array(
+                'name' => '001_nomina_organigrama_js',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/5/html2canvas.min.js" type="text/javascript"></script>',
+                'params' => ''
+            ),
+            array(
+                'name' => '002_nomina_organigrama_js',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/5/jquery.orgchart.js" type="text/javascript"></script>',
+                'params' => ''
+            ),
+            array(
+                'name' => '003_nomina_organigrama_js',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/nomina.js" type="text/javascript"></script>',
+                'params' => ''
+            ),
+        );
+        
+        foreach ($extensiones as $ext) {
+            $fsext0 = new fs_extension($ext);
+            if (!$fsext0->save()) {
+                $this->new_error_msg('Imposible guardar los datos de la extensión ' . $ext['name'] . '.');
+            }
         }
     }
 

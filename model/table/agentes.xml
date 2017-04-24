@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
     Document   : agentes.xml
+    Author     : Carlos Garcia Gomez
     Description:
         Estructura de la tabla agentes.
 -->
 <tabla>
     <columna>
         <nombre>apellidos</nombre>
-        <tipo>character varying(100)</tipo>
-        <nulo>NO</nulo>
+      <tipo>character varying(200)</tipo>
     </columna>
     <columna>
         <nombre>banco</nombre>
