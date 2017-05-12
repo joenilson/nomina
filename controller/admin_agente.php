@@ -285,6 +285,7 @@ class admin_agente extends fs_controller
                     $inactivo = true;
                 }
 
+                $this->agente->codalmacen = $_POST['codalmacen'];
                 $this->agente->codtipo = $_POST['codtipo'];
                 $this->agente->codsupervisor = $_POST['codsupervisor'];
                 $this->agente->codgerencia = $_POST['codgerencia'];
