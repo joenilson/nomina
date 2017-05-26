@@ -1013,6 +1013,7 @@ class configuracion_nomina extends fs_controller{
                 'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/pace.min.js" type="text/javascript"></script>',
                 'params' => ''
             ),
+
         );
 
         //Correcciones entre cambios de version
@@ -1033,6 +1034,62 @@ class configuracion_nomina extends fs_controller{
                 'type' => 'head',
                 'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/nomina.css"/>',
                 'params' => ''
+            ),
+            array(
+                'name' => 'contratos_empleado',
+                'page_from' => __CLASS__,
+                'page_to' => 'admin_agente',
+                'type' => 'tab',
+                'text' => '<span class="fa fa-archive" aria-hidden="true"></span> &nbsp; Contratos',
+                'params' => '&type=contratos'
+            ),
+            array(
+                'name' => 'ausencias_empleado',
+                'page_from' => __CLASS__,
+                'page_to' => 'admin_agente',
+                'type' => 'tab',
+                'text' => '<span class="fa fa-calendar-minus-o" aria-hidden="true"></span> &nbsp; Ausencias',
+                'params' => '&type=ausencias'
+            ),
+            array(
+                'name' => 'carga_familiar_empleado',
+                'page_from' => __CLASS__,
+                'page_to' => 'admin_agente',
+                'type' => 'tab',
+                'text' => '<span class="fa fa-group" aria-hidden="true"></span> &nbsp; Carga Familiar',
+                'params' => '&type=carga_familiar'
+            ),
+            array(
+                'name' => 'hoja_vida_empleado',
+                'page_from' => __CLASS__,
+                'page_to' => 'admin_agente',
+                'type' => 'tab',
+                'text' => '<span class="fa fa-suitcase" aria-hidden="true"></span> &nbsp; Hoja de Vida',
+                'params' => '&type=hoja_vida'
+            ),
+            array(
+                'name' => 'pagos_incentivos_empleado',
+                'page_from' => __CLASS__,
+                'page_to' => 'admin_agente',
+                'type' => 'tab',
+                'text' => '<span class="fa fa-money" aria-hidden="true"></span> &nbsp; Pagos e Incentivos',
+                'params' => '&type=pagos_incentivos'
+            ),
+            array(
+                'name' => 'control_horas_empleado',
+                'page_from' => __CLASS__,
+                'page_to' => 'admin_agente',
+                'type' => 'tab',
+                'text' => '<span class="fa fa-clock-o" aria-hidden="true"></span> &nbsp; Control de Horas',
+                'params' => '&type=control_horas'
+            ),
+            array(
+                'name' => 'movimientos_empleado',
+                'page_from' => __CLASS__,
+                'page_to' => 'admin_agente',
+                'type' => 'tab',
+                'text' => '<span class="fa fa-code-fork" aria-hidden="true"></span> &nbsp; Movimientos',
+                'params' => '&type=movimientos'
             ),
         );
 

@@ -1,0 +1,570 @@
+<?php
+
+/*
+ * Copyright (C) 2017 Joe Nilson <joenilson at gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+require_model('agente.php');
+require_model('almacen.php');
+require_model('ausencias.php');
+require_model('cargos.php');
+require_model('contratos.php');
+require_model('dependientes.php');
+require_model('bancos.php');
+require_model('estadocivil.php');
+require_model('seguridadsocial.php');
+require_model('tipodependientes.php');
+require_model('tipoempleado.php');
+require_model('tipoausencias.php');
+require_model('tipomovimiento.php');
+require_model('categoriaempleado.php');
+require_model('sindicalizacion.php');
+require_model('sistemapension.php');
+require_model('formacion.php');
+require_model('organizacion.php');
+require_model('hoja_vida.php');
+require_model('movimientos_empleados.php');
+require_once 'helper_nomina.php';
+require_once 'plugins/nomina/extras/verot/class.upload.php';
+/**
+ * Description of datos_agente
+ *
+ * @author Joe Nilson <joenilson at gmail.com>
+ */
+class datos_agente extends fs_controller
+{
+    public $agente;
+    public $agentes;
+    public $cargos;
+    public $ausencias;
+    public $contratos;
+    public $dependientes;
+    public $almacen;
+    public $bancos;
+    public $estadocivil;
+    public $formacion;
+    public $tipoempleado;
+    public $tipodependientes;
+    public $tipoausencias;
+    public $tipomovimiento;
+    public $categoriaempleado;
+    public $sindicalizacion;
+    public $organizacion;
+    public $seguridadsocial;
+    public $sistemapension;
+    public $hoja_vida;
+    public $movimientos_empleados;
+    public $allow_delete;
+    public $foto_empleado;
+    public $noimagen;
+    public $desde;
+    public $hasta;
+    public $rango;
+    public $resultados;
+    public $total_resultados;
+    private $upload_photo;
+    private $upload_documento;
+    private $dir_empleados;
+    public $dir_documentos_empleados;
+    public $campos_obligatorios;
+    public function __construct() {
+        parent::__construct(__CLASS__, 'Datos Agente', 'nomina', FALSE, FALSE, FALSE);
+    }
+    
+    protected function private_core() {
+        $this->ppage = $this->page->get('admin_agentes');
+        $basepath = dirname(dirname(dirname(__DIR__)));
+        $this->dir_documentos = $basepath.DIRECTORY_SEPARATOR.FS_MYDOCS."documentos/nomina/".$this->empresa->id."/";
+        $this->dir_empleados = FS_PATH.FS_MYDOCS."documentos/nomina/".$this->empresa->id."/e/";
+        $this->dir_documentos_empleados = FS_PATH.FS_MYDOCS."documentos/nomina/".$this->empresa->id."/d/";
+        $this->noimagen = FS_PATH."plugins/nomina/view/imagenes/no_foto.jpg";
+        /// ¿El usuario tiene permiso para eliminar en esta página?
+        $this->allow_delete = $this->user->allow_delete_on(__CLASS__);
+        $this->share_extensions();
+        $this->almacen = new almacen();
+        $this->agentes = new agente();
+        $this->bancos = new bancos();
+        $this->cargos = new cargos();
+        $this->formacion = new formacion();
+        $this->tipoempleado = new tipoempleado();
+        $this->categoriaempleado = new categoriaempleado();
+        $this->sindicalizacion = new sindicalizacion();
+        $this->organizacion = new organizacion();
+        $this->seguridadsocial = new seguridadsocial();
+        $this->sistemapension = new sistemapension();
+        $this->estadocivil = new estadocivil();
+        $this->tipoausencias = new tipoausencias();
+        $this->tipodependientes = new tipodependientes();
+        $this->tipomovimiento = new tipomovimiento();
+        
+        $this->agente = FALSE;
+        
+        $codagente = \filter_input(INPUT_GET, 'cod');
+        if (isset($codagente)) {
+            $agente = new agente();
+            $this->agente = $agente->get($codagente);
+        }
+        if (isset($_GET['type'])) {
+            $type = filter_input(INPUT_GET, 'type');
+            switch ($type) {
+                case "organizacion";
+                    $this->template = false;
+                    $helper = new helper_nomina();
+                    $helper->buscar_organizacion();
+                    break;
+                case "nuevo":
+                    $this->agente = new agente();
+                    $this->template = 'contenido/nuevo_agente';
+                    break;
+                case "ausencias":
+                    $this->ausencias = new ausencias();
+                    if (isset($_REQUEST['accion'])) {
+                        $this->tratar_ausencias();
+                    }
+                    $this->agente->ausencias = $this->ausencias->all_agente($this->agente->codagente);
+                    $this->total_resultados = count($this->agente->ausencias);
+                    $this->template = 'contenido/ausencias';
+                    break;
+                case "carga_familiar":
+                    $this->dependientes = new dependientes();
+                    if (isset($_REQUEST['accion'])) {
+                        $this->tratar_dependientes();
+                    }
+                    $this->agente->dependientes = $this->dependientes->all_agente($this->agente->codagente);
+                    $this->total_resultados = count($this->agente->dependientes);
+                    $this->template = 'contenido/carga_familiar';
+                    break;                    
+                case "contratos":
+                    $this->contratos = new contratos();
+                    if (isset($_REQUEST['mostrar'])) {
+                        $this->mostrar_informacion($_REQUEST['mostrar']);
+                    } elseif (isset($_REQUEST['accion'])) {
+                        $this->tratar_contratos();
+                    }
+                    $this->agente->contratos = $this->contratos->all_agente($this->agente->codagente);
+                    $this->total_resultados = count($this->agente->contratos);
+                    $this->template = 'contenido/contratos';
+                    break;
+                case "control_horas":
+                    $this->template = 'contenido/control_horas';
+                    break;
+                case "pagos_incentivos":
+                    $this->template = 'contenido/pagos_incentivos';
+                    break;
+                case "hoja_vida":
+                    $this->hoja_vida = new hoja_vida();
+                    if (isset($_REQUEST['mostrar'])) {
+                        $this->mostrar_informacion($_REQUEST['mostrar']);
+                    } elseif (isset($_REQUEST['accion'])) {
+                        $this->tratar_hoja_vida();
+                    }
+                    $this->agente->hoja_vida = $this->hoja_vida->all_agente($this->agente->codagente);
+                    $this->total_resultados = count($this->agente->hoja_vida);
+                    $this->template = 'contenido/hoja_vida';
+                    break;
+                case "movimientos":
+                    $this->movimientos_empleados = new movimientos_empleados();
+                    if (isset($_REQUEST['accion'])) {
+                        $this->tratar_movimientos();
+                    }
+                    $this->agente->movimientos = $this->movimientos_empleados->all_agente($this->agente->codagente);
+                    $this->total_resultados = count($this->agente->movimientos);
+                    $this->template = 'contenido/movimientos';
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        if ($this->agente) {
+            $this->page->title .= ' ' . $this->agente->codagente;
+        } else {
+            $this->new_error_msg("Empleado no encontrado.");
+        }
+
+    }
+    
+    public function mostrar_informacion($solicitud) {
+        if ($solicitud == 'buscar') {
+            $this->desde = \filter_input(INPUT_POST, 'f_desde');
+            $this->hasta = \filter_input(INPUT_POST, 'f_hasta');
+            $this->resultados = 0;
+        }
+    }
+    
+    public function tratar_ausencias(){
+        $accion = \filter_input(INPUT_POST, 'accion');
+        $id = \filter_input(INPUT_POST, 'id');
+        $tipo_ausencia = \filter_input(INPUT_POST, 'tipo_ausencia');
+        $fecha_desde = \date('d-m-Y H:i:s', strtotime(\filter_input(INPUT_POST, 'f_desde')));
+        $fecha_hasta = \date('d-m-Y H:i:s', strtotime(\filter_input(INPUT_POST, 'f_hasta')));
+        $justificada = \filter_input(INPUT_POST, 'justificada');
+        $estado = \filter_input(INPUT_POST, 'estado');
+        $this->upload_documento = (isset($_FILES['documento']))?new Upload($_FILES['documento']):false;
+        if ($accion == 'agregar') {
+            $hv0 = new ausencias();
+            $hv0->documento = ($this->upload_documento->uploaded)?$this->guardar_documento('ausencia'):NULL;
+            $hv0->tipo_ausencia = $tipo_ausencia;
+            $hv0->f_desde = $fecha_desde;
+            $hv0->f_hasta = $fecha_hasta;
+            $hv0->codagente = $this->agente->codagente;
+            $hv0->justificada = ($justificada)?TRUE:FALSE;
+            $hv0->estado = ($estado)?TRUE:FALSE;
+            $hv0->usuario_creacion = $this->user->nick;
+            $hv0->fecha_creacion = \Date('Y-m-d H:i:s');
+            $hv0->usuario_modificacion = $this->user->nick;
+            $hv0->fecha_modificacion = \Date('Y-m-d H:i:s');
+            if ($hv0->save()) {
+                $this->new_message('Ausencia agregada al empleado correctamente!');
+            } else {
+                $this->new_error_msg('Ocurrió un error con la información suministrada, por favor confirmar revisar los datos e intente de nuevo.');
+            }
+        } elseif ($accion == 'eliminar' and ($this->allow_delete)) {
+            $ausencia = $this->ausencias->get($id);
+            $doc = $ausencia->documento;
+            if ($ausencia->delete()) {
+                if(file_exists($doc)){
+                    unlink($this->dir_documentos.'d/'.$doc);
+                }
+                $this->new_message('Ausencia eliminada de las ausencias del empleado correctamente!');
+            } else {
+                $this->new_error_msg('Ocurrió un error intentando eliminar la informacion, por favor confirmar revisar los datos e intente de nuevo.');
+            }
+        }elseif($accion == 'eliminar' and !$this->allow_delete){
+            $this->new_error_msg('No tiene permisos para eliminar ausencias!.');
+        }
+    }
+    
+    public function tratar_contratos(){
+        $accion = \filter_input(INPUT_POST, 'accion');
+        $id = \filter_input(INPUT_POST, 'id');
+        $tipo_contrato = \filter_input(INPUT_POST, 'tipo_contrato');
+        $fecha_inicio = \filter_input(INPUT_POST, 'f_desde');
+        $fecha_fin = \filter_input(INPUT_POST, 'f_hasta');
+        $estado = \filter_input(INPUT_POST, 'estado');
+        $this->upload_documento = (isset($_FILES['documento']))?new Upload($_FILES['documento']):false;
+        if ($accion == 'agregar' AND $this->upload_documento->uploaded) {
+            $hv0 = new contratos();
+            $hv0->contrato = $this->guardar_documento('contrato');
+            $hv0->tipo_contrato = $tipo_contrato;
+            $hv0->fecha_inicio = $fecha_inicio;
+            $hv0->fecha_fin = $fecha_fin;
+            $hv0->codagente = $this->agente->codagente;
+            $hv0->estado = ($estado)?TRUE:FALSE;
+            $hv0->usuario_creacion = $this->user->nick;
+            $hv0->fecha_creacion = \Date('Y-m-d H:i:s');
+            if ($hv0->save()) {
+                $this->new_message('Documento agregado a los contratos del empleado correctamente!');
+            } else {
+                $this->new_error_msg('Ocurrió un error con la información suministrada, por favor confirmar revisar los datos e intente de nuevo.');
+            }
+        } elseif ($accion == 'eliminar' and ( $this->allow_delete)) {
+            $contrato = $this->contratos->get($id);
+            $doc = $contrato->contrato;
+            if ($contrato->delete()) {
+                unlink($this->dir_documentos.'d/'.$doc);
+                $this->new_message('Documento eliminado de los contratos del empleado correctamente!');
+            } else {
+                $this->new_error_msg('Ocurrió un error intentando eliminar la informacion, por favor confirmar revisar los datos e intente de nuevo.');
+            }
+        }elseif($accion == 'agregar' AND !$this->upload_documento->uploaded){
+            $this->new_error_msg('No se adjuntó un documento valido para agregar, por favor intentelo nuevamente.');
+        }elseif($accion == 'eliminar' and !$this->allow_delete){
+            $this->new_error_msg('No tiene permisos para eliminar documentos!.');
+        }
+    }
+    
+    public function tratar_dependientes(){
+        $accion = \filter_input(INPUT_POST, 'accion');
+        $id = \filter_input(INPUT_POST, 'id');
+        $tipo_dependiente = \filter_input(INPUT_POST, 'tipo_dependiente');
+        $docidentidad = \trim(\filter_input(INPUT_POST, 'doc_identidad'));
+        $f_nacimiento = \filter_input(INPUT_POST, 'f_nacimiento');
+        $nombres = $this->mayusculas(\filter_input(INPUT_POST, 'nombres'));
+        $apellido_paterno = $this->mayusculas(\filter_input(INPUT_POST, 'apellido_paterno'));
+        $apellido_materno = $this->mayusculas(\filter_input(INPUT_POST, 'apellido_materno'));
+        $genero = $this->mayusculas(\filter_input(INPUT_POST, 'genero'));
+        $grado_academico = \filter_input(INPUT_POST, 'grado_academico');
+        $estado = \filter_input(INPUT_POST, 'estado');
+        if ($accion == 'agregar') {
+            $hv0 = new dependientes();
+            $hv0->id = $id;
+            $hv0->codagente = $this->agente->codagente;
+            $hv0->coddependiente = $tipo_dependiente;
+            $hv0->nombres = $nombres;
+            $hv0->apellido_paterno = $apellido_paterno;
+            $hv0->apellido_materno = $apellido_materno;
+            $hv0->docidentidad = $docidentidad;            
+            $hv0->f_nacimiento = $f_nacimiento;            
+            $hv0->genero = $genero;
+            $hv0->grado_academico = $grado_academico;
+            $hv0->estado = ($estado)?TRUE:FALSE;
+            $hv0->usuario_creacion = $this->user->nick;
+            $hv0->fecha_creacion = \Date('Y-m-d H:i:s');
+            if ($hv0->save()) {
+                $this->new_message('Dependiente agregado al empleado correctamente!');
+            } else {
+                $this->new_error_msg('Ocurrió un error con la información suministrada, por favor confirmar revisar los datos e intente de nuevo.');
+            }
+        } elseif ($accion == 'eliminar' and ($this->allow_delete)) {
+            $dependiente = $this->dependientes->get($id);
+            if ($dependiente->delete()) {
+                $this->new_message('Dependiente eliminado del empleado correctamente!');
+            } else {
+                $this->new_error_msg('Ocurrió un error intentando eliminar la informacion, por favor confirmar revisar los datos e intente de nuevo.');
+            }
+        }elseif($accion == 'eliminar' and !$this->allow_delete){
+            $this->new_error_msg('No tiene permisos para eliminar dependientes!.');
+        }
+    }
+
+    public function tratar_hoja_vida() {
+        $accion = \filter_input(INPUT_POST, 'accion');
+        $id = \filter_input(INPUT_POST, 'id');
+        $tipo_documento = \filter_input(INPUT_POST, 'tipo_documento');
+        $autor_documento = \filter_input(INPUT_POST, 'autor_documento');
+        $fecha_documento = \filter_input(INPUT_POST, 'fecha_documento');
+        $this->upload_documento = (isset($_FILES['documento']))?new Upload($_FILES['documento']):false;
+        if ($accion == 'agregar' AND $this->upload_documento->uploaded) {
+            $hv0 = new hoja_vida();
+            $hv0->documento = $this->guardar_documento('hoja_vida');
+            $hv0->tipo_documento = $tipo_documento;
+            $hv0->fecha_documento = $fecha_documento;
+            $hv0->autor_documento = $autor_documento;
+            $hv0->codagente = $this->agente->codagente;
+            $hv0->estado = 'TRUE';
+            $hv0->usuario_creacion = $this->user->nick;
+            $hv0->fecha_creacion = \Date('Y-m-d H:i:s');
+            if ($hv0->save()) {
+                $this->new_message('Documento agregado a la hoja de vida correctamente!');
+            } else {
+                $this->new_error_msg('Ocurrió un error con la información suministrada, por favor confirmar revisar los datos e intente de nuevo.');
+            }
+        } elseif ($accion == 'eliminar' and ( $this->allow_delete)) {
+            $hoja_vida = $this->hoja_vida->get($id);
+            $doc = $hoja_vida->documento;
+            if ($hoja_vida->delete()) {
+                unlink($this->dir_documentos.'d/'.$doc);
+                $this->new_message('Documento eliminado de la hoja de vida del empleado correctamente!');
+            } else {
+                $this->new_error_msg('Ocurrió un error intentando eliminar la informacion, por favor confirmar revisar los datos e intente de nuevo.');
+            }
+        }elseif($accion == 'agregar' AND !$this->upload_documento->uploaded){
+            $this->new_error_msg('No se adjuntó un documento valido para agregar, por favor intentelo nuevamente.');
+        }elseif($accion == 'eliminar' and !$this->allow_delete){
+            $this->new_error_msg('No tiene permisos para eliminar documentos!.');
+        }
+    }
+    
+    public function tratar_movimientos(){
+        $accion = \filter_input(INPUT_POST, 'accion');
+        $id = \filter_input(INPUT_POST, 'id');
+        $codmovimiento = \filter_input(INPUT_POST, 'codmovimiento');
+        $codautoriza = \filter_input(INPUT_POST, 'codautoriza');
+        $observaciones = trim(\filter_input(INPUT_POST, 'observaciones'));
+        $f_desde = \filter_input(INPUT_POST, 'f_desde');
+        $f_hasta = \filter_input(INPUT_POST, 'f_hasta');
+        $estado = \filter_input(INPUT_POST, 'estado');
+        $this->upload_documento = (isset($_FILES['documento']))?new Upload($_FILES['documento']):false;
+        if ($accion == 'agregar' AND $this->upload_documento->uploaded) {
+            $hv0 = new movimientos_empleados();
+            $hv0->id = $id;
+            $hv0->documento = $this->guardar_documento('movimiento_empleado');
+            $hv0->codmovimiento = $codmovimiento;
+            $hv0->codautoriza = $codautoriza;
+            $hv0->observaciones = $observaciones;
+            $hv0->f_desde = $f_desde;
+            $hv0->f_hasta = (!empty($f_hasta))?$f_hasta:NULL;
+            $hv0->codagente = $this->agente->codagente;
+            $hv0->estado = ($estado)?TRUE:FALSE;
+            $hv0->usuario_creacion = $this->user->nick;
+            $hv0->fecha_creacion = \Date('Y-m-d H:i:s');
+            if ($hv0->save()) {
+                $this->new_message('Movimiento agregado al empleado correctamente!');
+            } else {
+                $this->new_error_msg('Ocurrió un error con la información suministrada, por favor confirmar revisar los datos e intente de nuevo.');
+            }
+        } elseif ($accion == 'eliminar' and ( $this->allow_delete)) {
+            $movimiento = $this->movimientos_empleados->get($id);
+            $doc = $movimiento->documento;
+            if ($movimiento->delete()) {
+                unlink($this->dir_documentos.'d/'.$doc);
+                $this->new_message('Movimiento eliminado del empleado correctamente!');
+            } else {
+                $this->new_error_msg('Ocurrió un error intentando eliminar la informacion, por favor confirmar revisar los datos e intente de nuevo.');
+            }
+        }elseif($accion == 'agregar' AND !$this->upload_documento->uploaded){
+            $this->new_error_msg('No se adjuntó un documento valido para agregar, por favor intentelo nuevamente.');
+        }elseif($accion == 'eliminar' and !$this->allow_delete){
+            $this->new_error_msg('No tiene permisos para eliminar documentos!.');
+        }
+    }
+    
+    //Con esta funcion guardamos los documentos dependiendo de donde vengan por cada modulo 
+    public function guardar_documento($destino) {
+        $nombre = \date('dmYhis').str_pad($this->agente->codagente, 6, 0, STR_PAD_LEFT) . "_" . $destino;
+        // Grabar el documento pdf con un nuevo nombre
+        $this->upload_documento->file_new_name_body = $nombre;
+        $this->upload_documento->file_new_name_ext = 'pdf';
+        $this->upload_documento->Process($this->dir_documentos."d/");
+        if ($this->upload_documento->processed) {
+            $this->upload_documento->clean();
+            return $nombre.'.pdf';
+        } else {
+            return false;
+        }
+    }
+    
+    private function mayusculas($string) {
+        return strtoupper(trim(strip_tags(stripslashes($string))));
+    }
+
+    private function minusculas($string) {
+        return strtolower(trim(strip_tags(stripslashes($string))));
+    }
+    
+    public function url() {
+        if (!isset($this->agente)) {
+            return parent::url();
+        } else if ($this->agente) {
+            return parent::url()."&cod=".$this->agente->codagente;
+        }
+    }
+    
+    public function share_extensions()
+    {
+        $extensiones = array(
+            array(
+                'name' => 'contratos_empleado',
+                'page_from' => __CLASS__,
+                'page_to' => 'admin_agente',
+                'type' => 'tab',
+                'text' => '<span class="fa fa-archive" aria-hidden="true"></span> &nbsp; Contratos',
+                'params' => '&type=contratos'
+            ),
+            array(
+                'name' => 'ausencias_empleado',
+                'page_from' => __CLASS__,
+                'page_to' => 'admin_agente',
+                'type' => 'tab',
+                'text' => '<span class="fa fa-calendar-minus-o" aria-hidden="true"></span> &nbsp; Ausencias',
+                'params' => '&type=ausencias'
+            ),
+            array(
+                'name' => 'carga_familiar_empleado',
+                'page_from' => __CLASS__,
+                'page_to' => 'admin_agente',
+                'type' => 'tab',
+                'text' => '<span class="fa fa-group" aria-hidden="true"></span> &nbsp; Carga Familiar',
+                'params' => '&type=carga_familiar'
+            ),
+            array(
+                'name' => 'hoja_vida_empleado',
+                'page_from' => __CLASS__,
+                'page_to' => 'admin_agente',
+                'type' => 'tab',
+                'text' => '<span class="fa fa-suitcase" aria-hidden="true"></span> &nbsp; Hoja de Vida',
+                'params' => '&type=hoja_vida'
+            ),
+            array(
+                'name' => 'pagos_incentivos_empleado',
+                'page_from' => __CLASS__,
+                'page_to' => 'admin_agente',
+                'type' => 'tab',
+                'text' => '<span class="fa fa-money" aria-hidden="true"></span> &nbsp; Pagos e Incentivos',
+                'params' => '&type=pagos_incentivos'
+            ),
+            array(
+                'name' => 'control_horas_empleado',
+                'page_from' => __CLASS__,
+                'page_to' => 'admin_agente',
+                'type' => 'tab',
+                'text' => '<span class="fa fa-clock-o" aria-hidden="true"></span> &nbsp; Control de Horas',
+                'params' => '&type=control_horas'
+            ),
+            array(
+                'name' => 'movimientos_empleado',
+                'page_from' => __CLASS__,
+                'page_to' => 'admin_agente',
+                'type' => 'tab',
+                'text' => '<span class="fa fa-code-fork" aria-hidden="true"></span> &nbsp; Movimientos',
+                'params' => '&type=movimientos'
+            ),
+            array(
+                'name' => '001_datos_agente_css',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<link href="'.FS_PATH.'plugins/nomina/view/css/bootstrap-switch.min.css" rel="stylesheet" type="text/css"/>',
+                'params' => ''
+            ),
+            array(
+                'name' => '002_datos_agente_css',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<link href="'.FS_PATH.'plugins/nomina/view/css/daterangepicker.css" rel="stylesheet" type="text/css"/>',
+                'params' => ''
+            ),
+            array(
+                'name' => '003_datos_agente_css',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<link href="'.FS_PATH.'plugins/nomina/view/css/nomina.css?build=' . rand(1, 1000) . '" rel="stylesheet" type="text/css"/>',
+                'params' => ''
+            ),
+            array(
+                'name' => '002_datos_agente_js',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/3/bootstrap-switch.min.js" type="text/javascript"></script>',
+                'params' => ''
+            ),
+            array(
+                'name' => '003_datos_agente_js',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/1/moment-with-locales.min.js" type="text/javascript"></script>',
+                'params' => ''
+            ),
+            array(
+                'name' => '004_datos_agente_js',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/2/daterangepicker.js" type="text/javascript"></script>',
+                'params' => ''
+            ),
+            array(
+                'name' => '005_admin_agente_js',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/nomina.js?build=' . rand(1, 1000) . '" type="text/javascript"></script>',
+                'params' => ''
+            ),
+        );
+
+        foreach ($extensiones as $ext) {
+            $fsext0 = new fs_extension($ext);
+            if (!$fsext0->save()) {
+                $this->new_error_msg('Imposible guardar los datos de la extensión ' . $ext['name'] . '.');
+            }
+        }
+    }
+}

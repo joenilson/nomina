@@ -534,22 +534,7 @@ class admin_agentes extends fs_controller
                 'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/ui.jqgrid-bootstrap.css"/>',
                 'params' => ''
             ),
-            array(
-                'name' => 'cargar_empleados_button',
-                'page_from' => 'importar_agentes',
-                'page_to' => __CLASS__,
-                'type' => 'button',
-                'text' => '<span class="fa fa-upload" aria-hidden="true"></span> &nbsp; Cargar Empleados',
-                'params' => ''
-            ),
-            array(
-                'name' => 'cargar_dependientes_button',
-                'page_from' => 'importar_dependientes',
-                'page_to' => __CLASS__,
-                'type' => 'button',
-                'text' => '<span class="fa fa-upload" aria-hidden="true"></span> &nbsp; Cargar Dependientes',
-                'params' => ''
-            ),
+
             array(
                 'name' => 'nuevo_empleado_js',
                 'page_from' => __CLASS__,
@@ -570,6 +555,40 @@ class admin_agentes extends fs_controller
         foreach($extensiones as $ext){
             $fsext0 = new fs_extension($ext);
             if (!$fsext0->save()) {
+                $this->new_error_msg('Imposible guardar los datos de la extensión ' . $ext['name'] . '.');
+            }
+        }
+        
+        $borrar = array(
+            array(
+                'name' => 'cargar_empleados_button',
+                'page_from' => 'importar_agentes',
+                'page_to' => __CLASS__,
+                'type' => 'button',
+                'text' => '<span class="fa fa-upload" aria-hidden="true"></span> &nbsp; Cargar Empleados',
+                'params' => ''
+            ),
+            array(
+                'name' => 'cargar_empleados_button',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'button',
+                'text' => '<span class="fa fa-upload" aria-hidden="true"></span> &nbsp; Cargar Empleados',
+                'params' => ''
+            ),
+            array(
+                'name' => 'cargar_dependientes_button',
+                'page_from' => 'importar_dependientes',
+                'page_to' => __CLASS__,
+                'type' => 'button',
+                'text' => '<span class="fa fa-upload" aria-hidden="true"></span> &nbsp; Cargar Dependientes',
+                'params' => ''
+            ),
+        );
+        
+        foreach($borrar as $ext){
+            $fsext0 = new fs_extension($ext);
+            if (!$fsext0->delete()) {
                 $this->new_error_msg('Imposible guardar los datos de la extensión ' . $ext['name'] . '.');
             }
         }

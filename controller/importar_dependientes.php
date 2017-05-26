@@ -44,7 +44,7 @@ class importar_dependientes extends fs_controller {
     );
 
     public function __construct() {
-        parent::__construct(__CLASS__, 'Importar Dependientes', 'admin', 'false', FALSE, FALSE);
+        parent::__construct(__CLASS__, 'Importar Dependientes', 'admin', FALSE, FALSE, FALSE);
     }
 
     protected function private_core() {
@@ -274,10 +274,35 @@ class importar_dependientes extends fs_controller {
                 'text' => '<link rel="stylesheet" type="text/css" media="screen" href="' . FS_PATH . 'plugins/nomina/view/css/nomina.css"/>',
                 'params' => ''
             ),
+            array(
+                'name' => 'importar_dependientes_button',
+                'page_from' => __CLASS__,
+                'page_to' => 'admin_agentes',
+                'type' => 'button',
+                'text' => '<span class="fa fa-upload" aria-hidden="true"></span> &nbsp; Cargar Dependientes',
+                'params' => ''
+            ),
         );
         foreach ($extensiones as $ext) {
             $fsext0 = new fs_extension($ext);
             if (!$fsext0->save()) {
+                $this->new_error_msg('Imposible guardar los datos de la extensión ' . $ext['name'] . '.');
+            }
+        }
+        
+        $extensiones2 = array(
+            array(
+                'name' => 'importar_dependientes_css',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'head',
+                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="' . FS_PATH . 'plugins/nomina/view/css/nomina.css"/>',
+                'params' => ''
+            ),
+        );
+        foreach ($extensiones2 as $ext) {
+            $fsext0 = new fs_extension($ext);
+            if (!$fsext0->delete()) {
                 $this->new_error_msg('Imposible guardar los datos de la extensión ' . $ext['name'] . '.');
             }
         }

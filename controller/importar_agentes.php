@@ -62,7 +62,7 @@ class importar_agentes extends fs_controller
             ,'codseguridadsocial','seg_social','dependientes','codformacion','carrera'
             ,'centroestudios','idsindicato','codtipo','pago_total','pago_neto','email','codbanco','cuenta_banco');
     public function __construct() {
-        parent::__construct(__CLASS__, 'Importar Empleados', 'admin', 'false', FALSE, FALSE);
+        parent::__construct(__CLASS__, 'Importar Empleados', 'admin', FALSE, FALSE, FALSE);
     }
 
     protected function private_core() {
@@ -435,10 +435,35 @@ class importar_agentes extends fs_controller
                 'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/nomina.css"/>',
                 'params' => ''
             ),
+            array(
+                'name' => 'importar_agentes_button',
+                'page_from' => __CLASS__,
+                'page_to' => 'admin_agentes',
+                'type' => 'button',
+                'text' => '<span class="fa fa-upload" aria-hidden="true"></span> &nbsp; Cargar Empleados',
+                'params' => ''
+            ),
         );
         foreach($extensiones as $ext){
             $fsext0 = new fs_extension($ext);
             if (!$fsext0->save()) {
+                $this->new_error_msg('Imposible guardar los datos de la extensión ' . $ext['name'] . '.');
+            }
+        }
+        
+        $extensiones2 = array(
+            array(
+                'name' => 'cargar_empleados_button',
+                'page_from' => __CLASS__,
+                'page_to' => 'admin_agentes',
+                'type' => 'button',
+                'text' => '<span class="fa fa-upload" aria-hidden="true"></span> &nbsp; Cargar Empleados',
+                'params' => ''
+            ),
+        );
+        foreach($extensiones2 as $ext){
+            $fsext0 = new fs_extension($ext);
+            if (!$fsext0->delete()) {
                 $this->new_error_msg('Imposible guardar los datos de la extensión ' . $ext['name'] . '.');
             }
         }
