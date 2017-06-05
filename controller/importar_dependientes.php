@@ -44,7 +44,7 @@ class importar_dependientes extends fs_controller {
     );
 
     public function __construct() {
-        parent::__construct(__CLASS__, 'Importar Dependientes', 'admin', FALSE, FALSE, FALSE);
+        parent::__construct(__CLASS__, 'Importar Dependientes', 'nomina');
     }
 
     protected function private_core() {
@@ -289,7 +289,7 @@ class importar_dependientes extends fs_controller {
                 $this->new_error_msg('Imposible guardar los datos de la extensión ' . $ext['name'] . '.');
             }
         }
-        
+
         $extensiones2 = array(
             array(
                 'name' => 'importar_dependientes_css',

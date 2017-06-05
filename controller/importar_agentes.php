@@ -62,7 +62,7 @@ class importar_agentes extends fs_controller
             ,'codseguridadsocial','seg_social','dependientes','codformacion','carrera'
             ,'centroestudios','idsindicato','codtipo','pago_total','pago_neto','email','codbanco','cuenta_banco');
     public function __construct() {
-        parent::__construct(__CLASS__, 'Importar Empleados', 'admin', FALSE, FALSE, FALSE);
+        parent::__construct(__CLASS__, 'Importar Empleados', 'nomina');
     }
 
     protected function private_core() {
@@ -450,7 +450,7 @@ class importar_agentes extends fs_controller
                 $this->new_error_msg('Imposible guardar los datos de la extensión ' . $ext['name'] . '.');
             }
         }
-        
+
         $extensiones2 = array(
             array(
                 'name' => 'cargar_empleados_button',
