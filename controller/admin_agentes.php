@@ -27,7 +27,7 @@ require_once 'helper_nomina.php';
 require_once('plugins/nomina/extras/PHPExcel/PHPExcel/IOFactory.php');
 require_once 'plugins/nomina/extras/verot/class.upload.php';
 
-class admin_agentes extends fs_controller 
+class admin_agentes extends fs_controller
 {
     public $agente;
     public $categoria;
@@ -56,12 +56,12 @@ class admin_agentes extends fs_controller
     public $opciones_nomina;
     public $fsvar;
 
-    public function __construct() 
+    public function __construct()
     {
         parent::__construct(__CLASS__, 'Empleados', 'nomina', FALSE, TRUE);
     }
 
-    protected function private_core() 
+    protected function private_core()
     {
         $this->allow_delete = $this->user->allow_delete_on(__CLASS__);
         $this->dir_empleados = FS_PATH.FS_MYDOCS."documentos/nomina/".$this->empresa->id."/e/";
@@ -252,7 +252,7 @@ class admin_agentes extends fs_controller
 
         $this->buscar();
     }
-    
+
     public function opcionesNomina($clave){
         $this->new_message($clave);
         $existe = $this->fsvar->simple_get($clave);
@@ -262,7 +262,7 @@ class admin_agentes extends fs_controller
             return $existe;
         }
     }
-    
+
     public function tratar_opciones(){
         foreach($this->campos_obligatorios as $key=>$linea){
             $clave = 'nomina_'.$key;
@@ -296,7 +296,7 @@ class admin_agentes extends fs_controller
                 'nomina_banco'=>0,
             ), FALSE
         );
-        
+
     }
 
     public function paginas() {
@@ -540,7 +540,7 @@ class admin_agentes extends fs_controller
                 'page_from' => __CLASS__,
                 'page_to' => __CLASS__,
                 'type' => 'head',
-                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/nomina.js" type="text/javascript"></script>',
+                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/nomina.js'.rand(1,4000).'" type="text/javascript"></script>',
                 'params' => ''
             ),
             array(
@@ -558,7 +558,7 @@ class admin_agentes extends fs_controller
                 $this->new_error_msg('Imposible guardar los datos de la extensión ' . $ext['name'] . '.');
             }
         }
-        
+
         $borrar = array(
             array(
                 'name' => 'cargar_empleados_button',
@@ -585,7 +585,7 @@ class admin_agentes extends fs_controller
                 'params' => ''
             ),
         );
-        
+
         foreach($borrar as $ext){
             $fsext0 = new fs_extension($ext);
             if (!$fsext0->delete()) {

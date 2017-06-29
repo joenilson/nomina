@@ -40,7 +40,7 @@ require_model('movimientos_empleados.php');
 require_once 'helper_nomina.php';
 require_once 'plugins/nomina/extras/verot/class.upload.php';
 
-class admin_agente extends fs_controller 
+class admin_agente extends fs_controller
 {
     public $agente;
     public $agentes;
@@ -130,17 +130,29 @@ class admin_agente extends fs_controller
             'codsistemapension'=>'Sistema de Pensión',
             'codbanco'=>'Banco'
         );
-        
+
         $this->agente = FALSE;
-        
+
         $codagente = \filter_input(INPUT_GET, 'cod');
         if (isset($codagente)) {
             $agente = new agente();
             $this->agente = $agente->get($codagente);
-        }        
-        
+        }
+
         if(filter_input(INPUT_GET, 'buscar_empleado')){
             $this->buscar_empleado();
+        }
+
+        if (isset($_GET['type'])) {
+            $type = filter_input(INPUT_GET, 'type');
+            switch ($type) {
+                case "nuevo":
+                    $this->agente = new agente();
+                    $this->template = 'contenido/nuevo_agente';
+                    break;
+                default:
+                    break;
+            }
         }
 
         if ($this->agente) {
@@ -153,7 +165,7 @@ class admin_agente extends fs_controller
             $this->new_error_msg("Empleado no encontrado.");
         }
     }
-    
+
     private function buscar_empleado()
     {
         /// desactivamos la plantilla HTML
@@ -168,7 +180,7 @@ class admin_agente extends fs_controller
         header('Content-Type: application/json');
         echo json_encode( array('query' => $query, 'suggestions' => $json) );
    }
-    
+
     public function tratar_agente(){
         if (isset($_POST['nombre'])) {
             //En la edición solo se permite campos no sensibles genéricos
@@ -417,14 +429,14 @@ class admin_agente extends fs_controller
                 'params' => '&type=control_horas'
             ),
         );
-        
+
         foreach ($extensiones_old as $ext) {
             $fsext0 = new fs_extension($ext);
             if (!$fsext0->delete()) {
                 $this->new_error_msg('Imposible guardar los datos de la extensión ' . $ext['name'] . '.');
             }
         }
-        
+
         $extensiones = array(
             array(
                 'name' => '001_admin_agente_css',
@@ -490,7 +502,7 @@ class admin_agente extends fs_controller
                 'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/nomina.js?build=' . rand(1, 1000) . '" type="text/javascript"></script>',
                 'params' => ''
             ),
-            
+
         );
 
         foreach ($extensiones as $ext) {
