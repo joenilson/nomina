@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Document   : hr_tipocuenta.xml
+    Description:
+        Estructura de la tabla hr_tipoempleado.
+    Author: Joe Nilson
+-->
+<tabla>
+    <columna>
+        <nombre>codtipo</nombre>
+        <tipo>character varying(4)</tipo>
+        <nulo>NO</nulo>
+    </columna>
+    <columna>
+        <nombre>descripcion</nombre>
+        <tipo>character varying(100)</tipo>
+        <nulo>NO</nulo>
+    </columna>
+    <columna>
+        <nombre>estado</nombre>
+        <tipo>boolean</tipo>
+        <nulo>YES</nulo>
+    </columna>
+    <restriccion>
+        <nombre>hr_tipocuenta_pkey</nombre>
+        <consulta>PRIMARY KEY (codtipo)</consulta>
+    </restriccion>
+</tabla>

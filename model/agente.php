@@ -256,6 +256,12 @@ class agente extends fs_model
     * @var type $fecha_modificacion
     */
    public $fecha_modificacion;
+
+   /**
+    * Tipo de cuenta de banco si el pago es por banco
+    * @var varchar(4)
+    */
+   public $tipo_cuenta;
    /*
     * Campos auxliares externos
     */
@@ -310,6 +316,7 @@ class agente extends fs_model
          $this->centroestudios = $a['centroestudios'];
          $this->codbanco = $a['codbanco'];
          $this->cuenta_banco = $a['cuenta_banco'];
+         $this->tipo_cuenta = $a['tipo_cuenta'];
          $this->estado = $a['estado'];
          $this->estado_civil = $a['estado_civil'];
 
@@ -394,6 +401,7 @@ class agente extends fs_model
          $this->centroestudios = NULL;
          $this->codbanco = NULL;
          $this->cuenta_banco = NULL;
+         $this->tipo_cuenta = NULL;
          $this->estado = NULL;
          $this->estado_civil = NULL;
          $this->fecha_creacion = Date('d-m-Y H:i:s');
@@ -780,6 +788,7 @@ class agente extends fs_model
                     ", seg_social = ".$this->var2str($this->seg_social).
                     ", codigo_pension = ".$this->var2str($this->codigo_pension).
                     ", cuenta_banco = ".$this->var2str($this->cuenta_banco).
+                    ", tipo_cuenta = ".$this->var2str($this->tipo_cuenta).
                     ", codbanco = ".$this->var2str($this->codbanco).
                     ", codformacion = ".$this->var2str($this->codformacion).
                     ", carrera = ".$this->var2str($this->carrera).
@@ -800,10 +809,10 @@ class agente extends fs_model
             if( is_null($this->codagente) )
             {
                $this->codagente = $this->get_new_codigo();
-            }             
+            }
             $sql = "INSERT INTO ".$this->table_name." (codalmacen,idempresa,codagente,nombre,apellidos,segundo_apellido,nombreap,dnicif,telefono,
                email,codcargo,cargo,codsupervisor,codgerencia,codtipo,codarea,coddepartamento,provincia,ciudad,direccion,f_nacimiento,
-               f_alta,f_baja,sexo,idsindicato,codseguridadsocial,seg_social,codsistemapension,codigo_pension,cuenta_banco,codbanco,codformacion,carrera,centroestudios,dependientes,estado,estado_civil,banco,
+               f_alta,f_baja,sexo,idsindicato,codseguridadsocial,seg_social,codsistemapension,codigo_pension,cuenta_banco,codbanco,tipo_cuenta,codformacion,carrera,centroestudios,dependientes,estado,estado_civil,banco,
                porcomision,pago_total,pago_neto,fecha_creacion,usuario_creacion)
                VALUES (".$this->var2str($this->codalmacen).
                     ",".$this->intval($this->idempresa).
@@ -836,6 +845,7 @@ class agente extends fs_model
                     ",".$this->var2str($this->codigo_pension).
                     ",".$this->var2str($this->cuenta_banco).
                     ",".$this->var2str($this->codbanco).
+                    ",".$this->var2str($this->tipo_cuenta).
                     ",".$this->var2str($this->codformacion).
                     ",".$this->var2str($this->carrera).
                     ",".$this->var2str($this->centroestudios).

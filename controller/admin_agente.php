@@ -26,6 +26,7 @@ require_model('dependientes.php');
 require_model('bancos.php');
 require_model('estadocivil.php');
 require_model('seguridadsocial.php');
+require_model('tipocuenta.php');
 require_model('tipodependientes.php');
 require_model('tipoempleado.php');
 require_model('tipoausencias.php');
@@ -52,6 +53,7 @@ class admin_agente extends fs_controller
     public $bancos;
     public $estadocivil;
     public $formacion;
+    public $tipocuenta;
     public $tipoempleado;
     public $tipodependientes;
     public $tipoausencias;
@@ -107,6 +109,7 @@ class admin_agente extends fs_controller
         $this->sistemapension = new sistemapension();
         $this->estadocivil = new estadocivil();
         $this->tipoausencias = new tipoausencias();
+        $this->tipocuenta = new tipocuenta();
         $this->tipodependientes = new tipodependientes();
         $this->tipomovimiento = new tipomovimiento();
         //Aqui se configurarán los campos obligatorios bajo demanda del usuario
@@ -128,7 +131,8 @@ class admin_agente extends fs_controller
             'codformacion'=>'Formación',
             'codseguridadsocial'=>'Seguridad Social',
             'codsistemapension'=>'Sistema de Pensión',
-            'codbanco'=>'Banco'
+            'codbanco'=>'Banco',
+            'tipo_cuenta'=>'Tipo Cuenta'
         );
 
         $this->agente = FALSE;
@@ -182,62 +186,63 @@ class admin_agente extends fs_controller
    }
 
     public function tratar_agente(){
-        if (isset($_POST['nombre'])) {
+        if (\filter_input(INPUT_POST, 'nombre')) {
             //En la edición solo se permite campos no sensibles genéricos
             if ($this->user_can_edit()) {
-                if ($_POST['codcargo'] != '') {
-                    $cargo = $this->cargos->get($_POST['codcargo']);
+                if (\filter_input(INPUT_POST, 'codcargo') != '') {
+                    $cargo = $this->cargos->get(\filter_input(INPUT_POST, 'codcargo'));
                 }
-                $this->agente->nombre = $this->mayusculas($_POST['nombre']);
-                $this->agente->apellidos = $this->mayusculas($_POST['apellidos']);
-                $this->agente->segundo_apellido = $this->mayusculas($_POST['segundo_apellido']);
-                $this->agente->dnicif = $_POST['dnicif'];
-                $this->agente->telefono = $_POST['telefono'];
-                $this->agente->email = $this->minusculas($_POST['email']);
-                $this->agente->provincia = $_POST['provincia'];
-                $this->agente->ciudad = $this->mayusculas($_POST['ciudad']);
-                $this->agente->direccion = $this->mayusculas($_POST['direccion']);
-                $this->agente->sexo = $_POST['sexo'];
+                $this->agente->nombre = $this->mayusculas(\filter_input(INPUT_POST, 'nombre'));
+                $this->agente->apellidos = $this->mayusculas(\filter_input(INPUT_POST, 'apellidos'));
+                $this->agente->segundo_apellido = $this->mayusculas(\filter_input(INPUT_POST, 'segundo_apellido'));
+                $this->agente->dnicif = \filter_input(INPUT_POST, 'dnicif');
+                $this->agente->telefono = \filter_input(INPUT_POST, 'telefono');
+                $this->agente->email = $this->minusculas(\filter_input(INPUT_POST, 'email'));
+                $this->agente->provincia = \filter_input(INPUT_POST, 'provincia');
+                $this->agente->ciudad = $this->mayusculas(\filter_input(INPUT_POST, 'ciudad'));
+                $this->agente->direccion = $this->mayusculas(\filter_input(INPUT_POST, 'direccion'));
+                $this->agente->sexo = \filter_input(INPUT_POST, 'sexo');
 
                 $this->agente->f_nacimiento = NULL;
-                if ($_POST['f_nacimiento'] != '') {
-                    $this->agente->f_nacimiento = $_POST['f_nacimiento'];
+                if (\filter_input(INPUT_POST, 'f_nacimiento') != '') {
+                    $this->agente->f_nacimiento = \filter_input(INPUT_POST, 'f_nacimiento');
                 }
 
                 $this->agente->f_alta = NULL;
-                if ($_POST['f_alta'] != '') {
-                    $this->agente->f_alta = $_POST['f_alta'];
+                if (\filter_input(INPUT_POST, 'f_alta') != '') {
+                    $this->agente->f_alta = \filter_input(INPUT_POST, 'f_alta');
                 }
 
                 $this->agente->f_baja = NULL;
                 $inactivo = false;
-                if ($_POST['f_baja'] != '') {
-                    $this->agente->f_baja = $_POST['f_baja'];
+                if (\filter_input(INPUT_POST, 'f_baja') != '') {
+                    $this->agente->f_baja = \filter_input(INPUT_POST, 'f_baja');
                     $inactivo = true;
                 }
 
-                $this->agente->codalmacen = $_POST['codalmacen'];
-                $this->agente->codtipo = $_POST['codtipo'];
-                $this->agente->codsupervisor = $_POST['codsupervisor'];
-                $this->agente->codgerencia = $_POST['codgerencia'];
-                $this->agente->codcargo = $_POST['codcargo'];
+                $this->agente->codalmacen = \filter_input(INPUT_POST, 'codalmacen');
+                $this->agente->codtipo = \filter_input(INPUT_POST, 'codtipo');
+                $this->agente->codsupervisor = \filter_input(INPUT_POST, 'codsupervisor');
+                $this->agente->codgerencia = \filter_input(INPUT_POST, 'codgerencia');
+                $this->agente->codcargo = \filter_input(INPUT_POST, 'codcargo');
                 $this->agente->cargo = $cargo->descripcion;
-                $this->agente->codarea = $_POST['codarea'];
-                $this->agente->coddepartamento = $_POST['coddepartamento'];
-                $this->agente->codformacion = $_POST['codformacion'];
-                $this->agente->carrera = $this->mayusculas($_POST['carrera']);
-                $this->agente->centroestudios = $this->mayusculas($_POST['centroestudios']);
-                $this->agente->codseguridadsocial = $_POST['codseguridadsocial'];
-                $this->agente->codsistemapension = $_POST['codsistemapension'];
-                $this->agente->seg_social = $_POST['seg_social'];
-                $this->agente->codigo_pension = $_POST['codigo_pension'];
-                $this->agente->codbanco = $_POST['codbanco'];
-                $this->agente->cuenta_banco = $_POST['cuenta_banco'];
-                $this->agente->porcomision = floatval($_POST['porcomision']);
-                $this->agente->dependientes = $_POST['dependientes'];
-                $this->agente->idsindicato = $_POST['idsindicalizado'];
-                $this->agente->estado = ($inactivo)?'I':$_POST['estado'];
-                $this->agente->estado_civil = $_POST['estado_civil'];
+                $this->agente->codarea = \filter_input(INPUT_POST, 'codarea');
+                $this->agente->coddepartamento = \filter_input(INPUT_POST, 'coddepartamento');
+                $this->agente->codformacion = \filter_input(INPUT_POST, 'codformacion');
+                $this->agente->carrera = $this->mayusculas(\filter_input(INPUT_POST, 'carrera'));
+                $this->agente->centroestudios = $this->mayusculas(\filter_input(INPUT_POST, 'centroestudios'));
+                $this->agente->codseguridadsocial = \filter_input(INPUT_POST, 'codseguridadsocial');
+                $this->agente->codsistemapension = \filter_input(INPUT_POST, 'codsistemapension');
+                $this->agente->seg_social = \filter_input(INPUT_POST, 'seg_social');
+                $this->agente->codigo_pension = \filter_input(INPUT_POST, 'codigo_pension');
+                $this->agente->codbanco = \filter_input(INPUT_POST, 'codbanco');
+                $this->agente->cuenta_banco = \filter_input(INPUT_POST, 'cuenta_banco');
+                $this->agente->tipo_cuenta = \filter_input(INPUT_POST, 'tipo_cuenta');
+                $this->agente->porcomision = floatval(\filter_input(INPUT_POST, 'porcomision'));
+                $this->agente->dependientes = \filter_input(INPUT_POST, 'dependientes');
+                $this->agente->idsindicato = \filter_input(INPUT_POST, 'idsindicalizado');
+                $this->agente->estado = ($inactivo)?'I':\filter_input(INPUT_POST, 'estado');
+                $this->agente->estado_civil = \filter_input(INPUT_POST, 'estado_civil');
 
                 if ($this->agente->save()) {
                     $this->upload_photo = new Upload($_FILES['foto']);
@@ -302,8 +307,9 @@ class admin_agente extends fs_controller
             return parent::url();
         } else if ($this->agente) {
             return $this->agente->url();
-        } else
+        } else {
             return $this->page->url();
+        }
     }
 
     public function share_extensions() {

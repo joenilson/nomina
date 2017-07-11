@@ -263,6 +263,11 @@
         <nulo>YES</nulo>
     </columna>
     <columna>
+        <nombre>tipo_cuenta</nombre>
+        <tipo>character varying(4)</tipo>
+        <nulo>YES</nulo>
+    </columna>
+    <columna>
         <nombre>usuario_creacion</nombre>
         <tipo>character varying(12)</tipo>
         <nulo>YES</nulo>

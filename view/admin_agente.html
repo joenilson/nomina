@@ -12,7 +12,7 @@
                 window.location.href = '{$fsc->ppage->url()}&delete={$fsc->agente->codagente}';
             }
         });
-        
+
         $("#ac_reporta").autocomplete({
             serviceUrl: '{$fsc->url()}',
             paramName: 'buscar_empleado',
@@ -42,7 +42,7 @@
             }
         {/loop}
         var f_baja = document.f_agente.f_baja.value;
-        
+
         if(estado === 'I' && f_baja === ''){
             $('#error_estado').html('<p class="text-danger"><span class="fa fa-warning"></span>&nbsp;Para desactivar a un empleado debe consignar su fecha de baja!</p>');
             document.f_agente.f_baja.focus();
@@ -140,7 +140,7 @@
                                         </div>
                                     </div>
                                     <div class="col-sm-6">
-                                        
+
                                     </div>
                                     <div class="col-sm-4">
                                         <ul class="list-group">
@@ -262,7 +262,7 @@
                                                 </div>
                                             </div>
                                             <div class="col-sm-5">
-                                                
+
                                             </div>
                                         </div>
                                         <div role="tabpanel" class="tab-pane fade" id="tab-organizacionales">
@@ -509,6 +509,19 @@
                                                         </span>
                                                         <input class="form-control input-sm" type="text" name="cuenta_banco" value="{$fsc->agente->cuenta_banco}" autocomplete="off"/>
                                                     </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <div class="form-group required">
+                                                    <label class="control-label">
+                                                        <a href="{$fsc->tipocuenta->url()}">Tipo Cuenta</a>
+                                                    </label>
+                                                    <select name="tipo_cuenta" required class="form-control input-sm">
+                                                        <option value="">--------</option>
+                                                        {loop="$fsc->tipocuenta->all()"}
+                                                        <option value="{$value->codtipo}" {if="$fsc->agente->tipo_cuenta==$value->codtipo"}selected{/if}>{$value->descripcion}</option>
+                                                        {/loop}
+                                                    </select>
                                                 </div>
                                             </div>
                                             <div class="col-sm-2">
