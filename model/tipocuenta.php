@@ -25,19 +25,25 @@
 class tipocuenta extends fs_model{
     /**
      * El codigo a generar del tipocuenta
-     * @var type $codtipo TipoCuenta
+     * @var varchar(4) $codtipo TipoCuenta
      */
     public $codtipo;
 
     /**
      * Se coloca la descripción del tipocuenta
-     * @var type $descripcion TipoCuenta
+     * @var varchar(100) $descripcion TipoCuenta
      */
     public $descripcion;
+    
+    /**
+     * Se coloca el codigo para el banco pagador
+     * @var varchar(20) $descripcion TipoCuenta
+     */
+    public $codigo_banco;
 
     /**
      * Si se va desactivar un tipo de cuenta se debe colocar aquí su estado
-     * @var type $estado Boolean
+     * @var boolean $estado Boolean
      */
     public $estado;
     public function __construct($t = FALSE) {
@@ -45,10 +51,12 @@ class tipocuenta extends fs_model{
         if($t){
             $this->codtipo = $t['codtipo'];
             $this->descripcion = $t['descripcion'];
+            $this->codigo_banco = $t['codigo_banco'];
             $this->estado = $this->str2bool($t['estado']);
         }else{
             $this->codtipo = NULL;
             $this->descripcion = NULL;
+            $this->codigo_banco = NULL;
             $this->estado = FALSE;
         }
     }
@@ -64,7 +72,7 @@ class tipocuenta extends fs_model{
 
     public function url()
     {
-        return "index.php?page=admin_tipocuenta";
+        return "index.php?page=configuracion_nomina&type=tipocuenta";
     }
 
     public function get_new_codigo()
@@ -99,9 +107,10 @@ class tipocuenta extends fs_model{
         }else{
             //INSERT DATA
             $this->codtipo = ($this->codtipo)?$this->sanitize_codigo($this->codtipo):$this->get_new_codigo();
-            $sql = "INSERT INTO ".$this->table_name." (codtipo, descripcion, estado) VALUES (".
-                $this->var2str($this->get_new_codigo()).", ".
+            $sql = "INSERT INTO ".$this->table_name." (codtipo, descripcion, codigo_banco, estado) VALUES (".
+                $this->var2str($this->codtipo).", ".
                 $this->var2str($this->descripcion).", ".
+                $this->var2str($this->codigo_banco).", ".
                 $this->var2str($this->estado).");";
             return $this->db->exec($sql);
         }
@@ -111,6 +120,7 @@ class tipocuenta extends fs_model{
         $sql = "UPDATE ".$this->table_name." SET ".
             " estado = ".$this->var2str($this->estado).
             ", descripcion = ".$this->var2str($this->descripcion).
+            ", codigo_banco = ".$this->var2str($this->codigo_banco).
             " WHERE codtipo = ".$this->var2str($this->codtipo).";";
         return $this->db->exec($sql);
     }
@@ -118,7 +128,7 @@ class tipocuenta extends fs_model{
     public function get($codtipo){
         $data = $this->db->select("SELECT * FROM ".$this->table_name." WHERE codtipo = ".$this->var2str($codtipo).";");
         if($data){
-            return new tipoempleado($data[0]);
+            return new tipocuenta($data[0]);
         }else{
             return false;
         }
@@ -127,7 +137,7 @@ class tipocuenta extends fs_model{
     public function get_by_descripcion($descripcion){
         $data = $this->db->select("SELECT * FROM ".$this->table_name." WHERE descripcion = ".$this->var2str($descripcion).";");
         if($data){
-            return new tipoempleado($data[0]);
+            return new tipocuenta($data[0]);
         }else{
             return false;
         }
@@ -138,7 +148,7 @@ class tipocuenta extends fs_model{
         $data = $this->db->select("SELECT * FROM ".$this->table_name." ORDER BY descripcion;");
         if($data){
             foreach($data as $d){
-                $lista[] = new tipoempleado($d);
+                $lista[] = new tipocuenta($d);
             }
             return $lista;
         }else{

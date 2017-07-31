@@ -2,7 +2,7 @@
 <!--
     Document   : hr_tipocuenta.xml
     Description:
-        Estructura de la tabla hr_tipoempleado.
+        Estructura de la tabla hr_tipocuenta.
     Author: Joe Nilson
 -->
 <tabla>
@@ -15,6 +15,11 @@
         <nombre>descripcion</nombre>
         <tipo>character varying(100)</tipo>
         <nulo>NO</nulo>
+    </columna>
+    <columna>
+        <nombre>codigo_banco</nombre>
+        <tipo>character varying(20)</tipo>
+        <nulo>YES</nulo>
     </columna>
     <columna>
         <nombre>estado</nombre>

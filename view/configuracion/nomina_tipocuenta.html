@@ -17,7 +17,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <div class="panel panel-primary">
     <div class="panel-heading">
-        <h3 class="panel-title">Configuraci&oacute;n de Tipo de Cuenta de Banco</h3>
+        <a class="btn btn-sm btn-default" href="{$fsc->url()}&type=tipocuenta" title="Recargar la página">
+            <span class="glyphicon glyphicon-refresh"></span>
+        </a>
+        <h3 class="panel-title pull-right">Configuraci&oacute;n de Tipo de Cuenta de Banco</h3>
+        
     </div>
     <div class="panel-body">
         <div class="container">
@@ -25,7 +29,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <thead>
                     <tr>
                         <th>Id</th>
-                        <th>Descripcion:</th>
+                        <th>Descripción:</th>
+                        <th>Código Banco:</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -33,10 +38,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <form class="form" role="form" action="{$fsc->url()}&type=tipocuenta" method="POST">
                     <tr class="info">
                         <td>
-                            <input type="hidden" name="codtipo" value="">
+                            <input type="text" name="codtipo" value="" autocomplete="off" class="form-control input-sm" placeholder="Codigo de 4 caracteres" maxlength="4">
                         </td>
                         <td>
                             <input type="text" name="descripcion" value="" autocomplete="off" class="form-control input-sm">
+                        </td>
+                        <td>
+                            <input type="text" name="codigo_banco" value="" autocomplete="off" class="form-control input-sm">
                         </td>
                         <td>
                             <input type="hidden" name="estado" value="true">
@@ -56,6 +64,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </td>
                         <td>
                             <input type="text" name="descripcion" value="{$value->descripcion}" autocomplete="off" class="form-control input-sm">
+                        </td>
+                        <td>
+                            <input type="text" name="codigo_banco" value="{$value->codigo_banco}" autocomplete="off" class="form-control input-sm">
                         </td>
                         <td class="text-center">
                             <input type="checkbox" onchange="this.value = (this.value === 'true') ? 'false' : 'true';" name="estado" value="{if="$value->estado"}true{else}false{/if}" {if="$value->estado"}checked{/if} class="checkbox-control">

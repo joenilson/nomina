@@ -35,6 +35,7 @@ require_model('sistemapension.php');
 require_model('sindicalizacion.php');
 require_model('tipoausencias.php');
 require_model('tipocese.php');
+require_model('tipocuenta.php');
 require_model('tipoempleado.php');
 require_model('tipodependientes.php');
 require_model('tipomovimiento.php');
@@ -56,6 +57,7 @@ class configuracion_nomina extends fs_controller{
     public $motivocese;
     public $tipoausencias;
     public $tipocese;
+    public $tipocuenta;
     public $tipoempleado;
     public $tipodependientes;
     public $tipomovimiento;
@@ -91,6 +93,7 @@ class configuracion_nomina extends fs_controller{
         $this->motivocese = new motivocese();
         $this->tipoausencias = new tipoausencias();
         $this->tipocese = new tipocese();
+        $this->tipocuenta = new tipocuenta();
         $this->tipoempleado = new tipoempleado();
         $this->tipodependientes = new tipodependientes();
         $this->tipomovimiento = new tipomovimiento();
@@ -107,7 +110,6 @@ class configuracion_nomina extends fs_controller{
         new dependientes();
         new hoja_vida();
         new movimientos_empleados();
-
         $this->fsvar = new fs_var();
         //Aqui almacenamos las variables del plugin
         $this->nomina_setup = $this->fsvar->array_get(
@@ -227,6 +229,13 @@ class configuracion_nomina extends fs_controller{
                     if(isset($_POST['codtipocese'])){
                         $this->tratar_motivocese();
                     }
+                    break;
+                case "tipocuenta":
+                    $this->template = 'configuracion/nomina_tipocuenta';
+                    if(isset($_POST['codtipo'])){
+                        $this->tratar_tipocuenta();
+                    }
+                    break;
                 default:
                     break;
             }
@@ -740,6 +749,31 @@ class configuracion_nomina extends fs_controller{
             }
         }
     }
+    
+    public function tratar_tipocuenta()
+    {
+        $accion = filter_input(INPUT_POST, 'accion');
+        if($accion == 'agregar'){
+            $tc0 = new tipocuenta();
+            $tc0->codtipo = filter_input(INPUT_POST, 'codtipo');
+            $tc0->descripcion = $this->mayusculas(filter_input(INPUT_POST, 'descripcion'));
+            $tc0->codigo_banco = $this->mayusculas(filter_input(INPUT_POST, 'codigo_banco'));
+            $tc0->estado = filter_input(INPUT_POST, 'estado');
+            $estado = $tc0->save();
+            if($estado){
+                $this->new_message("Datos guardados correctamente.");
+            }else{
+                $this->new_error_msg("La información con el Id ".$tc0->codtipo." No pudo ser guardado, revise los datos e intente nuevamente. Error: ".$estado);
+            }
+        }elseif($accion=='eliminar'){
+            $tipocuenta = $this->tipocuenta->get(\filter_input(INPUT_POST, 'codtipo'));
+            if($tipocuenta->delete()){
+                $this->new_message("Datos eliminados correctamente.");
+            }else{
+                $this->new_error_msg("La información no pudo ser eliminada, revise los datos e intente nuevamente");
+            }
+        }
+    }
 
     public function tratar_organizacion(){
         $accion = filter_input(INPUT_POST, 'accion');
@@ -972,6 +1006,14 @@ class configuracion_nomina extends fs_controller{
                 'type' => 'tab',
                 'text' => '<span class="fa fa-gear" aria-hidden="true"></span> &nbsp; Tipo de Ceses',
                 'params' => '&type=tipocese'
+            ),
+            array(
+                'name' => 'config_nomina_tipocuenta',
+                'page_from' => __CLASS__,
+                'page_to' => __CLASS__,
+                'type' => 'tab',
+                'text' => '<span class="fa fa-gear" aria-hidden="true"></span> &nbsp; Tipo de cuenta Banco',
+                'params' => '&type=tipocuenta'
             ),
             array(
                 'name' => 'configurar_nomina_js',
