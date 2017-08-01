@@ -36,6 +36,11 @@ class bancos extends fs_model {
     public $nombre;
 
     /**
+     * Este es un codigo auxiliar que se puede usar para generar un codigo de nómina
+     * @var varchar(60)
+     */
+    public $codigo_alterno;
+    /**
      * Aqui ponemos el tipo de Banco, puede ser
      * 1 BANCO
      * 2 COOPERATIVA de Ahorro
@@ -56,11 +61,13 @@ class bancos extends fs_model {
         if($t){
             $this->codbanco = $t['codbanco'];
             $this->nombre = $t['nombre'];
+            $this->codigo_alterno = $t['codigo_alterno'];
             $this->tipo = $t['tipo'];
             $this->estado = $this->str2bool($t['estado']);
         }else{
             $this->codbanco = NULL;
             $this->nombre = NULL;
+            $this->codigo_alterno = NULL;
             $this->tipo = NULL;
             $this->estado = FALSE;
         }
@@ -107,9 +114,10 @@ class bancos extends fs_model {
             return $this->update();
         }else{
             //INSERT DATA
-            $sql = "INSERT INTO ".$this->table_name." (codbanco, nombre, tipo, estado) VALUES (".
+            $sql = "INSERT INTO ".$this->table_name." (codbanco, nombre, codigo_alterno, tipo, estado) VALUES (".
                 $this->var2str($this->get_new_codigo()).", ".
                 $this->var2str($this->nombre).", ".
+                $this->var2str($this->codigo_alterno).", ".
                 $this->var2str($this->tipo).", ".
                 $this->var2str($this->estado).");";
             return $this->db->exec($sql);
@@ -121,6 +129,7 @@ class bancos extends fs_model {
             " estado = ".$this->var2str($this->estado).
             ", tipo = ".$this->var2str($this->tipo).
             ", nombre = ".$this->var2str($this->nombre).
+            ", codigo_alterno = ".$this->var2str($this->codigo_alterno).
             " WHERE codbanco = ".$this->var2str($this->codbanco).";";
         return $this->db->exec($sql);
     }

@@ -17,7 +17,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <div class="panel panel-primary">
     <div class="panel-heading">
-        <h3 class="panel-title">Administración de Bancos</h3>
+        <a class="btn btn-sm btn-default" href="{$fsc->url()}&type=bancos" title="Recargar la página">
+            <span class="glyphicon glyphicon-refresh"></span>
+        </a>
+        <h3 class="panel-title pull-right">Administración de Bancos</h3>
     </div>
     <div class="panel-body">
         <div class="container">
@@ -26,6 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <tr class="row">
                         <th>Id</th>
                         <th>Nombre:</th>
+                        <th>Codigo Alterno:</th>
                         <th>Tipo:</th>
                         <th></th>
                         <th></th>
@@ -39,6 +43,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </td>
                         <td>
                             <input type="text" name="nombre" value="" autocomplete="off" class="form-control input-sm">
+                        </td>
+                        <td>
+                            <input type="text" name="codigo_alterno" value="" autocomplete="off" class="form-control input-sm">
                         </td>
                         <td>
                             <select class="form-control input-sm" name="tipo" required>
@@ -65,8 +72,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <td class="col-sm-1">
                             <input type="text" name="codbanco" value="{$value->codbanco}" readonly="true" class="form-control input-sm">
                         </td>
-                        <td class="col-sm-5">
+                        <td class="col-sm-3">
                             <input type="text" name="nombre" value="{$value->nombre}" autocomplete="off" class="form-control input-sm">
+                        </td>
+                        <td class="col-sm-3">
+                            <input type="text" name="codigo_alterno" value="{$value->codigo_alterno}" autocomplete="off" class="form-control input-sm">
                         </td>
                         <td class="col-sm-3">
                             <select class="form-control input-sm" name="tipo" required>

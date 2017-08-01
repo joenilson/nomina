@@ -395,6 +395,7 @@ class configuracion_nomina extends fs_controller{
             $ss0 = new bancos();
             $ss0->codbanco = filter_input(INPUT_POST, 'codbanco');
             $ss0->nombre = $this->mayusculas(filter_input(INPUT_POST, 'nombre'));
+            $ss0->codigo_alterno = $this->mayusculas(filter_input(INPUT_POST, 'codigo_alterno'));
             $ss0->tipo = $this->mayusculas(filter_input(INPUT_POST, 'tipo'));
             $ss0->estado = filter_input(INPUT_POST, 'estado');
             $estado = $ss0->save();

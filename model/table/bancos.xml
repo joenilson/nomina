@@ -21,6 +21,11 @@
         <nulo>NO</nulo>
     </columna>
     <columna>
+        <nombre>codigo_alterno</nombre>
+        <tipo>character varying(60)</tipo>
+        <nulo>YES</nulo>
+    </columna>
+    <columna>
         <nombre>tipo</nombre>
         <tipo>character varying(16)</tipo>
         <nulo>NO</nulo>
