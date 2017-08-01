@@ -25,19 +25,19 @@
 class formacion extends fs_model{
     /**
      * El codigo a generar del formacion
-     * @var type $codformacion Formacion
+     * @var string $codformacion Formacion
      */
     public $codformacion;
 
     /**
      * Se coloca la descripción del formacion
-     * @var type $nombre Formacion
+     * @var string $nombre Formacion
      */
     public $nombre;
 
     /**
      * Si se va desactivar un tipo de formacion se debe colocar aquí su estado
-     * @var type $estado Boolean
+     * @var boolean $estado Boolean
      */
     public $estado;
     public function __construct($t = FALSE) {

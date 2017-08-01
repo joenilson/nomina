@@ -25,25 +25,25 @@
 class tipopago extends fs_model{
     /**
      * El codigo a generar del tipopago
-     * @var type $codpago TipoPago
+     * @var string $codpago TipoPago
      */
     public $codpago;
 
     /**
      * Se coloca la descripción del tipomovimiento
-     * @var type $descripcion TipoMovimiento
+     * @var string $descripcion TipoMovimiento
      */
     public $descripcion;
 
     /**
      * Si el tipo de pago es uno por defecto se configura como TRUE
-     * @var type $es_basico Boolean
+     * @var boolean $es_basico Boolean
      */
     public $es_basico;
     
     /**
      * Si se va desactivar un tipo de movimiento se debe colocar aquí su estado
-     * @var type $estado Boolean
+     * @var boolean $estado Boolean
      */
     public $estado;
     

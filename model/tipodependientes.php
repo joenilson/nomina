@@ -25,19 +25,19 @@
 class tipodependientes extends fs_model{
     /**
      * El codigo a generar del TipoDependiente
-     * @var type $coddependiente TipoDependiente
+     * @var string $coddependiente TipoDependiente
      */
     public $coddependiente;
 
     /**
      * Se coloca la descripción del TipoDependiente
-     * @var type $descripcion TipoDependiente
+     * @var string $descripcion TipoDependiente
      */
     public $descripcion;
 
     /**
      * Si se va desactivar un tipo de dependiente se debe colocar aquí su estado
-     * @var type $estado Boolean
+     * @var boolean $estado Boolean
      */
     public $estado;
     public function __construct($t = FALSE) {

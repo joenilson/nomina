@@ -25,19 +25,19 @@
 class tipomovimiento extends fs_model{
     /**
      * El codigo a generar del tipomovimiento
-     * @var type $codmovimiento TipoMovimiento
+     * @var string $codmovimiento TipoMovimiento
      */
     public $codmovimiento;
 
     /**
      * Se coloca la descripción del tipomovimiento
-     * @var type $descripcion TipoMovimiento
+     * @var string $descripcion TipoMovimiento
      */
     public $descripcion;
 
     /**
      * Si se va desactivar un tipo de movimiento se debe colocar aquí su estado
-     * @var type $estado Boolean
+     * @var boolean $estado Boolean
      */
     public $estado;
     

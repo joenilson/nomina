@@ -25,25 +25,25 @@
 class categoriaempleado extends fs_model{
     /**
      * El codigo a generar de la categoriaempleado
-     * @var type $codcategoria CategoriaEmpleado
+     * @var string $codcategoria CategoriaEmpleado
      */
     public $codcategoria;
 
     /**
      * Se coloca la descripción de la categoriaempleado
-     * @var type $descripcion CategoriaEmpleado
+     * @var string $descripcion CategoriaEmpleado
      */
     public $descripcion;
 
     /**
      * Para poder sacar un listado con jerarquias se necesita un orden
-     * @var type $orden Integer
+     * @var integer $orden Integer
      */
     public $orden;
 
     /**
      * Si se va desactivar una categoria de empleado se debe colocar aquí su estado
-     * @var type $estado Boolean
+     * @var boolean $estado Boolean
      */
     public $estado;
     public function __construct($t = FALSE) {

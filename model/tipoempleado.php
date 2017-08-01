@@ -25,19 +25,19 @@
 class tipoempleado extends fs_model{
     /**
      * El codigo a generar del tipoempleado
-     * @var type $codtipo TipoEmpleado
+     * @var string $codtipo TipoEmpleado
      */
     public $codtipo;
 
     /**
      * Se coloca la descripción del tipoempleado
-     * @var type $descripcion TipoEmpleado
+     * @var string $descripcion TipoEmpleado
      */
     public $descripcion;
 
     /**
      * Si se va desactivar un tipo de empleado se debe colocar aquí su estado
-     * @var type $estado Boolean
+     * @var string $estado Boolean
      */
     public $estado;
     public function __construct($t = FALSE) {

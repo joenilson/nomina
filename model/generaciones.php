@@ -25,31 +25,31 @@ require_model('agente.php');
 class generaciones extends fs_model{
     /**
      * El codigo a generar de la Generacion
-     * @var type $codgeneracion Generacion
+     * @var string $codgeneracion Generacion
      */
     public $codgeneracion;
 
     /**
      * Se coloca la descripción de la generacion
-     * @var type $descripcion Descripcion
+     * @var string $descripcion Descripcion
      */
     public $descripcion;
 
     /**
      * Se coloca el año de inicio de la Genereracion en formato YYYY
-     * @var type $inicio_generacion Date::Year
+     * @var integer $inicio_generacion Date::Year
      */
     public $inicio_generacion;
 
     /**
      * Se coloca el año de fin de la Generacion en formato YYYY
-     * @var type $fin_generacion Date::Year
+     * @var integer $fin_generacion Date::Year
      */
     public $fin_generacion;
 
     /**
      * Si se va desactivar una Generacion se debe colocar aquí su estado
-     * @var type $estado Boolean
+     * @var boolean $estado Boolean
      */
     public $estado;
 

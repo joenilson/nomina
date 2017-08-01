@@ -25,19 +25,19 @@
 class tipocese extends fs_model{
     /**
      * El codigo a generar del tipocese
-     * @var type $codtipocese TipoCese
+     * @var string $codtipocese TipoCese
      */
     public $codtipocese;
 
     /**
      * Se coloca la descripción del tipocese
-     * @var type $descripcion TipoCese
+     * @var string $descripcion TipoCese
      */
     public $descripcion;
     
     /**
      * Si se va desactivar un tipo de cese se debe colocar aquí su estado
-     * @var type $estado Boolean
+     * @var boolean $estado Boolean
      */
     public $estado;
     

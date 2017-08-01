@@ -25,26 +25,26 @@
 class motivocese extends fs_model{
     /**
      * El codigo a generar de Motivo Cese
-     * @var type $codmotivocese MotivoCese
+     * @var string $codmotivocese MotivoCese
      */
     public $codmotivocese;
     
     /**
      * Aqui ponemos el tipo de Motivo de Cese, el cual esta en la tabla
      * hr_tipocese
-     * @var type $codtipocese TipoCese
+     * @var string $codtipocese TipoCese
      */
     public $codtipocese;    
 
     /**
      * Se coloca la descripcion del Motivo Cese
-     * @var type $descripcion Motivo Cese
+     * @var string $descripcion Motivo Cese
      */
     public $descripcion;
 
     /**
      * Si se va desactivar un registro se debe colocar aquí su estado
-     * @var type $estado Boolean
+     * @var boolean $estado Boolean
      */
     public $estado;
     public function __construct($t = FALSE) {

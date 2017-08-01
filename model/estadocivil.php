@@ -25,13 +25,13 @@
 class estadocivil extends fs_model{
     /**
      * El codigo a generar del estadocivil
-     * @var type $codestadocivil EstadoCivil
+     * @var string $codestadocivil EstadoCivil
      */
     public $codestadocivil;
 
     /**
      * Se coloca la descripción del estadocivil
-     * @var type $descripcion EstadoCivil
+     * @var string $descripcion EstadoCivil
      */
     public $descripcion;
 

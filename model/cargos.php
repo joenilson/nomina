@@ -25,30 +25,30 @@ require_model('categoriaempleado.php');
 class cargos extends fs_model{
     /**
      * El codigo a generar del cargo
-     * @var type $codcargo Cargos
+     * @var string $codcargo Cargos
      */
     public $codcargo;
     /**
      * Si este cargo tiene un superior se coloca aquí
-     * @var type $padre Cargo
+     * @var string $padre Cargo
      */
     public $padre;
 
     /**
      * Se coloca la descripción del cargo
-     * @var type $descripcion Cargo
+     * @var string $descripcion Cargo
      */
     public $descripcion;
 
     /**
      * Un cargo debe pertenecer a una categoria
-     * @var type $codcategoria Categoria
+     * @var string $codcategoria Categoria
      */
     public $codcategoria;
 
     /**
      * Si se va desactivar un cargo se debe colocar aquí su estado
-     * @var type $estado Boolean
+     * @var boolean $estado Boolean
      */
     public $estado;
     

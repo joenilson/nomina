@@ -25,19 +25,19 @@
 class sistemapension extends fs_model{
     /**
      * El codigo a generar de Sistema de Pensión o Jubilación
-     * @var type $codsistemapension SistemaPension
+     * @var string $codsistemapension SistemaPension
      */
     public $codsistemapension;
 
     /**
      * Se coloca el nombre de la Sistema de Pension
-     * @var type $nombre Sistema de Pension
+     * @var string $nombre Sistema de Pension
      */
     public $nombre;
 
     /**
      * Se coloca la abreviatura de la Sistema de Pension
-     * @var type $nombre_corto
+     * @var string $nombre_corto
      */
     public $nombre_corto;
 
@@ -45,13 +45,13 @@ class sistemapension extends fs_model{
      * Aqui ponemos el tipo de Sistema de Pension, puede ser
      * PRIVADO
      * PUBLICO
-     * @var type $tipo Sistema de Pension
+     * @var string $tipo Sistema de Pension
      */
     public $tipo;
 
     /**
      * Si se va desactivar un registro se debe colocar aquí su estado
-     * @var type $estado Boolean
+     * @var boolean $estado Boolean
      */
     public $estado;
     public function __construct($t = FALSE) {

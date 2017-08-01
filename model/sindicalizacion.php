@@ -25,19 +25,19 @@
 class sindicalizacion extends fs_model{
     /**
      * El codigo a generar del sindicalizacion
-     * @var type $idsindicato TipoEmpleado
+     * @var string $idsindicato TipoEmpleado
      */
     public $idsindicato;
 
     /**
      * Se coloca la descripción del sindicalizacion
-     * @var type $descripcion TipoEmpleado
+     * @var string $descripcion TipoEmpleado
      */
     public $descripcion;
 
     /**
      * Si se va desactivar un tipo de empleado se debe colocar aquí su estado
-     * @var type $estado Boolean
+     * @var boolean $estado Boolean
      */
     public $estado;
     public function __construct($t = FALSE) {

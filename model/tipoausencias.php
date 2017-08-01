@@ -25,25 +25,25 @@
 class tipoausencias extends fs_model{
     /**
      * El codigo a generar del tipoausencias
-     * @var type $codausencia TipoAusencia
+     * @var string $codausencia TipoAusencia
      */
     public $codausencia;
 
     /**
      * Se coloca la descripción del tipoausencias
-     * @var type $descripcion TipoAusencia
+     * @var string $descripcion TipoAusencia
      */
     public $descripcion;
     
     /**
      * Se coloca si aplica descontar por la ausencia
-     * @var type $aplicar_descuento Boolean
+     * @var boolean $aplicar_descuento Boolean
      */
     public $aplicar_descuento;
 
     /**
      * Si se va desactivar un tipo de ausencia se debe colocar aquí su estado
-     * @var type $estado Boolean
+     * @var boolean $estado Boolean
      */
     public $estado;
     

@@ -25,18 +25,18 @@
 class organizacion extends fs_model{
     /**
      * El codigo a generar para la organizacion
-     * @var type $codorganizacion Organizacion
+     * @var string $codorganizacion Organizacion
      */
     public $codorganizacion;
     /**
      * Si este codigo tiene un codigo superior se coloca aquí
-     * @var type $padre Organizacion
+     * @var string $padre Organizacion
      */
     public $padre;
 
     /**
      * Se coloca la descripción de la Organizacion
-     * @var type $descripcion Organizacion
+     * @var string $descripcion Organizacion
      */
     public $descripcion;
 
@@ -48,7 +48,7 @@ class organizacion extends fs_model{
      * en ese orden en especifico seria lo deseable,
      * para otro tipo de jerarquias se puede seguir agregando aquí y generando selects
      * dinámicamente, pero ya pertenece a otra pelicula de Conan el barbaro
-     * @var type $tipo Organizacion
+     * @var string $tipo Organizacion
      */
     public $tipo;
 
@@ -56,7 +56,7 @@ class organizacion extends fs_model{
      * Si se va desactivar un punto de la Organizacion se debe colocar aquí su estado
      * teniendo cuidado de no desactivar una gerencia que tenga areas o departamentos
      * asignados, por lo que antes de cambiar el estado se hará una verificacion
-     * @var type $estado Boolean
+     * @var boolean $estado Boolean
      */
     public $estado;
 
