@@ -25,13 +25,13 @@
 class bancos extends fs_model {
     /**
      * El codigo a generar del Banco
-     * @var type $codbanco Banco
+     * @var string $codbanco Banco
      */
     public $codbanco;
 
     /**
      * Se coloca el nombre del Banco
-     * @var type $nombre Banco
+     * @var string $nombre Banco
      */
     public $nombre;
 
@@ -52,7 +52,7 @@ class bancos extends fs_model {
 
     /**
      * Si se va desactivar un banco se debe colocar aquí su estado
-     * @var type $estado Boolean
+     * @var boolean $estado Boolean
      */
     public $estado;
     

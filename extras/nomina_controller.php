@@ -71,7 +71,7 @@ class nomina_controller extends fs_controller {
         $this->periodos = range(2016,\date('Y'));
     }
     
-    private function buscar_empleado()
+    public function buscar_empleado()
     {
         /// desactivamos la plantilla HTML
         $this->template = FALSE;

@@ -152,6 +152,7 @@ class admin_agentes extends nomina_controller
         }
 
         if (isset($_POST['nuevo']) AND $_POST['nuevo'] == 1) {
+            $cargo = false;
             if ($_POST['codcargo'] != '') {
                 $cargo = $this->cargos->get($_POST['codcargo']);
             }
@@ -176,7 +177,7 @@ class admin_agentes extends nomina_controller
             $age0->codsupervisor = $_POST['codsupervisor'];
             $age0->codgerencia = $_POST['codgerencia'];
             $age0->codcargo = $_POST['codcargo'];
-            $age0->cargo = $cargo->descripcion;
+            $age0->cargo = ($cargo)?$cargo->descripcion:'';
             $age0->codarea = $_POST['codarea'];
             $age0->coddepartamento = $_POST['coddepartamento'];
             $age0->codformacion = $_POST['codformacion'];
@@ -265,6 +266,7 @@ class admin_agentes extends nomina_controller
     }
 
     public function tratar_opciones(){
+        $opciones_nomina = array();
         foreach($this->campos_obligatorios as $key=>$linea){
             $clave = 'nomina_'.$key;
             $opciones_nomina[$clave]=(int)\filter_input(INPUT_POST, $key);
@@ -459,7 +461,6 @@ class admin_agentes extends nomina_controller
 
         if ($this->tipo != '') {
             $sql .= $and . "codtipo = " . $this->agente->var2str($this->tipo);
-            $and = ' AND ';
         }
 
         $data = $this->db->select("SELECT COUNT(codagente) as total" . $sql . ';');
