@@ -268,7 +268,7 @@ class admin_agente extends fs_controller
         }
     }
 
-    //Para guardar la foto hacemos uso de la libreria de class.upload.php que esta en extras/verot/
+    //Para guardar la foto hacemos uso de la libreria de class.upload.php que esta en vendor/verot/
     //Con esta libreria estandarizamos todas las imagenes en PNG y les hacemos un resize a 120px
     public function guardar_foto() {
         $this->foto_empleado = $this->agente->get_foto();
