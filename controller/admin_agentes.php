@@ -26,8 +26,8 @@ require_model('categoriaempleado.php');
 require_once 'helper_nomina.php';
 require_once('plugins/nomina/vendor/PHPOffice/PHPExcel/IOFactory.php');
 require_once 'plugins/nomina/vendor/verot/class.upload.php';
-
-class admin_agentes extends fs_controller
+require_once 'plugins/nomina/extras/nomina_controller.php';
+class admin_agentes extends nomina_controller
 {
     public $agente;
     public $categoria;
@@ -63,6 +63,7 @@ class admin_agentes extends fs_controller
 
     protected function private_core()
     {
+        parent::private_core();
         $this->allow_delete = $this->user->allow_delete_on(__CLASS__);
         $this->dir_empleados = FS_PATH.FS_MYDOCS."documentos/nomina/".$this->empresa->id."/e/";
         $this->noimagen = FS_PATH."plugins/nomina/view/imagenes/no_foto.jpg";
@@ -475,21 +476,6 @@ class admin_agentes extends fs_controller
             }
         }
     }
-
-    private function buscar_empleado()
-    {
-        /// desactivamos la plantilla HTML
-        $this->template = FALSE;
-        $query = filter_input(INPUT_GET, 'buscar_empleado');
-        $json = array();
-        foreach($this->agente->search($query) as $cli)
-        {
-            $json[] = array('value' => $cli->nombreap, 'codigo' => $cli->codagente);
-        }
-
-        header('Content-Type: application/json');
-        echo json_encode( array('query' => $query, 'suggestions' => $json) );
-   }
 
     //Para guardar la foto hacemos uso de la libreria de class.upload.php que esta en vendor/verot/
     //Con esta libreria estandarizamos todas las imagenes en PNG y les hacemos un resize a 120px

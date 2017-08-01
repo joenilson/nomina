@@ -40,8 +40,8 @@ require_model('hoja_vida.php');
 require_model('movimientos_empleados.php');
 require_once 'helper_nomina.php';
 require_once 'plugins/nomina/vendor/verot/class.upload.php';
-
-class admin_agente extends fs_controller
+require_once 'plugins/nomina/extras/nomina_controller.php';
+class admin_agente extends nomina_controller
 {
     public $agente;
     public $agentes;
@@ -74,7 +74,6 @@ class admin_agente extends fs_controller
     public $resultados;
     public $total_resultados;
     private $upload_photo;
-    private $upload_documento;
     private $dir_empleados;
     public $dir_documentos_empleados;
     public $campos_obligatorios;
@@ -87,6 +86,7 @@ class admin_agente extends fs_controller
     }
 
     protected function private_core() {
+        parent::private_core();
         $this->ppage = $this->page->get('admin_agentes');
         $basepath = dirname(dirname(dirname(__DIR__)));
         $this->dir_documentos = $basepath.DIRECTORY_SEPARATOR.FS_MYDOCS."documentos/nomina/".$this->empresa->id."/";
@@ -169,21 +169,6 @@ class admin_agente extends fs_controller
             $this->new_error_msg("Empleado no encontrado.");
         }
     }
-
-    private function buscar_empleado()
-    {
-        /// desactivamos la plantilla HTML
-        $this->template = FALSE;
-        $query = filter_input(INPUT_GET, 'buscar_empleado');
-        $json = array();
-        foreach($this->agente->search($query) as $cli)
-        {
-            $json[] = array('value' => $cli->nombreap, 'codigo' => $cli->codagente);
-        }
-
-        header('Content-Type: application/json');
-        echo json_encode( array('query' => $query, 'suggestions' => $json) );
-   }
 
     public function tratar_agente(){
         if (\filter_input(INPUT_POST, 'nombre')) {
