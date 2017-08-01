@@ -37,7 +37,7 @@ require_model('organizacion.php');
 require_model('hoja_vida.php');
 require_model('movimientos_empleados.php');
 require_once 'helper_nomina.php';
-require_once 'plugins/nomina/extras/verot/class.upload.php';
+require_once 'plugins/nomina/vendor/verot/class.upload.php';
 /**
  * Description of datos_agente
  *

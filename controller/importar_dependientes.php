@@ -21,8 +21,8 @@ require_model('dependientes.php');
 require_model('tipodependientes.php');
 require_model('formacion.php');
 require_once 'helper_nomina.php';
-require_once 'plugins/nomina/extras/verot/class.upload.php';
-require_once('plugins/nomina/extras/PHPExcel/PHPExcel/IOFactory.php');
+require_once 'plugins/nomina/vendor/verot/class.upload.php';
+require_once('plugins/nomina/vendor/PHPOffice/PHPExcel/IOFactory.php');
 
 /**
  * Description of importar_agentes

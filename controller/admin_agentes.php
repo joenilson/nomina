@@ -24,8 +24,8 @@ require_model('tipoempleado.php');
 require_model('categoriaempleado.php');
 
 require_once 'helper_nomina.php';
-require_once('plugins/nomina/extras/PHPExcel/PHPExcel/IOFactory.php');
-require_once 'plugins/nomina/extras/verot/class.upload.php';
+require_once('plugins/nomina/vendor/PHPOffice/PHPExcel/IOFactory.php');
+require_once 'plugins/nomina/vendor/verot/class.upload.php';
 
 class admin_agentes extends fs_controller
 {
