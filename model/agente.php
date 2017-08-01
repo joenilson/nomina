@@ -32,7 +32,7 @@ class agente extends fs_model {
 
     /**
      * Clave primaria. Varchar (10).
-     * @var string
+     * @var integer
      */
     public $codagente;
 
@@ -139,13 +139,11 @@ class agente extends fs_model {
     public $codigo_pension;
 
     /**
-     * @deprecated since 10/05/2016 FS 2016.004
      * @var string
      */
     public $cargo;
 
     /**
-     * @deprecated since 10/05/2016 FS 2016.004
      * @var string
      */
     public $banco;
@@ -453,10 +451,10 @@ class agente extends fs_model {
             $this->provincia = NULL;
             $this->ciudad = NULL;
             $this->direccion = NULL;
-            $this->porcomision = 0;
-            $this->pago_total = 0;
-            $this->pago_neto = 0;
-            $this->irpf = 0;
+            $this->porcomision = floatval(0);
+            $this->pago_total = floatval(0);
+            $this->pago_neto = floatval(0);
+            $this->irpf = floatval(0);
             $this->seg_social = NULL;
             $this->codigo_pension = NULL;
             $this->banco = NULL;
@@ -731,9 +729,9 @@ class agente extends fs_model {
     }
 
     public function get_supervisor() {
+        $arrayLista = array();
         $c = $this->cargos->get($this->codcargo);
         $cargos = $c->get_superiores();
-        //print_r($cargos);
         foreach ($cargos as $cargo) {
             $arrayLista[] = $cargo->codcargo;
         }
