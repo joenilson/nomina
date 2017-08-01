@@ -24,7 +24,7 @@ $.jgrid.extend({
 			sValue:'searchString',
 			sOper: 'searchOper',
 			sFilter: 'filters',
-            loadDefaults: true, // this options activates loading of default filters from grid's postData for Multipe Search only.
+                        loadDefaults: true, // this options activates loading of default filters from grid's postData for Multipe Search only.
 			beforeShowSearch: null,
 			afterShowSearch : null,
 			onInitializeSearch: null,
