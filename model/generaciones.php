@@ -189,7 +189,7 @@ class generaciones extends fs_model{
             if(!empty($a->f_nacimiento)){
                 $dateEmpleado = new \DateTime($a->f_nacimiento);
                 $datos = $this->get_by_year($dateEmpleado->format('Y'));
-                if(!isset($lista[$datos->codgeneracion])){
+                if($datos and !isset($lista[$datos->codgeneracion])){
                     $lista[$datos->codgeneracion] = new stdClass();
                     $lista[$datos->codgeneracion]->cantidad = 0;
                 }

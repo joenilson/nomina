@@ -155,64 +155,7 @@ class nomina_dashboard extends fs_controller{
     }
 
     public function share_extensions(){
-        $extensiones_old = array(
-            array(
-                'name' => 'nomina_empleado_js',
-                'page_from' => __CLASS__,
-                'page_to' => __CLASS__,
-                'type' => 'head',
-                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/nomina.js" type="text/javascript"></script>',
-                'params' => ''
-            ),
-            array(
-                'name' => 'nomina_empleado_css',
-                'page_from' => __CLASS__,
-                'page_to' => __CLASS__,
-                'type' => 'head',
-                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/nomina.css"/>',
-                'params' => ''
-            ),
-            array(
-                'name' => 'chartist_js',
-                'page_from' => __CLASS__,
-                'page_to' => __CLASS__,
-                'type' => 'head',
-                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/chartist.min.js" type="text/javascript"></script>',
-                'params' => ''
-            ),
-            array(
-                'name' => 'chartist_css',
-                'page_from' => __CLASS__,
-                'page_to' => __CLASS__,
-                'type' => 'head',
-                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/chartist.min.css"/>',
-                'params' => ''
-            ),
-            array(
-                'name' => 'chartjs_css',
-                'page_from' => __CLASS__,
-                'page_to' => __CLASS__,
-                'type' => 'head',
-                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/4/Chart.min.js" type="text/javascript"></script>',
-                'params' => ''
-            ),
-            array(
-                'name' => '003_nomina_dashboard_css',
-                'page_from' => __CLASS__,
-                'page_to' => __CLASS__,
-                'type' => 'head',
-                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/nomina.css"/>',
-                'params' => ''
-            ),
-        );
-
-        foreach ($extensiones_old as $ext) {
-            $fsext0 = new fs_extension($ext);
-            if (!$fsext0->delete()) {
-                $this->new_error_msg('Imposible guardar los datos de la extensión ' . $ext['name'] . '.');
-            }
-        }
-        
+      
         $extensiones = array(
             array(
                 'name' => '001_nomina_dashboard_css',
@@ -227,7 +170,7 @@ class nomina_dashboard extends fs_controller{
                 'page_from' => __CLASS__,
                 'page_to' => __CLASS__,
                 'type' => 'head',
-                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/nomina.css"/>',
+                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/nomina.min.css"/>',
                 'params' => ''
             ),
             array(

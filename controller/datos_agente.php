@@ -515,7 +515,7 @@ class datos_agente extends fs_controller
                 'page_from' => __CLASS__,
                 'page_to' => __CLASS__,
                 'type' => 'head',
-                'text' => '<link href="'.FS_PATH.'plugins/nomina/view/css/daterangepicker.css" rel="stylesheet" type="text/css"/>',
+                'text' => '<link href="'.FS_PATH.'plugins/nomina/view/css/daterangepicker.min.css" rel="stylesheet" type="text/css"/>',
                 'params' => ''
             ),
             array(
@@ -523,7 +523,7 @@ class datos_agente extends fs_controller
                 'page_from' => __CLASS__,
                 'page_to' => __CLASS__,
                 'type' => 'head',
-                'text' => '<link href="'.FS_PATH.'plugins/nomina/view/css/nomina.css?build=' . rand(1, 1000) . '" rel="stylesheet" type="text/css"/>',
+                'text' => '<link href="'.FS_PATH.'plugins/nomina/view/css/nomina.min.css?build=' . rand(1, 1000) . '" rel="stylesheet" type="text/css"/>',
                 'params' => ''
             ),
             array(
@@ -547,7 +547,7 @@ class datos_agente extends fs_controller
                 'page_from' => __CLASS__,
                 'page_to' => __CLASS__,
                 'type' => 'head',
-                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/2/daterangepicker.js" type="text/javascript"></script>',
+                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/2/daterangepicker.min.js" type="text/javascript"></script>',
                 'params' => ''
             ),
             array(

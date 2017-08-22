@@ -1001,6 +1001,7 @@ class agente extends fs_model {
     }
 
     public function estadistica_almacen() {
+        $this->almacen = new almacen();
         $sql = "select codalmacen, count(codagente) as total from " . $this->table_name . " WHERE f_baja IS NULL GROUP BY codalmacen;";
         $data = $this->db->select($sql);
         if ($data) {

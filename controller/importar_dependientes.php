@@ -255,7 +255,7 @@ class importar_dependientes extends fs_controller {
                 'page_from' => __CLASS__,
                 'page_to' => __CLASS__,
                 'type' => 'head',
-                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="' . FS_PATH . 'plugins/nomina/view/css/ui.jqgrid-bootstrap.css"/>',
+                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="' . FS_PATH . 'plugins/nomina/view/css/ui.jqgrid-bootstrap.min.css"/>',
                 'params' => ''
             ),
             array(
@@ -271,7 +271,7 @@ class importar_dependientes extends fs_controller {
                 'page_from' => __CLASS__,
                 'page_to' => __CLASS__,
                 'type' => 'head',
-                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="' . FS_PATH . 'plugins/nomina/view/css/nomina.css"/>',
+                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="' . FS_PATH . 'plugins/nomina/view/css/nomina.min.css"/>',
                 'params' => ''
             ),
             array(

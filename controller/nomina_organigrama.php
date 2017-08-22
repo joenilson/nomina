@@ -72,71 +72,13 @@ class nomina_organigrama extends fs_controller{
     }
     
     private function shared_extensions(){
-        $extensiones_old = array(
-            array(
-                'name' => 'nomina_organigrama_general_js',
-                'page_from' => __CLASS__,
-                'page_to' => __CLASS__,
-                'type' => 'head',
-                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/nomina.js" type="text/javascript"></script>',
-                'params' => ''
-            ),
-            array(
-                'name' => 'nomina_organigrama_general_css',
-                'page_from' => __CLASS__,
-                'page_to' => __CLASS__,
-                'type' => 'head',
-                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/nomina.css"/>',
-                'params' => ''
-            ),
-            array(
-                'name' => 'nomina_organigrama_html2canvas_js',
-                'page_from' => __CLASS__,
-                'page_to' => __CLASS__,
-                'type' => 'head',
-                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/5/html2canvas.min.js" type="text/javascript"></script>',
-                'params' => ''
-            ),
-            array(
-                'name' => 'nomina_organigrama_js',
-                'page_from' => __CLASS__,
-                'page_to' => __CLASS__,
-                'type' => 'head',
-                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/5/jquery.orgchart.js" type="text/javascript"></script>',
-                'params' => ''
-            ),
-            array(
-                'name' => 'nomina_organigrama_css',
-                'page_from' => __CLASS__,
-                'page_to' => __CLASS__,
-                'type' => 'head',
-                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/jquery.orgchart.css"/>',
-                'params' => ''
-            ),
-            array(
-                'name' => 'nomina_organigrama_jquery3_js',
-                'page_from' => __CLASS__,
-                'page_to' => __CLASS__,
-                'type' => 'head',
-                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/0/jquery-3.1.1.min.js" type="text/javascript"></script>',
-                'params' => ''
-            )            
-        );
-        
-        foreach ($extensiones_old as $ext) {
-            $fsext0 = new fs_extension($ext);
-            if (!$fsext0->delete()) {
-                $this->new_error_msg('Imposible guardar los datos de la extensión ' . $ext['name'] . '.');
-            }
-        }
-        
         $extensiones = array(
             array(
                 'name' => '001_nomina_organigrama_css',
                 'page_from' => __CLASS__,
                 'page_to' => __CLASS__,
                 'type' => 'head',
-                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/nomina.css"/>',
+                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/nomina.min.css"/>',
                 'params' => ''
             ),
             array(
@@ -144,7 +86,7 @@ class nomina_organigrama extends fs_controller{
                 'page_from' => __CLASS__,
                 'page_to' => __CLASS__,
                 'type' => 'head',
-                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/jquery.orgchart.css"/>',
+                'text' => '<link rel="stylesheet" type="text/css" media="screen" href="'.FS_PATH.'plugins/nomina/view/css/jquery.orgchart.min.css"/>',
                 'params' => ''
             ),            
             array(
@@ -160,7 +102,7 @@ class nomina_organigrama extends fs_controller{
                 'page_from' => __CLASS__,
                 'page_to' => __CLASS__,
                 'type' => 'head',
-                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/5/jquery.orgchart.js" type="text/javascript"></script>',
+                'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/5/jquery.orgchart.min.js" type="text/javascript"></script>',
                 'params' => ''
             ),
             array(
