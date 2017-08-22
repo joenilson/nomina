@@ -64,9 +64,10 @@ class tipocuenta extends fs_model{
     protected function install() {
         return "INSERT INTO ".$this->table_name.
                 " (codtipo, descripcion, estado) VALUES".
-                " ('0001','CUENTA DE AHORRROS',TRUE),".
-                " ('0002','CUENTA CORRIENTE',TRUE),".
+                " ('0001','CUENTA CORRIENTE',TRUE),".
+                " ('0002','CUENTA DE AHORRROS',TRUE),".
                 " ('0003','CUENTA NOMINA',TRUE),".
+                " ('0005','CHEQUE',TRUE),".
                 " ('9999','NO APLICA',TRUE);";
     }
 
