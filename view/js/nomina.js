@@ -332,7 +332,7 @@ $(document).ready(function() {
         event.preventDefault();
         bootbox.dialog({
             message: "Esta seguro de haber revisado la información de los empleados?<br />"+
-                    "Si decide subir esta información, no podrá eliminar ningun registro.",
+                    "Si decide subir esta información, no podrá eliminar ningun registro y se actualizará la información de empleados ya registrados.",
             title: "Confirmar subir empleados",
             buttons: {
                 success: {

@@ -28,13 +28,13 @@
                     $('#grid_resultados_procesados').jqGrid()
                     .setGridParam({
                         data: datos,
-                        datatype: "local",
+                        datatype: "local"
                     });
                     $("#grid_resultados_procesados")[0].grid.endReq();
                     $('#grid_resultados_procesados').jqGrid().trigger("reloadGrid");
                 },
-                error: function() {
-                    bootbox.alert("Ocurrio un error no contemplado en el plugin, por favor envie un mensaje en el foro de soporte de FacturaScripts para verificar el problema, gracias.");
+                error: function(data) {
+                    bootbox.alert("Ocurrio un error no contemplado en el plugin: <br/>"+data);
                 }
             });
         });
@@ -65,8 +65,8 @@
                 {label: 'Cta Banco', name: 'cuenta_banco', width: 140, sorttype: 'text'},
                 {label: 'Seg Social', name: 'codseguridadsocial', width: 75, sorttype: 'text'},
                 {label: 'Nro SegSoc', name: 'seg_social', width: 120, sorttype: 'text'},
-                {label: 'Sist. Pensiones', name: 'codsistemapension', width: 75, sorttype: 'text'},
-                {label: 'Nro Sis Pension', name: 'codigo_pension', width: 120, sorttype: 'text'},
+                {label: 'Sist. Pensiones', name: 'sistemapension', width: 75, sorttype: 'text'},
+                {label: 'Nro Sis Pension', name: 'codsistemapension', width: 120, sorttype: 'text'},
                 {label: 'Dependientes', name: 'dependientes', width: 120, sorttype: 'text'},
                 {label: 'Formacion', name: 'codformacion', width: 120, sorttype: 'text'},
                 {label: 'Carrera', name: 'carrera', width: 120, sorttype: 'text'},
@@ -96,9 +96,8 @@
             loadComplete: function(data) {
                 for (var i = 0; i < data.rows.length; i++) {
                     var rowData = data.rows[i];
-                    //console.log(rowData);
-                    if (rowData.dnicif === null || rowData.estado !== 'Nuevo') {//update this to have your own check
-                        var checkbox = $("#jqg_grid_resultados_procesados_"+rowData.rid);//update this with your own grid name
+                    if (rowData.dnicif === null || (rowData.estado !== 'Nuevo' && rowData.estado !== 'Existe')) {
+                        var checkbox = $("#jqg_grid_resultados_procesados_"+rowData.rid);
                         checkbox.css("visibility", "hidden");
                         checkbox.attr("disabled", true);
                         if(rowData.estado !== 'Incompleto'){
@@ -106,10 +105,6 @@
                         }else if(rowData.estado !== 'Ya existe'){
                             $("#" + rowData.rid).find("td").addClass("warning");
                         }
-
-                    //}
-                    //if (rowData.estado === 'Ya existe') {
-                        //$("#" + rowData.rid).find("td").addClass("warning");
                     }
                 }
             },
