@@ -56,6 +56,17 @@ class importar_agentes extends fs_controller {
     public $noimagen = "plugins/nomina/view/imagenes/no_foto.jpg";
     public $archivo;
     public $resultado;
+    public $arrayHeader =  array ('SEDE'=>'sede','EMPRESA' => 'empresa', 'DOCUMENTO_IDENTIDAD' => 'dnicif', 'NOMBRE_COMPLETO' => 'nombreap',
+            'APELLIDO_PATERNO'=>'apellidos', 'APELLIDO_MATERNO' => 'segundo_apellido', 'NOMBRE' => 'nombre',  'SEXO'=>'sexo', 'ESTADO_CIVIL'=>'estado_civil',
+            'FECHA_NACIMIENTO' => 'f_nacimiento', 'DIRECCION' => 'direccion', 'TELEFONO' => 'telefono', 'FECHA_INGRESO' => 'f_alta', 'FECHA_CESE' => 'f_baja',
+            'GERENCIA' => 'gerencia', 'AREA' => 'area', 'DEPARTAMENTO' => 'departamento', 'CATEGORIA' => 'categoria', 'CUSSP' => 'cussp', 'CARGO' => 'cargo',
+            'SISTEMA_PENSION'=>'codsistemapension','CODIGO_SISTEMA_PENSION'=>'codigo_pension','SEGURIDAD_SOCIAL'=>'codseguridadsocial',
+            'NUMERO_SEGURIDAD_SOCIAL'=>'seg_social','NUMERO_HIJOS' => 'dependientes','NIVEL_FORMACION' => 'codformacion','CARRERA' => 'carrera',
+            'CENTRO_ESTUDIOS' => 'centroestudios','SINDICATO' => 'idsindicato','TIPO_CONTRATO' => 'codtipo','EMAIL' => 'email','BANCO' => 'banco',
+            'CUENTA_BANCO'=>'cuenta_banco','TIPO_CUENTA'=>'tipo_cuenta','TALLA_POLO'=>'talla_polo','PAGO_ASIGNACION_FAMILIAR'=>'pago_asignacion_familiar',
+            'PAGO_BONO_CARGO'=>'pago_bono_cargo','PAGO_BONO_TIEMPO_SERVICIOS'=>'pago_bono_tiempo_servicios','PAGO_BONO_REEMPLAZO'=>'pago_bono_reemplazo',
+            'PAGO_MOVILIDAD'=>'pago_movilidad','PAGO_BONO_ALIMENTO'=>'pago_bono_alimento','PAGO_SUELDO_BRUTO'=>'pago_total','PAGO_SUELDO_NETO'=>'pago_neto',
+            'CODIGO_SUPERVISOR'=>'codsupervisor','DNICIF_SUPERVISOR'=>'dnicif_supervisor');
     public $arrayCabeceras = array('sede', 'empresa', 'dnicif', 'nombreap', 'apellidos',
         'segundo_apellido', 'nombre', 'sexo', 'estado_civil', 'f_nacimiento', 'direccion'
         , 'telefono', 'f_alta', 'f_baja', 'gerencia', 'area', 'departamento', 'cargo', 'codigo_pension'
@@ -92,50 +103,6 @@ class importar_agentes extends fs_controller {
     private function importar_empleados() {
         $objPHPExcel = PHPExcel_IOFactory::load($this->archivo['tmp_name']);
         $l = 0;
-        $assoc_header['SEDE'] = 'sede';
-        $assoc_header['EMPRESA'] = 'empresa';
-        $assoc_header['DOCUMENTO_IDENTIDAD'] = 'dnicif';
-        $assoc_header['NOMBRE_COMPLETO'] = 'nombreap';
-        $assoc_header['APELLIDO_PATERNO'] = 'apellidos';
-        $assoc_header['APELLIDO_MATERNO'] = 'segundo_apellido';
-        $assoc_header['NOMBRE'] = 'nombre';
-        $assoc_header['SEXO'] = 'sexo';
-        $assoc_header['ESTADO_CIVIL'] = 'estado_civil';
-        $assoc_header['FECHA_NACIMIENTO'] = 'f_nacimiento';
-        $assoc_header['DIRECCION'] = 'direccion';
-        $assoc_header['TELEFONO'] = 'telefono';
-        $assoc_header['FECHA_INGRESO'] = 'f_alta';
-        $assoc_header['FECHA_CESE'] = 'f_baja';
-        $assoc_header['GERENCIA'] = 'gerencia';
-        $assoc_header['AREA'] = 'area';
-        $assoc_header['DEPARTAMENTO'] = 'departamento';
-        $assoc_header['CATEGORIA'] = 'categoria';
-        $assoc_header['CUSSP'] = 'cussp';
-        $assoc_header['CARGO'] = 'cargo';
-        $assoc_header['SISTEMA_PENSION'] = 'codsistemapension';
-        $assoc_header['CODIGO_SISTEMA_PENSION'] = 'codigo_pension';
-        $assoc_header['SEGURIDAD_SOCIAL'] = 'codseguridadsocial';
-        $assoc_header['NUMERO_SEGURIDAD_SOCIAL'] = 'seg_social';
-        $assoc_header['NUMERO_HIJOS'] = 'dependientes';
-        $assoc_header['NIVEL_FORMACION'] = 'codformacion';
-        $assoc_header['CARRERA'] = 'carrera';
-        $assoc_header['CENTRO_ESTUDIOS'] = 'centroestudios';
-        $assoc_header['SINDICATO'] = 'idsindicato';
-        $assoc_header['TIPO_CONTRATO'] = 'codtipo';
-        $assoc_header['EMAIL'] = 'email';
-        $assoc_header['BANCO'] = 'banco';
-        $assoc_header['CUENTA_BANCO'] = 'cuenta_banco';
-        $assoc_header['TIPO_CUENTA'] = 'tipo_cuenta';
-        $assoc_header['TALLA_POLO'] = 'talla_polo';
-        $assoc_header['PAGO_ASIGNACION_FAMILIAR'] = 'pago_asignacion_familiar';
-        $assoc_header['PAGO_BONO_CARGO'] = 'pago_bono_cargo';
-        $assoc_header['PAGO_BONO_TIEMPO_SERVICIOS'] = 'pago_bono_tiempo_servicios';
-        $assoc_header['PAGO_BONO_REEMPLAZO'] = 'pago_bono_reemplazo';
-        $assoc_header['PAGO_MOVILIDAD'] = 'pago_movilidad';
-        $assoc_header['PAGO_BONO_ALIMENTO'] = 'pago_bono_alimento';
-        $assoc_header['PAGO_SUELDO_BRUTO'] = 'pago_total';
-        $assoc_header['PAGO_SUELDO_NETO'] = 'pago_neto';
-
         //Listado de Almacenes por descripcion
         $sedesArray = array();
         foreach ($this->almacen->all() as $vals) {
@@ -145,20 +112,8 @@ class importar_agentes extends fs_controller {
         $worksheet = $objPHPExcel->getSheet(0);
         $highestRow = $worksheet->getHighestRow(); // ejemplo 10
         $highestColumn = $worksheet->getHighestColumn(); // ejemplo 'F'
-        $highestColumn++;
-        $cabeceraRecibida = array();
-        for ($i = 'A'; $i !== $highestColumn; ++$i) {
-            $pCoordinate = $i . '1';
-            $cell = $worksheet->getCell($pCoordinate);
-            $contenido = strtoupper($cell->getValue());
-            if (!empty($assoc_header[$contenido])) {
-                $cabeceraRecibida[] = $assoc_header[$contenido];
-            } else {
-                $cabeceraRecibida[] = "UNSELECTED";
-            }
-        }
+        list($cabeceraRecibida, $qdadHeader) = $this->procesarCabeceraArchivo($worksheet, $highestColumn);
 
-        $qdadHeader = count($cabeceraRecibida);
         for ($row = 1; $row <= $highestRow; ++$row) {
             if ($row != 1) {
                 $lineas = $this->getLineaArchivoXLSX($worksheet, $sedesArray, $cabeceraRecibida, $row, $l, $qdadHeader);
@@ -169,6 +124,29 @@ class importar_agentes extends fs_controller {
         $this->template = false;
         header('Content-Type: application/json');
         echo json_encode($this->resultado);
+    }
+
+    /**
+     * Procesamos el archivo Excel para validar los campos a procesar
+     * @param object $worksheet
+     * @param string $highestColumn
+     * @return array&&integer
+     */
+    public function procesarCabeceraArchivo(&$worksheet,$highestColumn)
+    {
+        $highestColumn++;
+        $cabeceraRecibida = array();
+        for ($i = 'A'; $i !== $highestColumn; ++$i) {
+            $pCoordinate = $i . '1';
+            $cell = $worksheet->getCell($pCoordinate);
+            $contenido = strtoupper($cell->getValue());
+            if (!empty($this->arrayHeader[$contenido])) {
+                $cabeceraRecibida[] = $this->arrayHeader[$contenido];
+            } else {
+                $cabeceraRecibida[] = "UNSELECTED";
+            }
+        }
+        return array($cabeceraRecibida,  count($cabeceraRecibida));
     }
 
     public function getLineaArchivoXLSX(&$worksheet, $sedesArray, $cabeceraRecibida, $row, $l, $qdadHeader) {
@@ -205,7 +183,7 @@ class importar_agentes extends fs_controller {
             }
             //Verificamos si la sede existe
             if ($cabeceraRecibida[$col] == 'sede' AND ( !empty($val) OR $val !== null)) {
-                list($val, $error) = $this->verificarSede($val, $sedesArray);                
+                list($val, $error) = $this->verificarSede($val, $sedesArray);
             }
             if ($error) {
                 $linea['estado'] = 'Incompleto';
@@ -216,7 +194,7 @@ class importar_agentes extends fs_controller {
         $linea['rid'] = $l;
         return $linea;
     }
-    
+
     public function verificarSede($value, $sedesArray){
         $val = strtoupper($value);
         $error = false;
@@ -365,9 +343,9 @@ class importar_agentes extends fs_controller {
                 $idsindicato = NULL;
             }
         }
-        
+
         $existe = $this->agente->get_by_dnicif($_POST['dnicif']);
-        
+
         $age0 = new agente();
         $age0->codalmacen = $sede->codalmacen;
         $age0->idempresa = $this->empresa->id;
@@ -406,6 +384,8 @@ class importar_agentes extends fs_controller {
         $age0->estado_civil = $estado_civil;
         $age0->fecha_creacion = \Date('d-m-y H:i:s');
         $age0->usuario_creacion = $this->user->nick;
+        $age0->fecha_modificacion = \Date('d-m-y H:i:s');
+        $age0->usuario_modificacion = $this->user->nick;
         try {
             $age0->save();
             return true;
@@ -421,7 +401,7 @@ class importar_agentes extends fs_controller {
     private function minusculas($string) {
         return strtolower(trim(strip_tags(stripslashes($string))));
     }
-    
+
         /**
      * Función para devolver el valor de una variable pasada ya sea por POST o GET
      * @param type string

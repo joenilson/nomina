@@ -1,0 +1,202 @@
+{include="header"}
+<script>
+    var url_import = '{$fsc->url()}&guardar_reportaa=1';
+</script>
+<script src="{$fsc->get_js_location('plugins/jquery.jqGrid.min.js')}" type="text/javascript"></script>
+<script src="{$fsc->get_js_location('locale/grid.locale-es.min.js')}" type="text/javascript"></script>
+<script src="{$fsc->get_js_location('plugins/jquery.tablecheckbox.min.js')}" type="text/javascript"></script>
+<script type="text/javascript">
+    $.jgrid.defaults.responsive = true;
+    $.jgrid.defaults.styleUI = 'Bootstrap';
+    $(document).ready(function() {
+        bootbox.setLocale('es');
+        $("#b_importar").click(function(event) {
+            event.preventDefault();
+            var formData = new FormData();
+            formData.append('importar', true);
+            formData.append('empleados', $('#empleados')[0].files[0]);
+            $("#grid_resultados_procesados").jqGrid('clearGridData');
+            $("#grid_resultados_procesados")[0].grid.beginReq();
+            $.ajax({
+                type: 'POST',
+                url: '{$fsc->url()}',
+                processData: false,
+                contentType: false,
+                data: formData,
+                enctype: 'multipart/form-data',
+                success : function(datos) {
+                    $('#grid_resultados_procesados').jqGrid()
+                    .setGridParam({
+                        data: datos,
+                        datatype: "local"
+                    });
+                    $("#grid_resultados_procesados")[0].grid.endReq();
+                    $('#grid_resultados_procesados').jqGrid().trigger("reloadGrid");
+                },
+                error: function(data) {
+                    bootbox.alert("Ocurrio un error no contemplado en el plugin: <br/>"+data);
+                }
+            });
+        });
+        $("#grid_resultados_procesados").jqGrid({
+            datatype: "local",
+            colModel: [
+                {label: 'Id', name: 'rid', hidden: true, key: true},
+                {label: 'Codigo', name: 'codagente', width: 90},
+                {label: '{#FS_CIFNIF#}', name: 'dnicif', width: 90},
+                {label: 'Apellido Paterno', name: 'apellidos', width: 180},
+                {label: 'Apellido Materno', name: 'segundo_apellido', width: 120},
+                {label: 'Nombres', name: 'nombre', width: 180},
+                {label: 'Codigo Sup', name: 'codsupervisor', width: 90},
+                {label: '{#FS_CIFNIF#} Sup', name: 'dnicif_sup', width: 90},
+                {label: 'Apellido Paterno Sup', name: 'apellidos_sup', width: 180},
+                {label: 'Apellido Materno Sup', name: 'segundo_apellido_sup', width: 120},
+                {label: 'Nombres Sup', name: 'nombre_sup', width: 180}
+            ],
+            loadonce: false,
+            viewrecords: true,
+            autowidth: true,
+            shrinkToFit: false,
+            height: 450,
+            rowNum: 500,
+            rowList: [250,500,750,1000,1500,2000],
+            scrollPopUp: true,
+            scrollLeftOffset: "5%",
+            rownumbers: true,
+            rownumWidth: 30,
+            multiselect: true,
+            defaults: {
+                emptyrecords: "No se encontraron registros",
+                loadtext: "Importando..."
+            },
+            pager: "#grid_resultados_procesados_pager",
+            loadComplete: function(data) {
+                for (var i = 0; i < data.rows.length; i++) {
+                    var rowData = data.rows[i];
+                    if (rowData.dnicif_supervisor === null) {
+                        var checkbox = $("#jqg_grid_resultados_procesados_"+rowData.rid);
+                        checkbox.css("visibility", "hidden");
+                        checkbox.attr("disabled", true);
+                        if(rowData.estado !== 'Incompleto'){
+                            $("#" + rowData.rid).find("td").addClass("danger");
+                        }else if(rowData.estado !== 'Ya existe'){
+                            $("#" + rowData.rid).find("td").addClass("warning");
+                        }
+                    }
+                }
+            },
+            beforeSelectRow: function(rowid, e) {
+                var cbsdis = $("tr#" + rowid + ".jqgrow > td > input.cbox:disabled", this);
+                if (cbsdis.length === 0) {
+                    return true;    // allow select the row
+                } else {
+                    return false;   // not allow select the row
+                }
+            },
+            onSelectAll: function(aRowids, status) {
+                if (status) {
+                    // uncheck "protected" rows
+                    var cbs = $("tr.jqgrow > td > input.cbox:disabled", this);
+                    cbs.removeAttr("checked");
+
+                    //modify the selarrrow parameter
+                    this.p.selarrrow = $('#grid_resultados_procesados').find("tr.jqgrow:has(td > input.cbox:checked)")
+                        .map(function() { return this.id; }) // convert to set of ids
+                        .get(); // convert to instance of Array
+
+                    //deselect disabled rows
+                    $('#grid_resultados_procesados').find("tr.jqgrow:has(td > input.cbox:disabled)")
+                        .attr('aria-selected', 'false')
+                        .removeClass('success');
+                }
+            }
+        });
+        $('#grid_resultados_procesados').navGrid('#grid_resultados_procesados_pager',
+        { edit: false, add: false, del: false, search: true, refresh: true, view: true, position: "left", cloneToTop: true });
+    });
+</script>
+<div class="container-fluid hidden-print" style="margin-top: 10px;">
+    <div class="row">
+        <div class="col-sm-6 col-xs-6">
+            <div class="btn-group hidden-xs">
+                <a class="btn btn-sm btn-default" href="index.php?page=admin_agentes">
+                    <span class="glyphicon glyphicon-arrow-left"></span>
+                    <span class="hidden-xs hidden-sm">&nbsp; Empleados</span>
+                </a>
+                <a class="btn btn-sm btn-default" href="{$fsc->url()}" title="Recargar la página">
+                    <span class="glyphicon glyphicon-refresh"></span>
+                </a>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xs-6 text-right">
+            <h2 style="margin-top: 0px;">
+                <i class="fa fa-users" aria-hidden="true"></i> Importar Reporta A
+            </h2>
+        </div>
+    </div>
+    <form class="form-horizontal" role="form" name="f_importar_empleados" enctype="multipart/form-data" action="{$fsc->url()}" method="post">
+        <div class="row">
+            <div class="col-sm-6 form-group">
+                <input id="empleados" type="file" name="empleados" accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required=""/>
+                <span class="help-block">Seleccione el archivo con los datos a importar de a quien reportan los empleados</span>
+                <span class="help-block">
+                    Puedes descargar la
+                    <a href="{#FS_PATH#}plugins/nomina/extras/plantilla_reportaa.xlsx">
+                        <span class='fa fa-file-excel-o'></span>&nbsp;plantilla de datos</a> para llenar la información de los empleados y luego importarla.</span>
+            </div>
+            <div class="col-sm-4">
+                <button class="btn btn-sm btn-primary" type="button" id="b_importar">
+                    <span class="fa fa-upload"></span> &nbsp; Importar
+                </button>
+            </div>
+        </div>
+    </form>
+    <div class="row">
+        <table id="grid_resultados_procesados">
+        </table>
+        <div id="grid_resultados_procesados_pager">
+        </div>
+    </div>
+    <div class="row" style="margin-top: 10px;">
+        <button type="button" class="btn btn-sm btn-warning" id="b_guardar_reportaa">
+            <span class="fa fa-upload"></span> Guardar Empleados Reportan a
+        </button>
+    </div>
+</div>
+<div class="modal" id="modal_estadistica_importacion">
+      <div class="modal-dialog">
+         <div class="modal-content">
+            <div class="modal-header">
+               <h4 class="modal-title">
+                  <span class="fa fa-bar-chart-o"></span>
+                  &nbsp; Proceso de Importación de Empleados
+               </h4>
+            </div>
+            <div class="modal-body">
+                <div id="divProgress_ingreso" class="text-left"></div>
+                <div class="progress progress-popup">
+                   <div class="progress-bar progress-bar-success progress-bar-striped active" id="progressor_ingreso"></div>
+                </div>
+                <div id="divProgress_no_ingreso" class="text-left"></div>
+                <div class="progress progress-popup">
+                   <div class="progress-bar progress-bar-info progress-bar-striped active" id="progressor_no_ingreso"></div>
+                </div>
+                <div id="divProgress_existe" class="text-left"></div>
+                <div class="progress progress-popup">
+                   <div class="progress-bar progress-bar-warning progress-bar-striped active" id="progressor_existe"></div>
+                </div>
+                <div id="divProgress_error" class="text-left"></div>
+                <div class="progress progress-popup">
+                   <div class="progress-bar progress-bar-danger progress-bar-striped active" id="progressor_error"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+               <button class="btn btn-sm btn-danger" id="b_cerrar_modal_estadistica_importacion" type="button" style="display: none;">
+                   <span class="fa fa-close"></span>
+                  &nbsp; Cerrar
+               </button>
+            </div>
+         </div>
+      </div>
+   </div>
+{include="footer"}

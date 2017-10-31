@@ -99,7 +99,7 @@ function procesar_seleccionados(){
             async: false,
             success : function(response) {
                 if(response.length !== 0){
-                    data = response;
+                    var data = response;
                     if(data.estado === 'ingresado'){
                         var pcj = (ingreso/lista.length)*100;
                         document.getElementById("divProgress_ingreso").innerHTML = ingreso+' Registro(s) ingresados de '+lista.length;
@@ -331,9 +331,34 @@ $(document).ready(function() {
     $("#b_guardar_empleados").click(function(event) {
         event.preventDefault();
         bootbox.dialog({
-            message: "Esta seguro de haber revisado la información de los empleados?<br />"+
+            message: "¿Esta seguro de haber revisado la información de los empleados?<br />"+
                     "Si decide subir esta información, no podrá eliminar ningun registro y se actualizará la información de empleados ya registrados.",
             title: "Confirmar subir empleados",
+            buttons: {
+                success: {
+                    label: "Confirmar",
+                    className: "btn-success",
+                    callback: function() {
+                        this.hide();
+                        procesar_seleccionados();
+                    }
+                },
+                danger: {
+                    label: "Cancelar",
+                    className: "btn-danger",
+                    callback: function() {
+                        this.hide();
+                    }
+                }
+            }
+        });
+    });
+
+    $("#b_guardar_reportaa").click(function(event) {
+        event.preventDefault();
+        bootbox.dialog({
+            message: "¿Esta seguro de haber revisado la información de los empleados y a quien reportan?",
+            title: "Confirmar subir empleados reportan a",
             buttons: {
                 success: {
                     label: "Confirmar",
@@ -357,7 +382,7 @@ $(document).ready(function() {
     $("#b_guardar_dependientes").click(function(event) {
         event.preventDefault();
         bootbox.dialog({
-            message: "Esta seguro de haber revisado la información de los dependientes?<br />"+
+            message: "¿Esta seguro de haber revisado la información de los dependientes?<br />"+
                     "Si decide subir esta información, tendrá que corregir luego manualmente la información faltante o errónea.",
             title: "Confirmar subir dependientes",
             buttons: {
