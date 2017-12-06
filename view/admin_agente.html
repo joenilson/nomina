@@ -3,7 +3,7 @@
 <script type="text/javascript" src="{$fsc->get_js_location('provincias.js')}"></script>
 <script type="text/javascript">
     var locale_user = 'es';
-    var url_organizacion = '{$fsc->url()}&type=organizacion';
+    var url_organizacion = 'index.php?page=datos_agente&type=organizacion';
     $(document).ready(function () {
         $("#b_delete_agente").click(function (event) {
             event.preventDefault();
@@ -12,7 +12,6 @@
                 window.location.href = '{$fsc->ppage->url()}&delete={$fsc->agente->codagente}';
             }
         });
-
         $("#ac_reporta").autocomplete({
             serviceUrl: '{$fsc->url()}',
             paramName: 'buscar_empleado',

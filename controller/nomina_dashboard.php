@@ -118,11 +118,10 @@ class nomina_dashboard extends fs_controller{
                 $resultado =array('datasets'=>array('data'=>$data,'backgroundColor'=>array("#FF6384","#008CBA","#FF6384"),'hoverBackgroundColor'=>array("#FF6384",
                             "#008CBA","#FF6384")),'labels'=>$labels,'backgroundColor'=>$backgroundColor,'borderColor'=>$borderColor);
                 break;
-                break;
             case "resumen-generacion":
                 $res = $this->generaciones->resumen_generaciones();
-                $data = "";
-                $labels = "";
+                $data = array();
+                $labels = array();
                 foreach($res as $values){
                     $labels[] = $values->descripcion;
                     $data[] = $values->cantidad;
@@ -155,7 +154,7 @@ class nomina_dashboard extends fs_controller{
     }
 
     public function share_extensions(){
-      
+
         $extensiones = array(
             array(
                 'name' => '001_nomina_dashboard_css',
@@ -188,7 +187,7 @@ class nomina_dashboard extends fs_controller{
                 'type' => 'head',
                 'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/4/Chart.min.js" type="text/javascript"></script>',
                 'params' => ''
-            ),            
+            ),
             array(
                 'name' => '003_nomina_dashboard_js',
                 'page_from' => __CLASS__,
@@ -196,7 +195,7 @@ class nomina_dashboard extends fs_controller{
                 'type' => 'head',
                 'text' => '<script src="'.FS_PATH.'plugins/nomina/view/js/nomina.js" type="text/javascript"></script>',
                 'params' => ''
-            )          
+            )
         );
 
         foreach ($extensiones as $ext) {
