@@ -76,6 +76,11 @@
         <nulo>YES</nulo>
     </columna>
     <columna>
+        <nombre>codmotivocese</nombre>
+        <tipo>character varying(6)</tipo>
+        <nulo>YES</nulo>
+    </columna>
+    <columna>
         <nombre>codpais</nombre>
         <tipo>character varying(20)</tipo>
         <nulo>YES</nulo>
@@ -97,6 +102,11 @@
     </columna>
     <columna>
         <nombre>codsupervisor</nombre>
+        <tipo>character varying(10)</tipo>
+        <nulo>YES</nulo>
+    </columna>
+    <columna>
+        <nombre>codsupervisorf</nombre>
         <tipo>character varying(10)</tipo>
         <nulo>YES</nulo>
     </columna>

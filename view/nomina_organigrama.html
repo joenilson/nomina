@@ -84,14 +84,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <div class="row">
         <div class="col-sm-12">
             <p class="help-block">
-                <span class="fa fa-circle-thin"></span>&nbsp;Puedes seleccionar un Almacén, Gerencia o Area para filtrar la información o dejar estos cambios en blanco.<br/>
-                <span class="fa fa-circle-thin"></span>&nbsp;Si el organigrama es muy grande, mueve la rueda del mouse para que se active el zoom.<br/>
-                <span class="fa fa-circle-thin"></span>&nbsp;Si el organigrama es muy grande, dale un click al organigrama y manten presionado para que te desplaces dentro del mismo.
+                <span class="fa fa-circle-thin fa-fw"></span>&nbsp;Puedes seleccionar un Almacén, Gerencia o Area para filtrar la información o dejar estos cambios en blanco.<br/>
+                <span class="fa fa-circle-thin fa-fw"></span>&nbsp;Si el organigrama es muy grande, mueve la rueda del mouse para que se active el zoom.<br/>
+                <span class="fa fa-circle-thin fa-fw"></span>&nbsp;Si el organigrama es muy grande, dale un click al organigrama y manten presionado para que te desplaces dentro del mismo.
             </p>
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-12" id="organigrama-completo"></div>
+        <div class="col-sm-12" id="organigrama-completo" style="zoom: 1;"></div>
     </div>
 </div>
 <script>
@@ -119,7 +119,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         });
         return listado;
     }
-    
+
     function dibujar_organigrama(){
         $('#organigrama-completo').html('');
         var organigrama = cargar_organigrama();
@@ -131,7 +131,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             'exportButtonText': 'Exportar',
             'exportFilename': 'Organigrama',
             'pan': true,
-            'zoom': true,
+            'zoom': false,
             'createNode': function($node, $data) {
                 if(typeof($data.foto) !== 'undefined'){
                     $('<image class="img-circle" width="auto" height="80" src="' + $data.foto + '" />')
@@ -152,10 +152,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }).on('touchmove', function(event) {
             event.preventDefault();
         });
+
     }
 
     $(document).ready(function () {
-        
+
+        var currentZoom = parseFloat($('#organigrama-completo').css('zoom'));
+
+        $('#zoomOut').on('click', function () {
+            $('#organigrama-completo').css('zoom', currentZoom -= 0.1);
+        });
+
+        $('#zoomIn').on('click', function () {
+            $('#organigrama-completo').css('zoom', currentZoom += 0.1);
+        });
     });
 </script>
 {include="footer"}

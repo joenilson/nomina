@@ -65,6 +65,7 @@ class admin_agente extends nomina_controller
     public $sistemapension;
     public $hoja_vida;
     public $movimientos_empleados;
+    public $motivocese;
     public $allow_delete;
     public $foto_empleado;
     public $noimagen;
@@ -112,6 +113,7 @@ class admin_agente extends nomina_controller
         $this->tipocuenta = new tipocuenta();
         $this->tipodependientes = new tipodependientes();
         $this->tipomovimiento = new tipomovimiento();
+        $this->motivocese = new motivocese();
         //Aqui se configurarán los campos obligatorios bajo demanda del usuario
         $this->campos_obligatorios = array(
             'nombre'=>'Nombre',
@@ -208,12 +210,14 @@ class admin_agente extends nomina_controller
                 $this->agente->codalmacen = \filter_input(INPUT_POST, 'codalmacen');
                 $this->agente->codtipo = \filter_input(INPUT_POST, 'codtipo');
                 $this->agente->codsupervisor = \filter_input(INPUT_POST, 'codsupervisor');
+                $this->agente->codsupervisorf = \filter_input(INPUT_POST, 'codsupervisorf');
                 $this->agente->codgerencia = \filter_input(INPUT_POST, 'codgerencia');
                 $this->agente->codcargo = \filter_input(INPUT_POST, 'codcargo');
                 $this->agente->cargo = $cargo->descripcion;
                 $this->agente->codarea = \filter_input(INPUT_POST, 'codarea');
                 $this->agente->coddepartamento = \filter_input(INPUT_POST, 'coddepartamento');
                 $this->agente->codformacion = \filter_input(INPUT_POST, 'codformacion');
+                $this->agente->codmotivocese = \filter_input(INPUT_POST, 'codmotivocese');
                 $this->agente->carrera = $this->mayusculas(\filter_input(INPUT_POST, 'carrera'));
                 $this->agente->centroestudios = $this->mayusculas(\filter_input(INPUT_POST, 'centroestudios'));
                 $this->agente->codseguridadsocial = \filter_input(INPUT_POST, 'codseguridadsocial');
@@ -230,10 +234,8 @@ class admin_agente extends nomina_controller
                 $this->agente->estado_civil = \filter_input(INPUT_POST, 'estado_civil');
 
                 if ($this->agente->save()) {
-                    $this->upload_photo = new Upload($_FILES['foto']);
-                    if ($this->upload_photo->uploaded) {
-                        $this->guardar_foto();
-                    }
+                    $this->verificar_foto();
+
                     $this->agente = $this->agente->get(\filter_input(INPUT_GET, 'cod'));
                     $this->new_message("Datos del empleado guardados correctamente.");
                 } else {
@@ -241,6 +243,16 @@ class admin_agente extends nomina_controller
                 }
             } else {
                 $this->new_error_msg('No tienes permiso para modificar estos datos.');
+            }
+        }
+    }
+
+    public function verificar_foto()
+    {
+        if($_FILES['foto']['name']){
+            $this->upload_photo = new Upload($_FILES['foto']);
+            if ($this->upload_photo->uploaded) {
+                $this->guardar_foto();
             }
         }
     }

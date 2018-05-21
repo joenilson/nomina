@@ -3577,7 +3577,7 @@ class upload {
                         } else if ($this->image_ratio_no_zoom_out) {
                             $this->image_ratio = true;
                             $this->image_no_shrinking = true;
-                        } 
+                        }
 
                         // keeps aspect ratio with x calculated from y
                         if ($this->image_ratio_x) {
@@ -4383,11 +4383,11 @@ class upload {
                             $text_offset_y = 0;
                             $rect = imagettfbbox($this->image_text_size, $this->image_text_angle, $this->image_text_font, $text );
                             if ($rect) {
-                                $minX = min(array($rect[0],$rect[2],$rect[4],$rect[6])); 
-                                $maxX = max(array($rect[0],$rect[2],$rect[4],$rect[6])); 
-                                $minY = min(array($rect[1],$rect[3],$rect[5],$rect[7])); 
-                                $maxY = max(array($rect[1],$rect[3],$rect[5],$rect[7])); 
-                                $text_offset_x = abs($minX) - 1; 
+                                $minX = min(array($rect[0],$rect[2],$rect[4],$rect[6]));
+                                $maxX = max(array($rect[0],$rect[2],$rect[4],$rect[6]));
+                                $minY = min(array($rect[1],$rect[3],$rect[5],$rect[7]));
+                                $maxY = max(array($rect[1],$rect[3],$rect[5],$rect[7]));
+                                $text_offset_x = abs($minX) - 1;
                                 $text_offset_y = abs($minY) - 1;
                                 $text_width = $maxX - $minX + (2 * $this->image_text_padding_x);
                                 $text_height = $maxY - $minY + (2 * $this->image_text_padding_y);

@@ -17,11 +17,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-require_model('almacen.php');
-require_model('cargos.php');
-require_model('organizacion.php');
-require_model('tipoempleado.php');
-require_model('categoriaempleado.php');
 
 /**
  * El agente/empleado es el que se asocia a un albarán, factura o caja.
@@ -234,6 +229,12 @@ class agente extends fs_model {
     public $codsupervisor;
 
     /**
+     * Se configura el superior inmediato del empleado al que reporta funcionalmente
+     * @var string $coduspervisorf Agente
+     */
+    public $codsupervisorf;
+
+    /**
      * Se selecciona si el empleado esta afiliado a un sindicato
      * @var string $idsincato Sindicato
      */
@@ -355,7 +356,7 @@ class agente extends fs_model {
     public $organizacion;
     public $codcategoria;
     public $categoriaempleado;
-
+    public $codmotivocese;
     public function __construct($a = FALSE) {
         parent::__construct('agentes');
         if ($a) {
@@ -390,11 +391,13 @@ class agente extends fs_model {
             $this->codarea = $a['codarea'];
             $this->codcargo = $a['codcargo'];
             $this->codsupervisor = $a['codsupervisor'];
+            $this->codsupervisorf = $a['codsupervisorf'];
             $this->codseguridadsocial = $a['codseguridadsocial'];
             $this->codsistemapension = $a['codsistemapension'];
             $this->idsindicato = $a['idsindicato'];
             $this->dependientes = $a['dependientes'];
             $this->codformacion = $a['codformacion'];
+            $this->codmotivocese = $a['codmotivocese'];
             $this->carrera = $a['carrera'];
             $this->centroestudios = $a['centroestudios'];
             $this->codbanco = $a['codbanco'];
@@ -468,8 +471,10 @@ class agente extends fs_model {
             $this->codarea = NULL;
             $this->codcargo = NULL;
             $this->codsupervisor = NULL;
+            $this->codsupervisorf = NULL;
             $this->codseguridadsocial = NULL;
             $this->codsistemapension = NULL;
+            $this->codmotivocese = NULL;
             $this->idsindicato = NULL;
             $this->dependientes = 0;
             $this->codformacion = NULL;
@@ -508,6 +513,7 @@ class agente extends fs_model {
         $res->codcategoria = '';
         $res->categoria = '';
         $res->nombre_supervisor = '';
+        $res->nombre_supervisorf = '';
         if ($res->codcargo) {
             $info_cargos = $this->cargos->get($res->codcargo);
             $info_categoria = ($info_cargos->codcategoria) ? $this->categoriaempleado->get($info_cargos->codcategoria) : false;
@@ -519,6 +525,12 @@ class agente extends fs_model {
             $nombre = $this->supervisor($res->codsupervisor);
             if (!empty($nombre)) {
                 $res->nombre_supervisor = $nombre->nombreap;
+            }
+        }
+        if (isset($res->codsupervisorf)) {
+            $nombre = $this->supervisor($res->codsupervisorf);
+            if (!empty($nombre)) {
+                $res->nombre_supervisorf = $nombre->nombreap;
             }
         }
         $res->edad = $this->edad($res->f_nacimiento);
@@ -800,6 +812,7 @@ class agente extends fs_model {
                         ", codcargo = " . $this->var2str($this->codcargo) .
                         ", cargo = " . $this->var2str($this->cargo) .
                         ", codsupervisor = " . $this->var2str($this->codsupervisor) .
+                        ", codsupervisorf = " . $this->var2str($this->codsupervisorf) .
                         ", codgerencia = " . $this->var2str($this->codgerencia) .
                         ", codtipo = " . $this->var2str($this->codtipo) .
                         ", codarea = " . $this->var2str($this->codarea) .
@@ -820,6 +833,7 @@ class agente extends fs_model {
                         ", tipo_cuenta = " . $this->var2str($this->tipo_cuenta) .
                         ", codbanco = " . $this->var2str($this->codbanco) .
                         ", codformacion = " . $this->var2str($this->codformacion) .
+                        ", codmotivocese = " . $this->var2str($this->codmotivocese) .
                         ", carrera = " . $this->var2str($this->carrera) .
                         ", centroestudios = " . $this->var2str($this->centroestudios) .
                         ", dependientes = " . $this->intval($this->dependientes) .
@@ -837,8 +851,9 @@ class agente extends fs_model {
                     $this->codagente = $this->get_new_codigo();
                 }
                 $sql = "INSERT INTO " . $this->table_name . " (codalmacen,idempresa,codagente,nombre,apellidos,segundo_apellido,nombreap,dnicif,telefono,
-               email,codcargo,cargo,codsupervisor,codgerencia,codtipo,codarea,coddepartamento,provincia,ciudad,direccion,f_nacimiento,
-               f_alta,f_baja,sexo,idsindicato,codseguridadsocial,seg_social,codsistemapension,codigo_pension,cuenta_banco,codbanco,tipo_cuenta,codformacion,carrera,centroestudios,dependientes,estado,estado_civil,banco,
+               email,codcargo,cargo,codsupervisor,codsupervisorf,codgerencia,codtipo,codarea,coddepartamento,provincia,ciudad,direccion,f_nacimiento,
+               f_alta,f_baja,sexo,idsindicato,codseguridadsocial,seg_social,codsistemapension,codigo_pension,cuenta_banco,codbanco,tipo_cuenta,
+               codmotivocese,codformacion,carrera,centroestudios,dependientes,estado,estado_civil,banco,
                porcomision,pago_total,pago_neto,fecha_creacion,usuario_creacion)
                VALUES (" . $this->var2str($this->codalmacen) .
                         "," . $this->intval($this->idempresa) .
@@ -853,6 +868,7 @@ class agente extends fs_model {
                         "," . $this->var2str($this->codcargo) .
                         "," . $this->var2str($this->cargo) .
                         "," . $this->var2str($this->codsupervisor) .
+                        "," . $this->var2str($this->codsupervisorf) .
                         "," . $this->var2str($this->codgerencia) .
                         "," . $this->var2str($this->codtipo) .
                         "," . $this->var2str($this->codarea) .
@@ -872,6 +888,7 @@ class agente extends fs_model {
                         "," . $this->var2str($this->cuenta_banco) .
                         "," . $this->var2str($this->codbanco) .
                         "," . $this->var2str($this->tipo_cuenta) .
+                        "," . $this->var2str($this->codmotivocese) .
                         "," . $this->var2str($this->codformacion) .
                         "," . $this->var2str($this->carrera) .
                         "," . $this->var2str($this->centroestudios) .

@@ -25,6 +25,19 @@
                }
             }
         });
+        $("#ac_supervisado").autocomplete({
+            serviceUrl: '{$fsc->url()}',
+            paramName: 'buscar_empleado',
+            onSelect: function (suggestion) {
+               if(suggestion)
+               {
+                  if(document.f_agente.codsupervisorf.value !== suggestion.codigo)
+                  {
+                     document.f_agente.codsupervisorf.value = suggestion.codigo;
+                  }
+               }
+            }
+        });
     });
     function verificarEstado(){
         var inputAgregarAgente = $("<input>")
@@ -309,6 +322,15 @@
                                                 </div>
                                             </div>
                                             <div class="col-sm-3">
+                                                <div class="form-group">
+                                                    <label class="control-label" for="ac_supervisado">
+                                                        Supervisado por:
+                                                    </label>
+                                                    <input type='hidden' name='codsupervisorf' value='{$fsc->agente->codsupervisorf}'>
+                                                    <input type='text' name='ac_supervisado' id='ac_supervisado' autocomplete="off" value='{$fsc->agente->nombre_supervisorf}' class='form-control input-sm'>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-3">
                                                 <div class="form-group required">
                                                     <label class="control-label" for="codtipo">
                                                         <a href="{$fsc->tipoempleado->url()}">Tipo de Contrato:</a>
@@ -321,7 +343,7 @@
                                                     </select>
                                                 </div>
                                             </div>
-                                            <div class="col-sm-4">
+                                            <div class="col-sm-3">
                                                 <div class="form-group required">
                                                     <label class="control-label" for="codgerencia">
                                                         <a href="{$fsc->organizacion->url()}">Gerencia:</a>
@@ -334,7 +356,7 @@
                                                     </select>
                                                 </div>
                                             </div>
-                                            <div class="col-sm-4">
+                                            <div class="col-sm-3">
                                                 <div class="form-group required">
                                                     <label class="control-label" for="codarea">
                                                         <a href="{$fsc->organizacion->url()}">Area:</a>
@@ -347,7 +369,7 @@
                                                     </select>
                                                 </div>
                                             </div>
-                                            <div class="col-sm-4">
+                                            <div class="col-sm-3">
                                                 <div class="form-group">
                                                     <label class="control-label" for="coddepartamento">
                                                         <a href="{$fsc->organizacion->url()}">Departamento:</a>
@@ -356,39 +378,6 @@
                                                         <option value="">--------</option>
                                                         {loop="$fsc->organizacion->all_tipo('DEPARTAMENTO')"}
                                                         <option value="{$value->codorganizacion}" {if="$fsc->agente->coddepartamento==$value->codorganizacion"}selected{/if}>{$value->descripcion}</option>
-                                                        {/loop}
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-2">
-                                                <div class="form-group required">
-                                                    <label class="control-label">Fecha Alta:</label>
-                                                    <div class="input-group">
-                                                        <span class="input-group-addon">
-                                                            <span class="glyphicon glyphicon-calendar"></span>
-                                                        </span>
-                                                        <input required class="form-control datepicker input-sm" type="text" name="f_alta" value="{$fsc->agente->f_alta}" autocomplete="off"/>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-2">
-                                                <div class="form-group">
-                                                    <label class="control-label">Fecha Baja:</label>
-                                                    <div class="input-group">
-                                                        <span class="input-group-addon">
-                                                            <span class="glyphicon glyphicon-calendar"></span>
-                                                        </span>
-                                                        <input class="form-control datepicker input-sm" type="text" name="f_baja" value="{$fsc->agente->f_baja}" autocomplete="off"/>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-3">
-                                                <div class="form-group required">
-                                                    <label class="control-label">Estado:</label>
-                                                    <select name="estado" required class="form-control input-sm">
-                                                        <option value="">--------</option>
-                                                        {loop="$fsc->agente->estados_agente()"}
-                                                        <option value="{$key}" {if="$fsc->agente->estado==$key"}selected{/if}>{$value}</option>
                                                         {/loop}
                                                     </select>
                                                 </div>
@@ -406,6 +395,52 @@
                                                     </select>
                                                 </div>
                                             </div>
+                                            <div class="col-sm-2">
+                                                <div class="form-group required">
+                                                    <label class="control-label">Fecha Alta:</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon">
+                                                            <span class="glyphicon glyphicon-calendar"></span>
+                                                        </span>
+                                                        <input required class="form-control datepicker input-sm" type="text" name="f_alta" value="{$fsc->agente->f_alta}" autocomplete="off"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-2 bg-danger">
+                                                <div class="form-group">
+                                                    <label class="control-label">Fecha Baja:</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon">
+                                                            <span class="glyphicon glyphicon-calendar"></span>
+                                                        </span>
+                                                        <input class="form-control datepicker input-sm" type="text" name="f_baja" value="{$fsc->agente->f_baja}" autocomplete="off"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-4 bg-danger">
+                                                <div class="form-group{if="$fsc->agente->f_baja"} required{/if}">
+                                                    <label class="control-label">Motivo Cese</label>
+                                                    <select name="codmotivocese" {if="$fsc->agente->f_baja"}required{/if} class="form-control input-sm">
+                                                        <option value="">--------</option>
+                                                        {loop="$fsc->motivocese->all()"}
+                                                        <option value="{$value->codmotivocese}" {if="$fsc->agente->codmotivocese==$value->codmotivocese"}selected{/if}>{$value->descripcion}</option>
+                                                        {/loop}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <div class="form-group required">
+                                                    <label class="control-label">Estado:</label>
+                                                    <select name="estado" required class="form-control input-sm">
+                                                        <option value="">--------</option>
+                                                        {loop="$fsc->agente->estados_agente()"}
+                                                        <option value="{$key}" {if="$fsc->agente->estado==$key"}selected{/if}>{$value}</option>
+                                                        {/loop}
+                                                    </select>
+                                                </div>
+                                            </div>
+
                                         </div>
                                         <div role="tabpanel" class="tab-pane fade" id="tab-sociales">
                                             <div class="col-sm-3">
